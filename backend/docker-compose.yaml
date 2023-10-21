@@ -1,0 +1,8 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    container_name: api
+    ports:
+      - "4000:4000"

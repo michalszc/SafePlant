@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+      "rootDirs": ["src"],
+      "outDir": "dist",
+      "lib": ["es2020"],
+      "target": "esnext",
+      "module": "esnext",
+      "moduleResolution": "node",
+      "resolveJsonModule": true,
+      "esModuleInterop": true,
+      "types": ["node", "jest"],
+      "skipLibCheck": true
+    },
+    "include": ["src/**/*"],
+    "exclude": [
+      "node_modules",
+      "**/__mocks__/*",
+      "__tests__"
+    ]
+}

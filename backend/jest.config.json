@@ -1,0 +1,9 @@
+{
+    "testRegex": "tests\/(?:.*\/)*[^\/]+\\.test\\.ts",
+    "setupFilesAfterEnv": [
+        ".\/tests\/setupTest.ts"
+    ],
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "clearMocks": true
+}

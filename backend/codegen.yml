@@ -7,3 +7,9 @@ generates:
     config:
       useIndexSignature: true
       contextType: "../utils/setup#Context"
+      scalars:
+        DateTime: string
+        Timestamp: number
+        UUID: string
+        JWT: string
+        Base64String: string

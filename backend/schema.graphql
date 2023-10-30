@@ -1,21 +1,579 @@
-# TEMPORARY SCHEMA
+"""
+A directive that specifies that a field cannot have a null value.
+"""
+directive @notNull on INPUT_FIELD_DEFINITION | ARGUMENT_DEFINITION
+
+"""
+A directive that enforces that an input field or argument value must not be empty.
+"""
+directive @notEmpty on INPUT_FIELD_DEFINITION | ARGUMENT_DEFINITION
+
+"""
+A directive that specifies a numeric range for a field's value.
+The field's value must be within the specified minimum and maximum (inclusive) bounds.
+"""
+directive @range(
+    """
+    The minimum value allowed for the field. Defaults to 0 if not provided.
+    """
+    min: Int = 0,
+
+    """
+    The maximum value allowed for the field. Defaults to positive infinity if not provided.
+    """
+    max: Int = Infinity
+) on INPUT_FIELD_DEFINITION | ARGUMENT_DEFINITION
+
+"""
+A directive that specifies a length range for an input field or argument value.
+The value's length must be within the specified minimum and maximum (inclusive) bounds.
+"""
+directive @length(
+    """
+    The minimum length allowed for the value. Defaults to 0 if not provided.
+    """
+    min: Int = 0,
+    """
+    The maximum length allowed for the value. Defaults to positive infinity if not provided.
+    """
+    max: Int = Infinity
+) on INPUT_FIELD_DEFINITION | ARGUMENT_DEFINITION
+
+scalar JWT
+scalar UUID
+scalar Timestamp
+scalar DateTime
+
+"""
+A string encoded using base64.
+"""
+scalar Base64String
+
+enum SensorTypeEnum {
+  """
+  Temperature sensor type
+  """
+  TEMPERATURE
+  """
+  Humidity sensor type
+  """
+  HUMIDITY
+}
+
+type SensorData {
+  """
+  Unique identifier for sensor data.
+  """
+  id: UUID!
+  """
+  Date and time when data was collected.
+  """
+  dateTime: DateTime!
+  """
+  Unix timestamp of data collection.
+  """
+  timestamp: Timestamp!
+  """
+  Numeric value of the sensor data.
+  """
+  numericValue: Float!
+  """
+  Raw sensor data value as a string.
+  """
+  rawValue: String!
+}
+
+type ValidRange {
+  """
+  Minimum valid range value
+  """
+  min: Float!
+  """
+  Maximum valid range value
+  """
+  max: Float!
+}
+
+type PageInfo {
+  """
+  Indicates if there are more pages after the current set.
+  """
+  hasNextPage: Boolean!
+  """
+  Indicates if there are more pages before the current set.
+  """
+  hasPreviousPage: Boolean!
+  """
+  The cursor marking the start of the current set.
+  """
+  startCursor: Base64String
+  """
+  The cursor marking the end of the current set.
+  """
+  endCursor: Base64String
+}
+
+type SensorDataEdge {
+  """
+  The actual sensor data.
+  """
+  node: SensorData!
+  """
+  A cursor for pagination purposes.
+  """
+  cursor: Base64String!
+}
+
+type Data {
+  """
+  A list of sensor data edges.
+  """
+  edges: [SensorDataEdge!]!
+  """
+  Information about pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+enum SensorDataSortFieldEnum {
+  """
+  Sort by date-time
+  """
+  DATETIME
+  """
+  Sort by timestamp
+  """
+  TIMESTAMP
+  """
+  Sort by value
+  """
+  VALUE
+}
+
+enum SortOrderEnum {
+  """
+  Sort in ascending order
+  """
+  ASC
+  """
+  Sort in descending order
+  """
+  DESC
+}
+
+input SensorDataSortInput {
+  """
+  Specify the field to sort by
+  """
+  field: SensorDataSortFieldEnum!
+  """
+  Specify the sorting order
+  """
+  order: SortOrderEnum!
+}
+
+input DateTimeFilter {
+  """
+  Filters for date-time greater than the specified value.
+  """
+  gt: DateTime
+  """
+  Filters for date-time less than the specified value.
+  """
+  lt: DateTime
+  """
+  Filters for date-time greater than or equal to the specified value.
+  """
+  gte: DateTime
+  """
+  Filters for date-time less than or equal to the specified value.
+  """
+  lte: DateTime 
+}
+
+input IDFilter {
+  """
+  Filter for UUID equality (equal to)
+  """
+  eq: UUID
+  """
+  Filter for UUID inequality (not equal to)
+  """
+  ne: UUID
+  """
+  Filter for inclusion in a list of UUIDs
+  """
+  in: [UUID!]
+  """
+  Filter for exclusion from a list of UUIDs
+  """
+  nin: [UUID!]
+}
+
+input DataFilterInput {
+  """
+  Filter based on date-time ranges.
+  """
+  dateTime: DateTimeFilter
+  """
+  Filter for ID-based criteria.
+  """
+  id: IDFilter
+}
+
+type Sensor {
+  """
+  Unique identifier for the sensor.
+  """
+  id: UUID!
+  """
+  Type of sensor (Temperature or Humidity).
+  """
+  type: SensorTypeEnum!
+  """
+  Number of seconds how often data is collected.
+  """
+  frequency: Int!
+  """
+  Valid data range for the sensor.
+  """
+  validRange: ValidRange!
+  """
+  Retrieve sensor data with optional filtering.
+  """
+  data(
+    """
+    Retrieves the first N data.
+    """
+    first: Int @notNull @range(min: 0, max: 10000),
+    """
+    Retrieves the last N data.
+    """
+    last: Int @notNull @range(min: 0, max: 10000),
+    """
+    Retrieves pages before the specified cursor.
+    """
+    before: Base64String @notNull,
+    """
+    Retrieves pages after the specified cursor.
+    """
+    after: Base64String @notNull,
+    """
+    Applies filters to sensor data retrieval.
+    """
+    filter: DataFilterInput @notNull
+    """
+    Specifies the sorting order for the retrieved sensor data.
+    """
+    sort: SensorDataSortInput @notNull
+  ): Data!
+}
+
+type Flower {
+  """
+  Unique identifier for the flower.
+  """
+  id: UUID!
+  """
+  Name of the flower.
+  """
+  name: String!
+  """
+  Humidity sensor for the flower.
+  """
+  humidity: Sensor!
+  """
+  Temperature sensor for the flower.
+  """
+  temperature: Sensor!
+}
+
+type AuthPayload {
+  """
+  Access token for authentication.
+  """
+  accessToken: JWT!
+  """
+  Refresh token for authentication.
+  """
+  refreshToken: JWT!
+  """
+  User associated with the authentication.
+  """
+  user: User!
+}
+
+type User {
+  """
+  Unique identifier for the user.
+  """
+  id: UUID!
+  """
+  Name of the user.
+  """
+  name: String!
+  """
+  Email of the user.
+  """
+  email: String!
+}
+
+type FlowerEdge {
+  """
+  The actual flower.
+  """
+  node: Flower!
+  """
+  A cursor for pagination purposes.
+  """
+  cursor: Base64String!
+}
+
+type Flowers {
+  """
+  A list of flower edges.
+  """
+  edges: [FlowerEdge!]!
+  """
+  Information about pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+input NameFilterInput {
+  """
+  Filter for equality (equal to) on names.
+  """
+  eq: String
+  """
+  Filter for inequality (not equal to) on names.
+  """
+  ne: String
+  """
+  Filter for names that contain a specific substring.
+  """
+  contains: String
+  """
+  Filter for names that start with a specific substring.
+  """
+  startsWith: String
+}
+
+input FlowerFilterInput {
+  """
+  Filter for filtering flowers by name.
+  """
+  name: NameFilterInput
+  """
+  Filter for ID-based criteria.
+  """
+  id: IDFilter
+}
+
+enum FlowerSortFieldEnum {
+  """
+  Sort by date-time
+  """
+  DATETIME
+  """
+  Sort by timestamp
+  """
+  TIMESTAMP
+  """
+  Sort by value
+  """
+  VALUE
+}
+
+enum SortOrderEnum {
+  """
+  Sort in ascending order
+  """
+  ASC
+  """
+  Sort in descending order
+  """
+  DESC
+}
+
+input FlowerSortInput {
+  """
+  Specify the field to sort by
+  """
+  field: FlowerSortFieldEnum!
+  """
+  Specify the sorting order
+  """
+  order: SortOrderEnum!
+}
+
 
 type Query {
-  books: [Book]
+  """
+  Retrieve a list of flowers.
+  """
+  flowers(
+    """
+    Retrieves the first N flowers.
+    """
+    first: Int @notNull @range(min: 0, max: 10000),
+    """
+    Retrieves the last N flowers.
+    """
+    last: Int @notNull @range(min: 0, max: 10000),
+    """
+    Retrieves pages before the specified cursor.
+    """
+    before: Base64String @notNull,
+    """
+    Retrieves pages after the specified cursor.
+    """
+    after: Base64String @notNull,
+    """
+    Applies filters to flowers retrieval.
+    """
+    filter: FlowerFilterInput @notNull
+    """
+    Specifies the sorting order for the retrieved flowers.
+    """
+    sort: FlowerSortInput @notNull
+  ): Flowers!
+  """
+  Retrieve a specific flower by ID.
+  """
+  flower(id: UUID!): Flower!
+  """
+  Retrieve a specific sensor by ID.
+  """
+  sensor(id: UUID!): Sensor!
+  """
+  Retrieve user data
+  """
+  user: User!
 }
 
-type Book {
-  title: String
-  author: String
+input ValidRangeInput {
+  """
+  Minimum valid range value.
+  """
+  min: Float!
+  """
+  Maximum valid range value.
+  """
+  max: Float!
 }
 
-type AddBookMutationResponse {
-  code: String!
-  success: Boolean!
-  message: String!
-  book: Book
+input SensorInput {
+  """
+  Frequency of data collection in seconds.
+  """
+  frequency: Int!
+  """
+  Valid data range for the sensor.
+  """
+  validRange: ValidRangeInput!
+}
+
+input AddFlowerInput {
+  """
+  Name of the flower to be added.
+  """
+  name: String!
+  """
+  Sensor input for humidity.
+  """
+  humidity: SensorInput!
+  """
+  Sensor input for temperature.
+  """
+  temperature: SensorInput!
+}
+
+input UpdateFlowerInput {
+  """
+  Updated name of the flower.
+  """
+  name: String
+  """
+  Updated sensor input for humidity.
+  """
+  humidity: SensorInput
+  """
+  Updated sensor input for temperature.
+  """
+  temperature: SensorInput
+}
+
+enum StatusEnum {
+  """
+  Status indicating success.
+  """
+  OK
+  """
+  Status indicating an error.
+  """
+  ERROR
+}
+
+interface Result {
+  """
+  Status of the result (OK or ERROR).
+  """
+  status: StatusEnum!
+}
+
+type FlowerResult implements Result {
+  """
+  Result data containing a flower.
+  """
+  data: Flower!
+  """
+  Status of the result.
+  """
+  status: StatusEnum!
+}
+
+type AuthResult implements Result {
+  """
+  Result data containing an authentication payload.
+  """
+  data: AuthPayload!
+  """
+  Status of the result.
+  """
+  status: StatusEnum!
 }
 
 type Mutation {
-  addBook(title: String, author: String): AddBookMutationResponse
+  """
+  Add a flower and return the result.
+  """
+  addFlower(input: AddFlowerInput!): FlowerResult!
+  """
+  Update a flower and return the result.
+  """
+  updateFlower(id: UUID!, input: UpdateFlowerInput!): FlowerResult!
+  """
+  Remove a flower and return the result.
+  """
+  removeFlower(id: UUID!): FlowerResult!
+  """
+  Authenticate and return the result.
+  """
+  login(email: String!, password: String!): AuthResult!
+  """
+  Refresh an access token and return the result.
+  """
+  refresh(token: JWT!): AuthResult!
+  """
+  Sign up a new user and return the result.
+  """
+  signUp(email: String!, password: String!, name: String!): AuthResult!
+}
+
+type Subscription {
+  """
+  Subscribe to the latest sensor data for a specific sensor.
+  """
+  latestSensorData(id: UUID!): SensorData!
 }

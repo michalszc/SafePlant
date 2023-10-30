@@ -1,10 +1,12 @@
 import { Resolvers } from '../__generated__/resolvers-types';
+import mutations from './mutations';
+import queries from './queries';
+import sensor from './sensorResolver';
+import subscriptions from './subscriptions';
 
 export const resolvers: Resolvers = {
-    Query: {
-        // NOT YET IMPLEMENTED
-    },
-    Mutation: {
-        // NOT YET IMPLEMENTED
-    }
+    Query: queries,
+    Mutation: mutations,
+    Subscription: subscriptions,
+    Sensor: sensor
 };

@@ -28,6 +28,7 @@
             "ignoreComments": true,
             "ignoreRegExpLiterals": true
         }],
-        "newline-before-return": "error"
+        "newline-before-return": "error",
+        "no-duplicate-imports": ["error", { "includeExports": true }]
     }
 }

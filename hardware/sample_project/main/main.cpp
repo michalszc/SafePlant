@@ -3,6 +3,7 @@
 #include <freertos/task.h>
 #include <dht.h>
 #include <chrono>
+#include "esp_wifi.h"
 
 #define SENSOR_TYPE DHT_TYPE_DHT11
 #define CONFIG_EXAMPLE_DATA_GPIO GPIO_NUM_18
@@ -26,5 +27,5 @@ void dht_test(void *pvParameters)
 
 
 extern "C" void app_main() {
-    xTaskCreate(dht_test, "dht_test", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
+    // xTaskCreate(dht_test, "dht_test", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
 }

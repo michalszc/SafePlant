@@ -14,6 +14,7 @@ import express from 'express';
 import cors from 'cors';
 import http from 'http';
 import { PubSub } from 'graphql-subscriptions';
+import { connectMongoDB } from './mongodb';
 
 export interface Context {
     pubsub: PubSub;
@@ -38,7 +39,7 @@ export const createApolloServer = (
     schema,
     plugins: [
         ApolloServerPluginDrainHttpServer({ httpServer }),
-        loggerPlugin,
+        // loggerPlugin,
         { // eslint-disable-next-line require-await
             async serverWillStart() {
                 return {
@@ -83,6 +84,7 @@ export async function main() {
     );
 
     if (NODE_ENV !== Environment.TEST) {
+        await connectMongoDB();
         httpServer.listen(PORT, () => {
             logger.info(`🚀 Query endpoint ready at http://localhost:${PORT}/api/v1`);
             logger.info(`🚀 Subscription endpoint ready at ws://localhost:${PORT}/api/v1`);
@@ -90,16 +92,16 @@ export async function main() {
     }
 
     // Temporary
-    (function publishMessage() {
-        pubsub.publish('DATA.7fc990e2-463e-45a0-939f-1414206ff1de', {
-            id: '7fc990e2-463e-45a0-939f-1414206ff1de',
-            dateTime: '2007-12-03T10:15:30Z',
-            timestamp: new Date().getTime(),
-            numericValue: 45.2,
-            rawValue: '45.2'
-        });
-        setTimeout(publishMessage, 1000);
-    })();
+    // (function publishMessage() {
+    //     pubsub.publish('DATA.7fc990e2-463e-45a0-939f-1414206ff1de', {
+    //         id: '7fc990e2-463e-45a0-939f-1414206ff1de',
+    //         dateTime: '2007-12-03T10:15:30Z',
+    //         timestamp: new Date().getTime(),
+    //         numericValue: 45.2,
+    //         rawValue: '45.2'
+    //     });
+    //     setTimeout(publishMessage, 1000);
+    // })();
 
     return app;
 }

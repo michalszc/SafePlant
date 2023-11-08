@@ -10,6 +10,6 @@ generates:
       scalars:
         DateTime: string
         Timestamp: number
-        UUID: string
+        ObjectID: string
         JWT: string
         Base64String: string

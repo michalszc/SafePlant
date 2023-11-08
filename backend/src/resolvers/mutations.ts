@@ -5,109 +5,188 @@ import {
     MutationResolvers, MutationSignUpArgs, MutationUpdateFlowerArgs,
     SensorTypeEnum, StatusEnum
 } from '../__generated__/resolvers-types';
-import { Context } from '../utils';
+import { Flower, Sensor } from '../providers';
+import { Context, logger } from '../utils';
 
 const mutations: MutationResolvers = {
-    // eslint-disable-next-line require-await
-    addFlower: async (
+    addFlower: (
         _: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
-        { input }: MutationAddFlowerArgs, // eslint-disable-line @typescript-eslint/no-unused-vars
+        { input: { name, humidity, temperature } }: MutationAddFlowerArgs,
         _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<FlowerResult> => {
-        return Promise.resolve({
-            status: StatusEnum.Ok,
-            data: {
-                id: '7fc990e2-463e-45a0-939f-1414206ff1de',
-                name: 'flower',
-                humidity: {
-                    id: '7fc990e2-463e-45a0-939f-1414206ff1de',
-                    type: SensorTypeEnum.Humidity,
-                    frequency: 123,
-                    validRange: {
-                        min: 12.4,
-                        max: 45.3
+
+        const humiditySensor = new Sensor({
+            user: '65494a083b1744f88c2622bf', // temporary
+            type: SensorTypeEnum.Humidity,
+            ...humidity
+        });
+
+        const temperatureSensor = new Sensor({
+            user: '65494a083b1744f88c2622bf', // temporary
+            type: SensorTypeEnum.Temperature,
+            ...temperature
+        });
+        
+        return Promise.all([
+            humiditySensor.save(),
+            temperatureSensor.save()
+        ]).then(async ([humiditySensor, temperatureSensor]) => {
+            const flower = await new Flower({
+                user: '65494a083b1744f88c2622bf', // temporary
+                name,
+                humidity: humiditySensor._id,
+                temperature: temperatureSensor._id
+            }).save();
+
+            return {
+                status: StatusEnum.Ok,
+                data: {
+                    id: flower._id.toString(),
+                    name,
+                    humidity: {
+                        id: humiditySensor._id.toString(),
+                        type: SensorTypeEnum.Humidity,
+                        ...humidity,
+                        data: null
                     },
-                    data: null // pass null to resolve this value in Sensor
-                },
-                temperature: {
-                    id: '7fc990e2-463e-45a0-939f-1414206ff1de',
-                    type: SensorTypeEnum.Temperature,
-                    frequency: 123,
-                    validRange: {
-                        min: 12.4,
-                        max: 45.3
-                    },
-                    data: null // pass null to resolve this value in Sensor
+                    temperature: {
+                        id: temperatureSensor._id.toString(),
+                        type: SensorTypeEnum.Temperature,
+                        ...temperature,
+                        data: null
+                    }
                 }
-            }
+            };
+        }).catch(err => {
+            logger.error(err);
+
+            return {
+                status: StatusEnum.Error,
+                data: null
+            };
         });
     },
-    // eslint-disable-next-line require-await
     updateFlower: async (
         _: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
-        { id, input }: MutationUpdateFlowerArgs, // eslint-disable-line @typescript-eslint/no-unused-vars
+        { id, input }: MutationUpdateFlowerArgs,
         _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<FlowerResult> => {
-        return Promise.resolve({
+
+        const flower = await Flower
+            .findById(id)
+            .populate('humidity')
+            .populate('temperature');
+
+        if (!flower) {
+            logger.error(`Cannot find flower with id ${id}`);
+
+            throw Error(`Cannot find flower with id ${id}`);
+        }
+
+        const updates = [];
+
+        if ('humidity' in input) {
+            updates.push(
+                Sensor.updateOne(
+                    { _id: flower.humidity._id },
+                    { $set: { ...input.humidity } }
+                )
+            );
+        }
+
+        if ('temperature' in input) {
+            updates.push(
+                Sensor.updateOne(
+                    { _id: flower.temperature._id },
+                    { $set: { ...input.temperature } }
+                )
+            );
+        }
+
+        if ('name' in input) {
+            updates.push(
+                Flower.updateOne(
+                    { _id: id },
+                    { $set: { name: input.name } }  
+                )
+            );
+        }
+
+        return Promise.all(updates).then(() => ({
             status: StatusEnum.Ok,
             data: {
-                id: '7fc990e2-463e-45a0-939f-1414206ff1de',
-                name: 'flower',
+                id,
+                name: input.name,
                 humidity: {
-                    id: '7fc990e2-463e-45a0-939f-1414206ff1de',
+                    id: flower.humidity._id.toString(),
                     type: SensorTypeEnum.Humidity,
-                    frequency: 123,
-                    validRange: {
-                        min: 12.4,
-                        max: 45.3
-                    },
-                    data: null // pass null to resolve this value in Sensor
+                    frequency: flower.humidity.frequency,
+                    validRange: flower.humidity.validRange,
+                    ...input?.humidity,
+                    data: null
                 },
                 temperature: {
-                    id: '7fc990e2-463e-45a0-939f-1414206ff1de',
+                    id: flower.temperature._id.toString(),
                     type: SensorTypeEnum.Temperature,
-                    frequency: 123,
-                    validRange: {
-                        min: 12.4,
-                        max: 45.3
-                    },
-                    data: null // pass null to resolve this value in Sensor
+                    frequency: flower.temperature.frequency,
+                    validRange: flower.temperature.validRange,
+                    ...input?.temperature,
+                    data: null
                 }
             }
+        })).catch(err => {
+            logger.error(err);
+
+            return {
+                status: StatusEnum.Error,
+                data: null
+            };
         });
     },
-    // eslint-disable-next-line require-await
     removeFlower: async (
         _: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
-        { id }: MutationRemoveFlowerArgs, // eslint-disable-line @typescript-eslint/no-unused-vars
+        { id }: MutationRemoveFlowerArgs,
         _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<FlowerResult> => {
-        return Promise.resolve({
+
+        const flower = await Flower
+            .findById(id)
+            .populate('humidity')
+            .populate('temperature');
+
+        if (!flower) {
+            logger.error(`Cannot find flower with id ${id}`);
+
+            throw Error(`Cannot find flower with id ${id}`);
+        }
+
+        return Flower.removeOne(id).then(() => ({
             status: StatusEnum.Ok,
             data: {
-                id: '7fc990e2-463e-45a0-939f-1414206ff1de',
-                name: 'flower',
+                id,
+                name: flower.name,
                 humidity: {
-                    id: '7fc990e2-463e-45a0-939f-1414206ff1de',
+                    id: flower.humidity._id.toString(),
                     type: SensorTypeEnum.Humidity,
-                    frequency: 123,
-                    validRange: {
-                        min: 12.4,
-                        max: 45.3
-                    },
-                    data: null // pass null to resolve this value in Sensor
+                    frequency: flower.humidity.frequency,
+                    validRange: flower.humidity.validRange,
+                    data: null
                 },
                 temperature: {
-                    id: '7fc990e2-463e-45a0-939f-1414206ff1de',
+                    id: flower.temperature._id.toString(),
                     type: SensorTypeEnum.Temperature,
-                    frequency: 123,
-                    validRange: {
-                        min: 12.4,
-                        max: 45.3
-                    },
-                    data: null // pass null to resolve this value in Sensor
+                    frequency: flower.temperature.frequency,
+                    validRange: flower.temperature.validRange,
+                    data: null
                 }
             }
+        })).catch(err => {
+            logger.error(err);
+
+            return {
+                status: StatusEnum.Error,
+                data: null
+            };
         });
     },
     // eslint-disable-next-line require-await

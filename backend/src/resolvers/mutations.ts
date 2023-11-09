@@ -5,7 +5,7 @@ import {
     MutationResolvers, MutationSignUpArgs, MutationUpdateFlowerArgs,
     SensorTypeEnum, StatusEnum
 } from '../__generated__/resolvers-types';
-import { Flower, Sensor } from '../providers';
+import { Flower, Sensor, User } from '../providers';
 import { Context, logger } from '../utils';
 
 const mutations: MutationResolvers = {
@@ -189,42 +189,71 @@ const mutations: MutationResolvers = {
             };
         });
     },
-    // eslint-disable-next-line require-await
-    login: async (
+    login: (
         _: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
-        { email, password }: MutationLoginArgs, // eslint-disable-line @typescript-eslint/no-unused-vars
+        { email, password }: MutationLoginArgs,
         _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<AuthResult> => {
-        return Promise.resolve({
-            status: StatusEnum.Ok,
-            data: {
-                accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94',
-                refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94',
-                user: {
-                    id: '7fc990e2-463e-45a0-939f-1414206ff1de',
-                    name: 'name',
-                    email: 'mail@mail.to'
+        return User.findByLoginAndPassword(email, password)
+            .then((user) => {
+                if (!user) {
+                    return {
+                        status: StatusEnum.Error,
+                        data: null
+                    };
+                } else {
+                    return {
+                        status: StatusEnum.Ok,
+                        data: {
+                            accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94',
+                            refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94',
+                            user: {
+                                id: user._id.toString(),
+                                name: user.name,
+                                email: user.email
+                            }
+                        }
+                    };
                 }
-            }
-        });
+            })
+            .catch(err => {
+                logger.error(err);
+
+                return {
+                    status: StatusEnum.Error,
+                    data: null
+                };
+            });
     },
-    // eslint-disable-next-line require-await
-    signUp: async (
+    signUp: (
         _: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
-        { email, password, name }: MutationSignUpArgs, // eslint-disable-line @typescript-eslint/no-unused-vars
+        { email, password, name }: MutationSignUpArgs,
         _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<AuthResult> => {
-        return Promise.resolve({
+        return new User({
+            name,
+            password,
+            email
+        }).save().then(user => ({
             status: StatusEnum.Ok,
             data: {
                 accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94',
                 refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94',
                 user: {
-                    id: '7fc990e2-463e-45a0-939f-1414206ff1de',
-                    name: 'name',
-                    email: 'mail@mail.to'
+                    id: user._id.toString(),
+                    name: user.name,
+                    email: user.email
                 }
             }
+        }))
+        .catch(err => {
+            console.error(err);
+            logger.error(err);
+
+            return {
+                status: StatusEnum.Error,
+                data: null
+            };
         });
     },
     // eslint-disable-next-line require-await

@@ -45,7 +45,7 @@ export type AuthPayload = {
 export type AuthResult = Result & {
   __typename?: 'AuthResult';
   /** Result data containing an authentication payload. */
-  data: AuthPayload;
+  data?: Maybe<AuthPayload>;
   /** Status of the result. */
   status: StatusEnum;
 };
@@ -582,7 +582,7 @@ export type AuthPayloadResolvers<ContextType = Context, ParentType extends Resol
 }>;
 
 export type AuthResultResolvers<ContextType = Context, ParentType extends ResolversParentTypes['AuthResult'] = ResolversParentTypes['AuthResult']> = ResolversObject<{
-  data?: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType>;
+  data?: Resolver<Maybe<ResolversTypes['AuthPayload']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['StatusEnum'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

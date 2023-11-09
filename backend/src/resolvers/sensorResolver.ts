@@ -8,11 +8,14 @@ const sensor: SensorResolvers = {
         _sensorDataArgs: Partial<SensorDataArgs>, // eslint-disable-line @typescript-eslint/no-unused-vars
         _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<Data> => {
+
+        console.log('SESNOR', _parent, _sensorDataArgs, _context);
+
         return Promise.resolve({
             edges: [
                 {
                     node: {
-                        id: '7fc990e2-463e-45a0-939f-1414206ff1de',
+                        id: '654d40cf3128e7fc4d6a30e4',
                         dateTime: '2007-12-03T10:15:30Z',
                         timestamp: 1698595357206,
                         numericValue: 45.2,

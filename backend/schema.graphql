@@ -372,17 +372,13 @@ input FlowerFilterInput {
 
 enum FlowerSortFieldEnum {
   """
-  Sort by date-time
+  Sort by ID
   """
-  DATETIME
+  ID
   """
-  Sort by timestamp
+  Sort by name
   """
-  TIMESTAMP
-  """
-  Sort by value
-  """
-  VALUE
+  NAME
 }
 
 enum SortOrderEnum {

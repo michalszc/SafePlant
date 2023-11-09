@@ -537,7 +537,7 @@ type AuthResult implements Result {
   """
   Result data containing an authentication payload.
   """
-  data: AuthPayload!
+  data: AuthPayload
   """
   Status of the result.
   """

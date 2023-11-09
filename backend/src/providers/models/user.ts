@@ -1,5 +1,5 @@
 import { Maybe, User as UserType } from '../../__generated__/resolvers-types';
-import { Model, Schema, model } from 'mongoose';
+import { HydratedDocument, Model, Schema, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 export type IUser = Omit<UserType, 'id' | '__typename'> & {
@@ -7,7 +7,7 @@ export type IUser = Omit<UserType, 'id' | '__typename'> & {
 };
 
 interface UserModel extends Model<IUser> {
-    findByLoginAndPassword(email: string, password: string): Promise<Maybe<IUser>>;
+    findByLoginAndPassword(email: string, password: string): Promise<Maybe<HydratedDocument<IUser>>>;
 }
 
 const userSchema = new Schema<IUser, UserModel>({
@@ -36,7 +36,7 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
-userSchema.statics.findByLoginAndPassword = async function (email: string, password: string): Promise<Maybe<IUser>> {
+userSchema.statics.findByLoginAndPassword = async function (email: string, password: string) {
     const user = await this.findOne({ email });
 
     if (!user) {

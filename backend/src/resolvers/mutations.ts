@@ -247,7 +247,6 @@ const mutations: MutationResolvers = {
             }
         }))
         .catch(err => {
-            console.error(err);
             logger.error(err);
 
             return {
@@ -268,7 +267,7 @@ const mutations: MutationResolvers = {
                 accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94',
                 refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94',
                 user: {
-                    id: '7fc990e2-463e-45a0-939f-1414206ff1de',
+                    id: '654d3e91d427763a100eda43',
                     name: 'name',
                     email: 'mail@mail.to'
                 }

@@ -112,12 +112,10 @@ export type FlowerResult = Result & {
 };
 
 export enum FlowerSortFieldEnum {
-  /** Sort by date-time */
-  Datetime = 'DATETIME',
-  /** Sort by timestamp */
-  Timestamp = 'TIMESTAMP',
-  /** Sort by value */
-  Value = 'VALUE'
+  /** Sort by ID */
+  Id = 'ID',
+  /** Sort by name */
+  Name = 'NAME'
 }
 
 export type FlowerSortInput = {

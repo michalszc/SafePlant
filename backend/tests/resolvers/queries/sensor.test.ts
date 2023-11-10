@@ -17,7 +17,7 @@ describe('Queries > Sensor', () => {
             }
         }
     `;
-    
+
     beforeAll(async () => {
         const app = await main();
         request = supertest(app);
@@ -116,9 +116,9 @@ describe('Queries > Sensor', () => {
                     max: 100
                 },
                 data: {
-                    edges: Array.from({ length: 100 }, (_, __) => ({
+                    edges: Array.from({ length: 100 }, () => ({
                         node: {
-                            id :expect.any(String),
+                            id: expect.any(String),
                             dateTime: expect.any(String),
                             timestamp: expect.any(Number),
                             numericValue: expect.any(Number),

@@ -20,7 +20,7 @@ describe('Queries > Sign Up', () => {
             }
         }
     `;
-    
+
     beforeAll(async () => {
         const app = await main();
         request = supertest(app);

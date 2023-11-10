@@ -20,7 +20,7 @@ describe('Queries > Login', () => {
             }
         }
     `;
-    
+
     beforeAll(async () => {
         const app = await main();
         request = supertest(app);
@@ -44,7 +44,7 @@ describe('Queries > Login', () => {
                     accessToken: expect.any(String),
                     refreshToken: expect.any(String),
                     user: {
-                        id: '654e97e38835ad080eb81c58',
+                        id: '654e97e38835ad080eb81c99',
                         name: 'xyz',
                         email: 'xyz@mail.to'
                     }

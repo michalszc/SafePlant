@@ -33,7 +33,7 @@ describe('Queries > Update Flower', () => {
             }
         }
     `;
-    
+
     beforeAll(async () => {
         const app = await main();
         request = supertest(app);
@@ -45,7 +45,7 @@ describe('Queries > Update Flower', () => {
             variables: {
                 updateFlowerId: '654e93357cdc6705e7ad22b1',
                 input: {
-                    name: "new flower",
+                    name: 'new flower',
                     humidity: {
                         frequency: 123,
                         validRange: {

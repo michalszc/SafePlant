@@ -13,17 +13,17 @@ interface UserModel extends Model<IUser> {
 const userSchema = new Schema<IUser, UserModel>({
     name: {
         type: String,
-        required: true,
+        required: true
     },
     email: {
         type: String,
         required: true,
-        unique: true,
+        unique: true
     },
     password: {
         type: String,
-        required: true,
-    },
+        required: true
+    }
 });
 
 userSchema.pre('save', async function (next) {
@@ -40,15 +40,15 @@ userSchema.statics.findByLoginAndPassword = async function (email: string, passw
     const user = await this.findOne({ email });
 
     if (!user) {
-      return null;
+        return null;
     }
-  
+
     const isMatch = await bcrypt.compare(password, user.password);
-  
+
     if (!isMatch) {
-      return null;
+        return null;
     }
-  
+
     return user;
 };
 

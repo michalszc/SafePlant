@@ -1,7 +1,11 @@
-import { SortOrder } from 'mongoose';
+import { FilterQuery, SortOrder } from 'mongoose';
 import { SensorData } from '../providers';
 import { Context, logger } from '../utils';
-import { Data, Sensor, SensorDataArgs, SensorDataSortFieldEnum, SensorResolvers, SortOrderEnum } from './../__generated__/resolvers-types';
+import {
+    Data, Sensor, SensorDataArgs,
+    SensorDataSortFieldEnum, SensorResolvers,
+    SortOrderEnum
+} from './../__generated__/resolvers-types';
 
 const sensor: SensorResolvers = {
     data: (
@@ -31,13 +35,13 @@ const sensor: SensorResolvers = {
             sortOrder *= -1;
         }
 
-        let filters: Record<string, any> = {
+        let filters: FilterQuery<typeof SensorData> = {
             sensor: id
         };
         if (before) {
             const key = sortOrder === 1 ? '$lt' : '$gt';
             filters = { ...filters, _id: { [key]: Buffer.from(before, 'base64').toString('ascii') } };
-        }else if (after) {
+        } else if (after) {
             const key = sortOrder === 1 ? '$gt' : '$lt';
             filters = { ...filters, _id: { [key]: Buffer.from(after, 'base64').toString('ascii') } };
         }
@@ -49,7 +53,7 @@ const sensor: SensorResolvers = {
                 } else if (filter.id.ne) {
                     filters = { ...filters, _id: { $ne: filter.id.ne } };
                 } else if (filter.id.in) {
-                    filters = { ...filters, _id: { $in: filter.id.in } };  
+                    filters = { ...filters, _id: { $in: filter.id.in } };
                 } else if (filter.id.nin) {
                     filters = { ...filters, _id: { $nin: filter.id.nin } };
                 }
@@ -60,7 +64,7 @@ const sensor: SensorResolvers = {
                 } else if (filter.dateTime.gte) {
                     filters = { ...filters, timestamp: { $gte: new Date(filter.dateTime.gte) } };
                 }
-                
+
                 if (filter.dateTime.lt) {
                     filters = { ...filters, timestamp: { ...filters.timestamp, $lt: new Date(filter.dateTime.lt) } };
                 } else if (filter.dateTime.lte) {
@@ -78,24 +82,24 @@ const sensor: SensorResolvers = {
 
                 let hasNextPage = false;
                 let hasPreviousPage = false;
-                
+
                 const queries = [];
 
                 if (startCursor) {
                     const key = sortOrder === 1 ? '$lt' : '$gt';
                     queries.push(
-                        SensorData.find({...filters, _id: {[key]: Buffer.from(startCursor, 'base64').toString('ascii') } })
-                        .sort({ [sortField]: sortOrder as SortOrder })
-                        .limit(1)
+                        SensorData.find({ ...filters, _id: { [key]: Buffer.from(startCursor, 'base64').toString('ascii') } })
+                            .sort({ [sortField]: sortOrder as SortOrder })
+                            .limit(1)
                     );
                 }
 
                 if (endCursor) {
                     const key = sortOrder === 1 ? '$gt' : '$lt';
                     queries.push(
-                        SensorData.find({...filters, _id: {[key]: Buffer.from(endCursor, 'base64').toString('ascii') } })
-                        .sort({ [sortField]: sortOrder as SortOrder })
-                        .limit(1)
+                        SensorData.find({ ...filters, _id: { [key]: Buffer.from(endCursor, 'base64').toString('ascii') } })
+                            .sort({ [sortField]: sortOrder as SortOrder })
+                            .limit(1)
                     );
                 }
 

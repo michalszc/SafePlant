@@ -1,4 +1,4 @@
-import { SortOrder } from 'mongoose';
+import { FilterQuery, SortOrder } from 'mongoose';
 import {
     Flower, FlowerSortFieldEnum, Flowers, QueryFlowerArgs, QueryFlowersArgs,
     QueryResolvers, QuerySensorArgs, RequireFields, Sensor,
@@ -13,7 +13,6 @@ const queries: QueryResolvers = {
         { first, last, before, after, filter, sort }: Partial<QueryFlowersArgs>,
         _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<Flowers> => {
-
         let sortField: string = '_id';
         let sortOrder: number = 1;
         if (sort) {
@@ -34,11 +33,11 @@ const queries: QueryResolvers = {
             sortOrder *= -1;
         }
 
-        let filters: Record<string, any> = {};
+        let filters: FilterQuery<typeof FlowerModel> = {};
         if (before) {
             const key = sortOrder === 1 ? '$lt' : '$gt';
             filters = { ...filters, _id: { [key]: Buffer.from(before, 'base64').toString('ascii') } };
-        }else if (after) {
+        } else if (after) {
             const key = sortOrder === 1 ? '$gt' : '$lt';
             filters = { ...filters, _id: { [key]: Buffer.from(after, 'base64').toString('ascii') } };
         }
@@ -50,7 +49,7 @@ const queries: QueryResolvers = {
                 } else if (filter.id.ne) {
                     filters = { ...filters, _id: { $ne: filter.id.ne } };
                 } else if (filter.id.in) {
-                    filters = { ...filters, _id: { $in: filter.id.in } };  
+                    filters = { ...filters, _id: { $in: filter.id.in } };
                 } else if (filter.id.nin) {
                     filters = { ...filters, _id: { $nin: filter.id.nin } };
                 }
@@ -79,24 +78,24 @@ const queries: QueryResolvers = {
 
                 let hasNextPage = false;
                 let hasPreviousPage = false;
-                
+
                 const queries = [];
 
                 if (startCursor) {
                     const key = sortOrder === 1 ? '$lt' : '$gt';
                     queries.push(
-                        FlowerModel.find({...filters, _id: {[key]: Buffer.from(startCursor, 'base64').toString('ascii') } })
-                        .sort({ [sortField]: sortOrder as SortOrder })
-                        .limit(1)
+                        FlowerModel.find({ ...filters, _id: { [key]: Buffer.from(startCursor, 'base64').toString('ascii') } })
+                            .sort({ [sortField]: sortOrder as SortOrder })
+                            .limit(1)
                     );
                 }
 
                 if (endCursor) {
                     const key = sortOrder === 1 ? '$gt' : '$lt';
                     queries.push(
-                        FlowerModel.find({...filters, _id: {[key]: Buffer.from(endCursor, 'base64').toString('ascii') } })
-                        .sort({ [sortField]: sortOrder as SortOrder })
-                        .limit(1)
+                        FlowerModel.find({ ...filters, _id: { [key]: Buffer.from(endCursor, 'base64').toString('ascii') } })
+                            .sort({ [sortField]: sortOrder as SortOrder })
+                            .limit(1)
                     );
                 }
 

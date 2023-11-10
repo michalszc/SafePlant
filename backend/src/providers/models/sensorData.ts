@@ -7,32 +7,32 @@ export type ISensorData = Omit<SensorDataType, 'id' | '__typename'> & {
 };
 
 const sensorDataSchema = new Schema<ISensorData>({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  sensor: {
-    type: Schema.Types.ObjectId,
-    ref: 'Sensor',
-    required: true
-  },
-  dateTime: {
-    type: String,
-    required: true,
-  },
-  timestamp: {
-    type: Number,
-    required: true,
-  },
-  numericValue: {
-    type: Number,
-    required: true,
-  },
-  rawValue: {
-    type: String,
-    required: true,
-  },
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    sensor: {
+        type: Schema.Types.ObjectId,
+        ref: 'Sensor',
+        required: true
+    },
+    dateTime: {
+        type: String,
+        required: true
+    },
+    timestamp: {
+        type: Number,
+        required: true
+    },
+    numericValue: {
+        type: Number,
+        required: true
+    },
+    rawValue: {
+        type: String,
+        required: true
+    }
 });
 
 export const SensorData = mongoose.model<ISensorData>('SensorData', sensorDataSchema);

@@ -39,7 +39,7 @@ export const createApolloServer = (
     schema,
     plugins: [
         ApolloServerPluginDrainHttpServer({ httpServer }),
-        // loggerPlugin,
+        loggerPlugin,
         { // eslint-disable-next-line require-await
             async serverWillStart() {
                 return {

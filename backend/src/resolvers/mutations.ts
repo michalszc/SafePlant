@@ -14,7 +14,6 @@ const mutations: MutationResolvers = {
         { input: { name, humidity, temperature } }: MutationAddFlowerArgs,
         _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<FlowerResult> => {
-
         const humiditySensor = new Sensor({
             user: '65494a083b1744f88c2622bf', // temporary
             type: SensorTypeEnum.Humidity,
@@ -26,7 +25,7 @@ const mutations: MutationResolvers = {
             type: SensorTypeEnum.Temperature,
             ...temperature
         });
-        
+
         return Promise.all([
             humiditySensor.save(),
             temperatureSensor.save()
@@ -71,7 +70,6 @@ const mutations: MutationResolvers = {
         { id, input }: MutationUpdateFlowerArgs,
         _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<FlowerResult> => {
-
         const flower = await Flower
             .findById(id)
             .populate('humidity')
@@ -107,7 +105,7 @@ const mutations: MutationResolvers = {
             updates.push(
                 Flower.updateOne(
                     { _id: id },
-                    { $set: { name: input.name } }  
+                    { $set: { name: input.name } }
                 )
             );
         }
@@ -148,7 +146,6 @@ const mutations: MutationResolvers = {
         { id }: MutationRemoveFlowerArgs,
         _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<FlowerResult> => {
-
         const flower = await Flower
             .findById(id)
             .populate('humidity')
@@ -246,14 +243,14 @@ const mutations: MutationResolvers = {
                 }
             }
         }))
-        .catch(err => {
-            logger.error(err);
+            .catch(err => {
+                logger.error(err);
 
-            return {
-                status: StatusEnum.Error,
-                data: null
-            };
-        });
+                return {
+                    status: StatusEnum.Error,
+                    data: null
+                };
+            });
     },
     // eslint-disable-next-line require-await
     refresh: async (

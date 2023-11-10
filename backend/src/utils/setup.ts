@@ -92,16 +92,16 @@ export async function main() {
     }
 
     // Temporary
-    // (function publishMessage() {
-    //     pubsub.publish('DATA.7fc990e2-463e-45a0-939f-1414206ff1de', {
-    //         id: '7fc990e2-463e-45a0-939f-1414206ff1de',
-    //         dateTime: '2007-12-03T10:15:30Z',
-    //         timestamp: new Date().getTime(),
-    //         numericValue: 45.2,
-    //         rawValue: '45.2'
-    //     });
-    //     setTimeout(publishMessage, 1000);
-    // })();
+    (function publishMessage() {
+        pubsub.publish('DATA.654d40cf3128e7fc4d6a30e4', {
+            id: '654d40cf3128e7fc4d6a30e4',
+            dateTime: '2007-12-03T10:15:30Z',
+            timestamp: new Date().getTime(),
+            numericValue: 45.2,
+            rawValue: '45.2'
+        });
+        setTimeout(publishMessage, 1000);
+    })();
 
     return app;
 }

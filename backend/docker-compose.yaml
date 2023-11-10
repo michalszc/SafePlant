@@ -8,6 +8,6 @@ services:
       - "4000:4000"
     environment:
       - PORT=${PORT}
-      - MONGODB_URI=${MONGODB_URI}
+      - MONGODB_URI=mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@mongodb:27017
     depends_on:
       - mongodb

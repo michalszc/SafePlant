@@ -84,24 +84,24 @@ const queries: QueryResolvers = {
 
                 if (startCursor) {
                     const key = sortOrder === 1 ? '$lt' : '$gt';
-                    queries.push([
+                    queries.push(
                         FlowerModel.find({...filters, _id: {[key]: Buffer.from(startCursor, 'base64').toString('ascii') } })
                         .sort({ [sortField]: sortOrder as SortOrder })
                         .limit(1)
-                    ]);
+                    );
                 }
 
                 if (endCursor) {
                     const key = sortOrder === 1 ? '$gt' : '$lt';
-                    queries.push([
+                    queries.push(
                         FlowerModel.find({...filters, _id: {[key]: Buffer.from(endCursor, 'base64').toString('ascii') } })
                         .sort({ [sortField]: sortOrder as SortOrder })
                         .limit(1)
-                    ]);
+                    );
                 }
 
                 if (queries.length) {
-                    const [previousPage, nextPage] = await Promise.all(queries.map(query => query[0]));
+                    const [previousPage, nextPage] = await Promise.all(queries);
                     hasPreviousPage = !!previousPage.length;
                     hasNextPage = !!nextPage.length;
                 }

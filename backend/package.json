@@ -9,7 +9,7 @@
     "npm": "^10"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest --forceExit",
     "test:coverage": "jest --coverage",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",

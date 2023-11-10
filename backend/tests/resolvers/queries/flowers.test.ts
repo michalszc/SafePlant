@@ -41,7 +41,7 @@ describe('Queries > Flowers', () => {
             }
         }
     `;
-    
+
     beforeAll(async () => {
         const app = await main();
         request = supertest(app);
@@ -113,7 +113,7 @@ describe('Queries > Flowers', () => {
                     hasNextPage: false,
                     hasPreviousPage: false,
                     startCursor: Buffer.from('654e93357cdc6705e7ad22b1').toString('base64'),
-                    endCursor: Buffer.from('654e93357cdc6705e7ad22b2').toString('base64'),
+                    endCursor: Buffer.from('654e93357cdc6705e7ad22b2').toString('base64')
                 }
             }
         });

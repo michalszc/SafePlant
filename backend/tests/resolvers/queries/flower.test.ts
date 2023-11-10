@@ -30,7 +30,7 @@ describe('Queries > Flower', () => {
             }
         }
     `;
-    
+
     beforeAll(async () => {
         const app = await main();
         request = supertest(app);

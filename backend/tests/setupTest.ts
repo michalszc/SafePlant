@@ -1,7 +1,7 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
-import { Flower, Sensor, SensorData, User } from "../src/providers";
-import { SensorTypeEnum } from "../src/__generated__/resolvers-types";
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import mongoose from 'mongoose';
+import { Flower, Sensor, SensorData, User } from '../src/providers';
+import { SensorTypeEnum } from '../src/__generated__/resolvers-types';
 
 let mongoServer: MongoMemoryServer;
 
@@ -10,9 +10,8 @@ beforeAll(async () => {
     const uri = mongoServer.getUri();
     await mongoose.connect(uri);
 
-
     const user = await User.create({
-        _id: '654e97e38835ad080eb81c58',
+        _id: '654e97e38835ad080eb81c99',
         email: 'xyz@mail.to',
         name: 'xyz',
         password: '1234'
@@ -58,7 +57,6 @@ beforeAll(async () => {
 
     let timestamp = 1196676930000;
     for (let i = 0; i < 100; i++) {
-
         const value = Math.random() * 100;
 
         await SensorData.create({
@@ -81,11 +79,9 @@ beforeAll(async () => {
 
         timestamp += 1000;
     }
-
 });
 
 afterAll(async () => {
     await mongoose.disconnect();
     await mongoServer.stop();
 });
-

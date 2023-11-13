@@ -1,8 +1,6 @@
 #include "dht_handler.h"
 
 #include <iostream>
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
 #include <dht.h>
 #include <chrono>
 #include "esp_wifi.h"

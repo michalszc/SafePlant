@@ -1,2 +1,6 @@
-idf_component_register(SRCS "main.cpp" "src/dht_handler.cpp" "src/wifi_connection.cpp" "src/dioda.cpp" 
+idf_component_register(SRCS "main.cpp" 
+                            "src/dht_handler.cpp"
+                            "src/wifi_connection.cpp"
+                            "src/dioda.cpp" 
+                            "src/http_request.cpp"
                     INCLUDE_DIRS "./include")

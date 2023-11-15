@@ -4,13 +4,13 @@ import { Maybe, User } from '../__generated__/resolvers-types';
 import logger from './logger';
 
 export function generateAccessToken(user: User): string {
-  const token = jwt.sign({
-    id: user.id,
-    email: user.email,
-    name: user.name
-  }, SECRET_ACCESS_KEY, { expiresIn: '1h' });
+    const token = jwt.sign({
+        id: user.id,
+        email: user.email,
+        name: user.name
+    }, SECRET_ACCESS_KEY, { expiresIn: '1h' });
 
-  return token;
+    return token;
 }
 
 export function generateRefreshToken(user: User): string {
@@ -36,13 +36,13 @@ export function refreshAccessToken(refreshToken: string): Maybe<string> {
 }
 
 export function verifyToken(token: string, secret: string = SECRET_ACCESS_KEY): Maybe<string | jwt.JwtPayload> {
-  try {
-    return jwt.verify(token, secret);
-  } catch (err) {
-    logger.error(err);
+    try {
+        return jwt.verify(token, secret);
+    } catch (err) {
+        logger.error(err);
 
-    return null;
-  }
+        return null;
+    }
 }
 
 export function getUser(token: string): Maybe<User> {

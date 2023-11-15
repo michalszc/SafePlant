@@ -31,7 +31,7 @@ describe('Mutations > Refresh', () => {
     test('should refresh access token - SUCCESS', async () => {
         const queryData = {
             query,
-            variables: {
+            variables: { // eslint-disable-next-line max-len
                 token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94'
             }
         };
@@ -63,7 +63,7 @@ describe('Mutations > Refresh', () => {
     test('should refresh access token - UNAUTHORIZED', async () => {
         const queryData = {
             query,
-            variables: {
+            variables: { // eslint-disable-next-line max-len
                 token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94'
             }
         };

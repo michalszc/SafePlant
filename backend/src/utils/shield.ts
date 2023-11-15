@@ -1,9 +1,11 @@
-import { or, rule, shield } from "graphql-shield";
+import { or, rule, shield } from 'graphql-shield';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, require-await
 const isAuthenticated = rule({ cache: 'contextual' })(async (parent, args, ctx, info) => {
     return ctx.user !== null;
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, require-await
 const isGuest = rule({ cache: 'contextual' })(async (parent, args, ctx, info) => {
     return ctx.user === null;
 });

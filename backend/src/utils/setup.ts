@@ -44,7 +44,7 @@ export const createApolloServer = (
     schema,
     plugins: [
         ApolloServerPluginDrainHttpServer({ httpServer }),
-        // loggerPlugin,
+        loggerPlugin,
         { // eslint-disable-next-line require-await
             async serverWillStart() {
                 return {
@@ -70,7 +70,7 @@ export async function main() {
 
     const serverCleanup = useServer({
         schema,
-        context: async (ctx, _msg, _args) => {
+        context: async (ctx, _msg, _args) => { // eslint-disable-line require-await, @typescript-eslint/no-unused-vars
             const token = (ctx.connectionParams?.authorization as string) ?? '';
             const user = token ? getUser(token) : null;
 
@@ -96,7 +96,7 @@ export async function main() {
                 return {
                     user,
                     pubsub
-                }
+                };
             }
         })
     );

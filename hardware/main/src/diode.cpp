@@ -1,4 +1,4 @@
-#include "dioda.h"
+#include "diode.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -16,12 +16,12 @@ namespace diode {
             if (!*connect) {
                 bool led_state = true;
                 gpio_set_level((gpio_num_t)BLINK_GPIO, led_state);
-                vTaskDelay(500 / portTICK_PERIOD_MS);
+                vTaskDelay(100 / portTICK_PERIOD_MS);
                 led_state = !led_state;
                 gpio_set_level((gpio_num_t)BLINK_GPIO, led_state);
-                vTaskDelay(500 / portTICK_PERIOD_MS);
+                vTaskDelay(100 / portTICK_PERIOD_MS);
             }
-            vTaskDelay(500 / portTICK_PERIOD_MS);
+            vTaskDelay(100 / portTICK_PERIOD_MS);
         }
     }
 }

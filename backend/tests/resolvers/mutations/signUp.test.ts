@@ -2,7 +2,7 @@ import { StatusEnum } from '../../../src/__generated__/resolvers-types';
 import { main } from '../../../src/utils';
 import supertest from 'supertest';
 
-describe('Queries > Sign Up', () => {
+describe('Mutations > Sign Up', () => {
     let request: supertest.SuperTest<supertest.Test>;
     const query = `
         mutation signUp($email: String!, $password: String!, $name: String!) {

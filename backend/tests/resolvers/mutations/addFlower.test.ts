@@ -2,7 +2,9 @@ import { SensorTypeEnum, StatusEnum } from '../../../src/__generated__/resolvers
 import { main } from '../../../src/utils';
 import supertest from 'supertest';
 
-describe('Queries > Add Flower', () => {
+jest.mock('../../../src/utils/token');
+
+describe('Mutations > Add Flower', () => {
     let request: supertest.SuperTest<supertest.Test>;
     const query = `
         mutation addFlower($input: AddFlowerInput!) {
@@ -63,7 +65,13 @@ describe('Queries > Add Flower', () => {
             }
         };
 
-        const response = await request.post('/api/v1').set({ origin: 'http://localhost' }).send(queryData);
+        const response = await request
+            .post('/api/v1')
+            .set({ origin: 'http://localhost' })
+            .set({
+                Authorization: 'Bearer token'
+            })
+            .send(queryData);
         expect(response.status).toBe(200);
         expect(response.body?.data).toMatchObject({
             addFlower: {
@@ -91,6 +99,48 @@ describe('Queries > Add Flower', () => {
                     }
                 }
             }
+        });
+    });
+
+    test('should add flower - UNAUTHORIZED', async () => {
+        const queryData = {
+            query,
+            variables: {
+                input: {
+                    name: 'new flower',
+                    humidity: {
+                        frequency: 123,
+                        validRange: {
+                            max: 2,
+                            min: 5
+                        }
+                    },
+                    temperature: {
+                        frequency: 51,
+                        validRange: {
+                            max: 123,
+                            min: 2
+                        }
+                    }
+                }
+            }
+        };
+
+        const response = await request
+            .post('/api/v1')
+            .set({ origin: 'http://localhost' })
+            .send(queryData);
+        expect(response.status).toBe(200);
+        expect(response.body).toMatchObject({
+            errors: [
+                {
+                    message: 'Not Authorised!',
+                    locations: expect.any(Array),
+                    path: expect.any(Array),
+                    extensions: expect.any(Object)
+                }
+            ],
+            data: null
         });
     });
 });

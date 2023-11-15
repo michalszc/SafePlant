@@ -192,7 +192,7 @@ const queries: QueryResolvers = {
                 throw err;
             });
     },
-    user: async (
+    user: (
         _: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
         __: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
         { user }: Context

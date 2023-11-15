@@ -268,13 +268,13 @@ const mutations: MutationResolvers = {
                 }
             };
         }).catch(err => {
-                logger.error(err);
+            logger.error(err);
 
-                return {
-                    status: StatusEnum.Error,
-                    data: null
-                };
-            });
+            return {
+                status: StatusEnum.Error,
+                data: null
+            };
+        });
     },
     refresh: (
         _: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -283,7 +283,7 @@ const mutations: MutationResolvers = {
     ): Promise<AuthResult> => {
         try {
             const accessToken = refreshAccessToken(token);
-    
+
             return Promise.resolve({
                 status: StatusEnum.Ok,
                 data: {

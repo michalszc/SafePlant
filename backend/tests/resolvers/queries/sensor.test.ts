@@ -2,6 +2,8 @@ import { SensorTypeEnum } from '../../../src/__generated__/resolvers-types';
 import { main } from '../../../src/utils';
 import supertest from 'supertest';
 
+jest.mock('../../../src/utils/token');
+
 describe('Queries > Sensor', () => {
     let request: supertest.SuperTest<supertest.Test>;
     const query = `
@@ -29,7 +31,13 @@ describe('Queries > Sensor', () => {
             variables: { sensorId: '654d3e91d427763a100eda43' }
         };
 
-        const response = await request.post('/api/v1').set({ origin: 'http://localhost' }).send(queryData);
+        const response = await request
+            .post('/api/v1')
+            .set({ origin: 'http://localhost' })
+            .set({
+                Authorization: 'Bearer token'
+            })
+            .send(queryData);
         expect(response.status).toBe(200);
         expect(response.body?.data).toMatchObject({
             sensor: {
@@ -44,13 +52,42 @@ describe('Queries > Sensor', () => {
         });
     });
 
+    test('should get sensor by id - UNAUTHORIZED', async () => {
+        const queryData = {
+            query,
+            variables: { sensorId: '654d3e91d427763a100eda43' }
+        };
+
+        const response = await request
+            .post('/api/v1')
+            .set({ origin: 'http://localhost' })
+            .send(queryData);
+        expect(response.status).toBe(200);
+        expect(response.body).toMatchObject({
+            errors: [
+                {
+                    message: 'Not Authorised!',
+                    locations: expect.any(Array),
+                    path: expect.any(Array),
+                    extensions: expect.any(Object)
+                }
+            ],
+            data: null
+        });
+    });
+
     test('should get sensor by id - NOT FOUND ERROR', async () => {
         const queryData = {
             query,
             variables: { sensorId: '654d3e91d427763a100eda99' }
         };
 
-        const response = await request.post('/api/v1').send(queryData);
+        const response = await request
+            .post('/api/v1')
+            .set({
+                Authorization: 'Bearer token'
+            })
+            .send(queryData);
         expect(response.status).toBe(200);
         expect(response.body?.errors).toHaveLength(1);
         expect(response.body?.data).toBeNull();
@@ -62,7 +99,12 @@ describe('Queries > Sensor', () => {
             variables: { sensorId: 'f2e6d8c1-9b3a-4e5f-a1d0-c7b9e8f2a6d' }
         };
 
-        const response = await request.post('/api/v1').send(queryData);
+        const response = await request
+            .post('/api/v1')
+            .set({
+                Authorization: 'Bearer token'
+            })
+            .send(queryData);
         expect(response.status).toBe(200);
         expect(response.body?.errors).toHaveLength(1);
         expect(response.body?.data).toBeUndefined();
@@ -104,7 +146,13 @@ describe('Queries > Sensor', () => {
             variables: { sensorId: '654d3e91d427763a100eda43' }
         };
 
-        const response = await request.post('/api/v1').set({ origin: 'http://localhost' }).send(queryData);
+        const response = await request
+            .post('/api/v1')
+            .set({ origin: 'http://localhost' })
+            .set({
+                Authorization: 'Bearer token'
+            })
+            .send(queryData);
         expect(response.status).toBe(200);
         expect(response.body?.data).toMatchObject({
             sensor: {

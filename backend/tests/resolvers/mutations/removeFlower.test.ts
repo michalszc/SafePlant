@@ -2,7 +2,9 @@ import { SensorTypeEnum, StatusEnum } from '../../../src/__generated__/resolvers
 import { main } from '../../../src/utils';
 import supertest from 'supertest';
 
-describe('Queries > Remove Flower', () => {
+jest.mock('../../../src/utils/token');
+
+describe('Mutations > Remove Flower', () => {
     let request: supertest.SuperTest<supertest.Test>;
     const query = `
         mutation RemoveFlower($removeFlowerId: ObjectID!) {
@@ -45,7 +47,13 @@ describe('Queries > Remove Flower', () => {
             variables: { removeFlowerId: '654e93357cdc6705e7ad22b2' }
         };
 
-        const response = await request.post('/api/v1').set({ origin: 'http://localhost' }).send(queryData);
+        const response = await request
+            .post('/api/v1')
+            .set({ origin: 'http://localhost' })
+            .set({
+                Authorization: 'Bearer token'
+            })
+            .send(queryData);
         expect(response.status).toBe(200);
         expect(response.body?.data).toMatchObject({
             removeFlower: {
@@ -73,6 +81,30 @@ describe('Queries > Remove Flower', () => {
                     }
                 }
             }
+        });
+    });
+
+    test('should remove flower - UNAUTHORIZED', async () => {
+        const queryData = {
+            query,
+            variables: { removeFlowerId: '654e93357cdc6705e7ad22b2' }
+        };
+
+        const response = await request
+            .post('/api/v1')
+            .set({ origin: 'http://localhost' })
+            .send(queryData);
+        expect(response.status).toBe(200);
+        expect(response.body).toMatchObject({
+            errors: [
+                {
+                    message: 'Not Authorised!',
+                    locations: expect.any(Array),
+                    path: expect.any(Array),
+                    extensions: expect.any(Object)
+                }
+            ],
+            data: null
         });
     });
 });

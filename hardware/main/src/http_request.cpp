@@ -1,33 +1,15 @@
 #include "http_request.h"
 
-#include <string.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 #include "esp_system.h"
-#include "esp_wifi.h"
-#include "esp_event.h"
-#include "esp_log.h"
-#include "nvs_flash.h"
-
-#include "lwip/err.h"
 #include "lwip/sockets.h"
-#include "lwip/sys.h"
 #include "lwip/netdb.h"
 #include "lwip/dns.h"
-#include "sdkconfig.h"
+#include "lwip/sys.h"
+
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 #include <iostream>
-
-// #include "esp_system.h"
-// #include "lwip/sockets.h"
-// #include "lwip/netdb.h"
-// #include "lwip/dns.h"
-// #include "lwip/sys.h"
-
-// #include <freertos/FreeRTOS.h>
-// #include <freertos/task.h>
-
-// #include <iostream>
 
 namespace http::rq {
     void get_task(void* connected) {
@@ -70,6 +52,8 @@ namespace http::rq {
                 result += buf[i];
             } 
         } while(resp_len > 0);
+
+        close(sock);
 
         return result;
     }

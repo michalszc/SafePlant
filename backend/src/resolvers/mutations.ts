@@ -3,10 +3,11 @@ import {
     MutationRefreshArgs, AuthResult, FlowerResult,
     MutationAddFlowerArgs, MutationLoginArgs, MutationRemoveFlowerArgs,
     MutationResolvers, MutationSignUpArgs, MutationUpdateFlowerArgs,
-    SensorTypeEnum, StatusEnum
+    SensorTypeEnum, StatusEnum, User
 } from '../__generated__/resolvers-types';
-import { Flower, Sensor, User } from '../providers';
+import { Flower, Sensor, User as UserModel } from '../providers';
 import { Context, logger } from '../utils';
+import { generateAccessToken, generateRefreshToken, refreshAccessToken } from '../utils/token';
 
 const mutations: MutationResolvers = {
     addFlower: (
@@ -191,24 +192,35 @@ const mutations: MutationResolvers = {
         { email, password }: MutationLoginArgs,
         _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<AuthResult> => {
-        return User.findByLoginAndPassword(email, password)
-            .then((user) => {
+        return UserModel.findByLoginAndPassword(email, password)
+            .then(async (user) => {
                 if (!user) {
                     return {
                         status: StatusEnum.Error,
                         data: null
                     };
                 } else {
+                    const loggedUser: User = {
+                        id: user._id.toString(),
+                        name: user.name,
+                        email: user.email
+                    };
+
+                    const accessToken = generateAccessToken(loggedUser);
+                    const refreshToken = generateRefreshToken(loggedUser);
+
+                    // Update user with tokens
+                    await user.updateOne({
+                        accessToken,
+                        refreshToken
+                    });
+
                     return {
                         status: StatusEnum.Ok,
                         data: {
-                            accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94',
-                            refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94',
-                            user: {
-                                id: user._id.toString(),
-                                name: user.name,
-                                email: user.email
-                            }
+                            accessToken,
+                            refreshToken,
+                            user: loggedUser
                         }
                     };
                 }
@@ -227,23 +239,35 @@ const mutations: MutationResolvers = {
         { email, password, name }: MutationSignUpArgs,
         _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<AuthResult> => {
-        return new User({
+        return new UserModel({
             name,
             password,
             email
-        }).save().then(user => ({
-            status: StatusEnum.Ok,
-            data: {
-                accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94',
-                refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94',
-                user: {
-                    id: user._id.toString(),
-                    name: user.name,
-                    email: user.email
+        }).save().then(async user => {
+            const loggedUser: User = {
+                id: user._id.toString(),
+                name: user.name,
+                email: user.email
+            };
+
+            const accessToken = generateAccessToken(loggedUser);
+            const refreshToken = generateRefreshToken(loggedUser);
+
+            // Update user with tokens
+            await user.updateOne({
+                accessToken,
+                refreshToken
+            });
+
+            return {
+                status: StatusEnum.Ok,
+                data: {
+                    accessToken,
+                    refreshToken,
+                    user: loggedUser
                 }
-            }
-        }))
-            .catch(err => {
+            };
+        }).catch(err => {
                 logger.error(err);
 
                 return {
@@ -252,24 +276,34 @@ const mutations: MutationResolvers = {
                 };
             });
     },
-    // eslint-disable-next-line require-await
-    refresh: async (
+    refresh: (
         _: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
-        { token }: MutationRefreshArgs, // eslint-disable-line @typescript-eslint/no-unused-vars
-        _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
+        { token }: MutationRefreshArgs,
+        { user }: Context
     ): Promise<AuthResult> => {
-        return Promise.resolve({
-            status: StatusEnum.Ok,
-            data: {
-                accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94',
-                refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94',
-                user: {
-                    id: '654d3e91d427763a100eda43',
-                    name: 'name',
-                    email: 'mail@mail.to'
+        try {
+            const accessToken = refreshAccessToken(token);
+    
+            return Promise.resolve({
+                status: StatusEnum.Ok,
+                data: {
+                    accessToken,
+                    refreshToken: token,
+                    user: {
+                        id: user.id,
+                        name: user.name,
+                        email: user.email
+                    }
                 }
-            }
-        });
+            });
+        } catch (err) {
+            logger.error(err);
+
+            return Promise.resolve({
+                status: StatusEnum.Error,
+                data: null
+            });
+        }
     }
 };
 

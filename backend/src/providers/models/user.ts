@@ -4,6 +4,8 @@ import bcrypt from 'bcrypt';
 
 export type IUser = Omit<UserType, 'id' | '__typename'> & {
     password: string;
+    accessToken: string;
+    refreshToken: string;
 };
 
 interface UserModel extends Model<IUser> {
@@ -23,6 +25,14 @@ const userSchema = new Schema<IUser, UserModel>({
     password: {
         type: String,
         required: true
+    },
+    accessToken: {
+        type: String,
+        required: false
+    },
+    refreshToken: {
+        type: String,
+        required: false
     }
 });
 

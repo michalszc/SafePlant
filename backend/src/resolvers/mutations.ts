@@ -227,7 +227,7 @@ const mutations: MutationResolvers = {
             })
             .catch(err => {
                 logger.error(err);
-                console.error(err);
+                console.error(err); // eslint-disable-line no-console
 
                 return {
                     status: StatusEnum.Error,
@@ -270,7 +270,7 @@ const mutations: MutationResolvers = {
             };
         }).catch(err => {
             logger.error(err);
-            console.error(err);
+            console.error(err); // eslint-disable-line no-console
 
             return {
                 status: StatusEnum.Error,

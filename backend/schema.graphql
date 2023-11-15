@@ -1,4 +1,9 @@
 """
+A directive that restricts access to certain fields based on user authentication.
+"""
+directive @auth on FIELD_DEFINITION
+
+"""
 A directive that specifies that a field cannot have a null value.
 """
 directive @notNull on INPUT_FIELD_DEFINITION | ARGUMENT_DEFINITION
@@ -433,19 +438,19 @@ type Query {
     Specifies the sorting order for the retrieved flowers.
     """
     sort: FlowerSortInput @notNull
-  ): Flowers!
+  ): Flowers! @auth
   """
   Retrieve a specific flower by ID.
   """
-  flower(id: ObjectID!): Flower!
+  flower(id: ObjectID!): Flower! @auth
   """
   Retrieve a specific sensor by ID.
   """
-  sensor(id: ObjectID!): Sensor!
+  sensor(id: ObjectID!): Sensor! @auth
   """
   Retrieve user data
   """
-  user: User!
+  user: User! @auth
 }
 
 input ValidRangeInput {
@@ -544,15 +549,15 @@ type Mutation {
   """
   Add a flower and return the result.
   """
-  addFlower(input: AddFlowerInput!): FlowerResult!
+  addFlower(input: AddFlowerInput!): FlowerResult! @auth
   """
   Update a flower and return the result.
   """
-  updateFlower(id: ObjectID!, input: UpdateFlowerInput!): FlowerResult!
+  updateFlower(id: ObjectID!, input: UpdateFlowerInput!): FlowerResult! @auth
   """
   Remove a flower and return the result.
   """
-  removeFlower(id: ObjectID!): FlowerResult!
+  removeFlower(id: ObjectID!): FlowerResult! @auth
   """
   Authenticate and return the result.
   """
@@ -560,7 +565,7 @@ type Mutation {
   """
   Refresh an access token and return the result.
   """
-  refresh(token: JWT!): AuthResult!
+  refresh(token: JWT!): AuthResult! @auth
   """
   Sign up a new user and return the result.
   """
@@ -571,5 +576,5 @@ type Subscription {
   """
   Subscribe to the latest sensor data for a specific sensor.
   """
-  latestSensorData(id: ObjectID!): SensorData!
+  latestSensorData(id: ObjectID!): SensorData! @auth
 }

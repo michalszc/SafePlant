@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  mongodb:
+    image: mongodb/mongodb-community-server:latest
+    container_name: mongodb_cluster
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=${MONGODB_USER}
+      - MONGODB_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
+    volumes:
+      - type: bind
+        source: ./data
+        target: /data/db

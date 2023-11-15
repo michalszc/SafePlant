@@ -19,8 +19,8 @@ export type Scalars = {
   Base64String: { input: string; output: string; }
   DateTime: { input: string; output: string; }
   JWT: { input: string; output: string; }
+  ObjectID: { input: string; output: string; }
   Timestamp: { input: number; output: number; }
-  UUID: { input: string; output: string; }
 };
 
 export type AddFlowerInput = {
@@ -45,7 +45,7 @@ export type AuthPayload = {
 export type AuthResult = Result & {
   __typename?: 'AuthResult';
   /** Result data containing an authentication payload. */
-  data: AuthPayload;
+  data?: Maybe<AuthPayload>;
   /** Status of the result. */
   status: StatusEnum;
 };
@@ -81,7 +81,7 @@ export type Flower = {
   /** Humidity sensor for the flower. */
   humidity: Sensor;
   /** Unique identifier for the flower. */
-  id: Scalars['UUID']['output'];
+  id: Scalars['ObjectID']['output'];
   /** Name of the flower. */
   name: Scalars['String']['output'];
   /** Temperature sensor for the flower. */
@@ -106,18 +106,16 @@ export type FlowerFilterInput = {
 export type FlowerResult = Result & {
   __typename?: 'FlowerResult';
   /** Result data containing a flower. */
-  data: Flower;
+  data?: Maybe<Flower>;
   /** Status of the result. */
   status: StatusEnum;
 };
 
 export enum FlowerSortFieldEnum {
-  /** Sort by date-time */
-  Datetime = 'DATETIME',
-  /** Sort by timestamp */
-  Timestamp = 'TIMESTAMP',
-  /** Sort by value */
-  Value = 'VALUE'
+  /** Sort by ID */
+  Id = 'ID',
+  /** Sort by name */
+  Name = 'NAME'
 }
 
 export type FlowerSortInput = {
@@ -136,14 +134,14 @@ export type Flowers = {
 };
 
 export type IdFilter = {
-  /** Filter for UUID equality (equal to) */
-  eq?: InputMaybe<Scalars['UUID']['input']>;
-  /** Filter for inclusion in a list of UUIDs */
-  in?: InputMaybe<Array<Scalars['UUID']['input']>>;
-  /** Filter for UUID inequality (not equal to) */
-  ne?: InputMaybe<Scalars['UUID']['input']>;
-  /** Filter for exclusion from a list of UUIDs */
-  nin?: InputMaybe<Array<Scalars['UUID']['input']>>;
+  /** Filter for ObjectID equality (equal to) */
+  eq?: InputMaybe<Scalars['ObjectID']['input']>;
+  /** Filter for inclusion in a list of ObjectIDs */
+  in?: InputMaybe<Array<Scalars['ObjectID']['input']>>;
+  /** Filter for ObjectID inequality (not equal to) */
+  ne?: InputMaybe<Scalars['ObjectID']['input']>;
+  /** Filter for exclusion from a list of ObjectIDs */
+  nin?: InputMaybe<Array<Scalars['ObjectID']['input']>>;
 };
 
 export type Mutation = {
@@ -180,7 +178,7 @@ export type MutationRefreshArgs = {
 
 
 export type MutationRemoveFlowerArgs = {
-  id: Scalars['UUID']['input'];
+  id: Scalars['ObjectID']['input'];
 };
 
 
@@ -192,7 +190,7 @@ export type MutationSignUpArgs = {
 
 
 export type MutationUpdateFlowerArgs = {
-  id: Scalars['UUID']['input'];
+  id: Scalars['ObjectID']['input'];
   input: UpdateFlowerInput;
 };
 
@@ -233,7 +231,7 @@ export type Query = {
 
 
 export type QueryFlowerArgs = {
-  id: Scalars['UUID']['input'];
+  id: Scalars['ObjectID']['input'];
 };
 
 
@@ -248,7 +246,7 @@ export type QueryFlowersArgs = {
 
 
 export type QuerySensorArgs = {
-  id: Scalars['UUID']['input'];
+  id: Scalars['ObjectID']['input'];
 };
 
 export type Result = {
@@ -263,7 +261,7 @@ export type Sensor = {
   /** Number of seconds how often data is collected. */
   frequency: Scalars['Int']['output'];
   /** Unique identifier for the sensor. */
-  id: Scalars['UUID']['output'];
+  id: Scalars['ObjectID']['output'];
   /** Type of sensor (Temperature or Humidity). */
   type: SensorTypeEnum;
   /** Valid data range for the sensor. */
@@ -285,7 +283,7 @@ export type SensorData = {
   /** Date and time when data was collected. */
   dateTime: Scalars['DateTime']['output'];
   /** Unique identifier for sensor data. */
-  id: Scalars['UUID']['output'];
+  id: Scalars['ObjectID']['output'];
   /** Numeric value of the sensor data. */
   numericValue: Scalars['Float']['output'];
   /** Raw sensor data value as a string. */
@@ -354,7 +352,7 @@ export type Subscription = {
 
 
 export type SubscriptionLatestSensorDataArgs = {
-  id: Scalars['UUID']['input'];
+  id: Scalars['ObjectID']['input'];
 };
 
 export type UpdateFlowerInput = {
@@ -371,7 +369,7 @@ export type User = {
   /** Email of the user. */
   email: Scalars['String']['output'];
   /** Unique identifier for the user. */
-  id: Scalars['UUID']['output'];
+  id: Scalars['ObjectID']['output'];
   /** Name of the user. */
   name: Scalars['String']['output'];
 };
@@ -489,6 +487,7 @@ export type ResolversTypes = ResolversObject<{
   JWT: ResolverTypeWrapper<Scalars['JWT']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   NameFilterInput: NameFilterInput;
+  ObjectID: ResolverTypeWrapper<Scalars['ObjectID']['output']>;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   Query: ResolverTypeWrapper<{}>;
   Result: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Result']>;
@@ -504,7 +503,6 @@ export type ResolversTypes = ResolversObject<{
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Subscription: ResolverTypeWrapper<{}>;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']['output']>;
-  UUID: ResolverTypeWrapper<Scalars['UUID']['output']>;
   UpdateFlowerInput: UpdateFlowerInput;
   User: ResolverTypeWrapper<User>;
   ValidRange: ResolverTypeWrapper<ValidRange>;
@@ -534,6 +532,7 @@ export type ResolversParentTypes = ResolversObject<{
   JWT: Scalars['JWT']['output'];
   Mutation: {};
   NameFilterInput: NameFilterInput;
+  ObjectID: Scalars['ObjectID']['output'];
   PageInfo: PageInfo;
   Query: {};
   Result: ResolversInterfaceTypes<ResolversParentTypes>['Result'];
@@ -545,7 +544,6 @@ export type ResolversParentTypes = ResolversObject<{
   String: Scalars['String']['output'];
   Subscription: {};
   Timestamp: Scalars['Timestamp']['output'];
-  UUID: Scalars['UUID']['output'];
   UpdateFlowerInput: UpdateFlowerInput;
   User: User;
   ValidRange: ValidRange;
@@ -582,7 +580,7 @@ export type AuthPayloadResolvers<ContextType = Context, ParentType extends Resol
 }>;
 
 export type AuthResultResolvers<ContextType = Context, ParentType extends ResolversParentTypes['AuthResult'] = ResolversParentTypes['AuthResult']> = ResolversObject<{
-  data?: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType>;
+  data?: Resolver<Maybe<ResolversTypes['AuthPayload']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['StatusEnum'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -603,7 +601,7 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 
 export type FlowerResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Flower'] = ResolversParentTypes['Flower']> = ResolversObject<{
   humidity?: Resolver<ResolversTypes['Sensor'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ObjectID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   temperature?: Resolver<ResolversTypes['Sensor'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -616,7 +614,7 @@ export type FlowerEdgeResolvers<ContextType = Context, ParentType extends Resolv
 }>;
 
 export type FlowerResultResolvers<ContextType = Context, ParentType extends ResolversParentTypes['FlowerResult'] = ResolversParentTypes['FlowerResult']> = ResolversObject<{
-  data?: Resolver<ResolversTypes['Flower'], ParentType, ContextType>;
+  data?: Resolver<Maybe<ResolversTypes['Flower']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['StatusEnum'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -639,6 +637,10 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   signUp?: Resolver<ResolversTypes['AuthResult'], ParentType, ContextType, RequireFields<MutationSignUpArgs, 'email' | 'name' | 'password'>>;
   updateFlower?: Resolver<ResolversTypes['FlowerResult'], ParentType, ContextType, RequireFields<MutationUpdateFlowerArgs, 'id' | 'input'>>;
 }>;
+
+export interface ObjectIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['ObjectID'], any> {
+  name: 'ObjectID';
+}
 
 export type PageInfoResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = ResolversObject<{
   endCursor?: Resolver<Maybe<ResolversTypes['Base64String']>, ParentType, ContextType>;
@@ -663,7 +665,7 @@ export type ResultResolvers<ContextType = Context, ParentType extends ResolversP
 export type SensorResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Sensor'] = ResolversParentTypes['Sensor']> = ResolversObject<{
   data?: Resolver<ResolversTypes['Data'], ParentType, ContextType, Partial<SensorDataArgs>>;
   frequency?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ObjectID'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['SensorTypeEnum'], ParentType, ContextType>;
   validRange?: Resolver<ResolversTypes['ValidRange'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -671,7 +673,7 @@ export type SensorResolvers<ContextType = Context, ParentType extends ResolversP
 
 export type SensorDataResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SensorData'] = ResolversParentTypes['SensorData']> = ResolversObject<{
   dateTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ObjectID'], ParentType, ContextType>;
   numericValue?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   rawValue?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
@@ -692,13 +694,9 @@ export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<Resolvers
   name: 'Timestamp';
 }
 
-export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
-  name: 'UUID';
-}
-
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ObjectID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -721,6 +719,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Flowers?: FlowersResolvers<ContextType>;
   JWT?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
+  ObjectID?: GraphQLScalarType;
   PageInfo?: PageInfoResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Result?: ResultResolvers<ContextType>;
@@ -729,7 +728,6 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   SensorDataEdge?: SensorDataEdgeResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Timestamp?: GraphQLScalarType;
-  UUID?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   ValidRange?: ValidRangeResolvers<ContextType>;
 }>;

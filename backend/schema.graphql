@@ -40,7 +40,7 @@ directive @length(
 ) on INPUT_FIELD_DEFINITION | ARGUMENT_DEFINITION
 
 scalar JWT
-scalar UUID
+scalar ObjectID
 scalar Timestamp
 scalar DateTime
 
@@ -64,7 +64,7 @@ type SensorData {
   """
   Unique identifier for sensor data.
   """
-  id: UUID!
+  id: ObjectID!
   """
   Date and time when data was collected.
   """
@@ -193,21 +193,21 @@ input DateTimeFilter {
 
 input IDFilter {
   """
-  Filter for UUID equality (equal to)
+  Filter for ObjectID equality (equal to)
   """
-  eq: UUID
+  eq: ObjectID
   """
-  Filter for UUID inequality (not equal to)
+  Filter for ObjectID inequality (not equal to)
   """
-  ne: UUID
+  ne: ObjectID
   """
-  Filter for inclusion in a list of UUIDs
+  Filter for inclusion in a list of ObjectIDs
   """
-  in: [UUID!]
+  in: [ObjectID!]
   """
-  Filter for exclusion from a list of UUIDs
+  Filter for exclusion from a list of ObjectIDs
   """
-  nin: [UUID!]
+  nin: [ObjectID!]
 }
 
 input DataFilterInput {
@@ -225,7 +225,7 @@ type Sensor {
   """
   Unique identifier for the sensor.
   """
-  id: UUID!
+  id: ObjectID!
   """
   Type of sensor (Temperature or Humidity).
   """
@@ -273,7 +273,7 @@ type Flower {
   """
   Unique identifier for the flower.
   """
-  id: UUID!
+  id: ObjectID!
   """
   Name of the flower.
   """
@@ -307,7 +307,7 @@ type User {
   """
   Unique identifier for the user.
   """
-  id: UUID!
+  id: ObjectID!
   """
   Name of the user.
   """
@@ -372,17 +372,13 @@ input FlowerFilterInput {
 
 enum FlowerSortFieldEnum {
   """
-  Sort by date-time
+  Sort by ID
   """
-  DATETIME
+  ID
   """
-  Sort by timestamp
+  Sort by name
   """
-  TIMESTAMP
-  """
-  Sort by value
-  """
-  VALUE
+  NAME
 }
 
 enum SortOrderEnum {
@@ -441,11 +437,11 @@ type Query {
   """
   Retrieve a specific flower by ID.
   """
-  flower(id: UUID!): Flower!
+  flower(id: ObjectID!): Flower!
   """
   Retrieve a specific sensor by ID.
   """
-  sensor(id: UUID!): Sensor!
+  sensor(id: ObjectID!): Sensor!
   """
   Retrieve user data
   """
@@ -526,7 +522,7 @@ type FlowerResult implements Result {
   """
   Result data containing a flower.
   """
-  data: Flower!
+  data: Flower
   """
   Status of the result.
   """
@@ -537,7 +533,7 @@ type AuthResult implements Result {
   """
   Result data containing an authentication payload.
   """
-  data: AuthPayload!
+  data: AuthPayload
   """
   Status of the result.
   """
@@ -552,11 +548,11 @@ type Mutation {
   """
   Update a flower and return the result.
   """
-  updateFlower(id: UUID!, input: UpdateFlowerInput!): FlowerResult!
+  updateFlower(id: ObjectID!, input: UpdateFlowerInput!): FlowerResult!
   """
   Remove a flower and return the result.
   """
-  removeFlower(id: UUID!): FlowerResult!
+  removeFlower(id: ObjectID!): FlowerResult!
   """
   Authenticate and return the result.
   """
@@ -575,5 +571,5 @@ type Subscription {
   """
   Subscribe to the latest sensor data for a specific sensor.
   """
-  latestSensorData(id: UUID!): SensorData!
+  latestSensorData(id: ObjectID!): SensorData!
 }

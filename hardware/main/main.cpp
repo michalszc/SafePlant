@@ -1,6 +1,6 @@
 #include "include/dht_handler.h"
 #include "wifi_connection.h"
-#include "dioda.h"
+#include "diode.h"
 #include "http_request.h"
 #include "nvs_flash.h"
 

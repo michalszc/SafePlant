@@ -9,11 +9,11 @@ export default function HomePage({navigation}: {navigation: any}) {
             <Text style={styles.name}>SafePlant</Text>
             </View>
         <View style={styles.bot}>
-            <View style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Register")} >
               <Text style={styles.button_text}>
                   Sign up
               </Text>
-            </View>
+            </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Login")} >
               <Text style={styles.button_text}>
                   Sign in

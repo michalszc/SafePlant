@@ -192,16 +192,15 @@ const queries: QueryResolvers = {
                 throw err;
             });
     },
-    // eslint-disable-next-line require-await
     user: async (
         _: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
         __: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
-        _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
+        { user }: Context
     ): Promise<User> => {
         return Promise.resolve({
-            id: '654d3e91d427763a100eda43',
-            name: 'name',
-            email: 'mail@mail.to'
+            id: user.id,
+            name: user.name,
+            email: user.email
         });
     }
 };

@@ -2,6 +2,8 @@ import { StatusEnum } from '../../../src/__generated__/resolvers-types';
 import { main } from '../../../src/utils';
 import supertest from 'supertest';
 
+jest.mock('../../../src/utils/token');
+
 describe('Mutations > Sign Up', () => {
     let request: supertest.SuperTest<supertest.Test>;
     const query = `

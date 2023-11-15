@@ -550,6 +550,10 @@ export type ResolversParentTypes = ResolversObject<{
   ValidRangeInput: ValidRangeInput;
 }>;
 
+export type AuthDirectiveArgs = { };
+
+export type AuthDirectiveResolver<Result, Parent, ContextType = Context, Args = AuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export type LengthDirectiveArgs = {
   max?: Maybe<Scalars['Int']['input']>;
   min?: Maybe<Scalars['Int']['input']>;
@@ -733,6 +737,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
 }>;
 
 export type DirectiveResolvers<ContextType = Context> = ResolversObject<{
+  auth?: AuthDirectiveResolver<any, any, ContextType>;
   length?: LengthDirectiveResolver<any, any, ContextType>;
   notEmpty?: NotEmptyDirectiveResolver<any, any, ContextType>;
   notNull?: NotNullDirectiveResolver<any, any, ContextType>;

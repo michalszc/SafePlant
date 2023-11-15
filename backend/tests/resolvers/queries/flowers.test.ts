@@ -2,6 +2,8 @@ import { SensorTypeEnum } from '../../../src/__generated__/resolvers-types';
 import { main } from '../../../src/utils';
 import supertest from 'supertest';
 
+jest.mock('../../../src/utils/token');
+
 describe('Queries > Flowers', () => {
     let request: supertest.SuperTest<supertest.Test>;
     const query = `
@@ -53,7 +55,13 @@ describe('Queries > Flowers', () => {
             variables: { flowerId: '654e93357cdc6705e7ad22b1' }
         };
 
-        const response = await request.post('/api/v1').set({ origin: 'http://localhost' }).send(queryData);
+        const response = await request
+            .post('/api/v1')
+            .set({ origin: 'http://localhost' })
+            .set({
+                Authorization: 'Bearer token'
+            })
+            .send(queryData);
         expect(response.status).toBe(200);
         expect(response.body?.data).toMatchObject({
             flowers: {
@@ -116,6 +124,29 @@ describe('Queries > Flowers', () => {
                     endCursor: Buffer.from('654e93357cdc6705e7ad22b2').toString('base64')
                 }
             }
+        });
+    });
+    test('should get all flowers - UNAUTHORIZED', async () => {
+        const queryData = {
+            query,
+            variables: { flowerId: '654e93357cdc6705e7ad22b1' }
+        };
+
+        const response = await request
+            .post('/api/v1')
+            .set({ origin: 'http://localhost' })
+            .send(queryData);
+        expect(response.status).toBe(200);
+        expect(response.body).toMatchObject({
+            errors: [
+                {
+                    message: 'Not Authorised!',
+                    locations: expect.any(Array),
+                    path: expect.any(Array),
+                    extensions: expect.any(Object)
+                }
+            ],
+            data: null
         });
     });
 });

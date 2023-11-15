@@ -2,7 +2,9 @@ import { StatusEnum } from '../../../src/__generated__/resolvers-types';
 import { main } from '../../../src/utils';
 import supertest from 'supertest';
 
-describe('Queries > Login', () => {
+jest.mock('../../../src/utils/token');
+
+describe('Mutations > Login', () => {
     let request: supertest.SuperTest<supertest.Test>;
     const query = `
         mutation Login($email: String!, $password: String!) {

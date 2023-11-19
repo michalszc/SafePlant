@@ -3,6 +3,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <iostream>
+#include <chrono>
 
 #include "esp_log.h"
 #include "esp_adc/adc_oneshot.h"
@@ -68,10 +69,13 @@ namespace moisture {
     }
 
     void measure_moisture(adc_oneshot_unit_handle_t handle) {
+        namespace chrono = std::chrono;
         int value;
+        const auto p1 = chrono::system_clock::now();
         ESP_ERROR_CHECK(adc_oneshot_read(handle, CHANNEL, &value));
         float moisture = 100.f - (value / 4095.f)*100.f;
         int moisture_percentage = static_cast<int>(moisture);
-        std::cout << "Moisture level: " << moisture_percentage << "%\n"; 
+        std::cout << "Timestamp: " << chrono::duration_cast<chrono::milliseconds>(p1.time_since_epoch()).count();
+        std::cout << " Moisture level: " << moisture_percentage << "%\n"; 
     }
 }

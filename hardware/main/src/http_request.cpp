@@ -1,4 +1,5 @@
 #include "http_request.h"
+#include "variables.hpp"
 
 #include "esp_system.h"
 #include "lwip/sockets.h"
@@ -13,9 +14,8 @@
 
 namespace http::rq {
     void get_task(void* connected) {
-        bool* connect = reinterpret_cast<bool*>(connected);
         while (true) {
-            if (*connect) {
+            if (conn) {
                 std::cout << get("example.com", "/", "80") << std::endl;
             }
             vTaskDelay(10000 / portTICK_PERIOD_MS);

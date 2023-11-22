@@ -4,4 +4,5 @@ idf_component_register(SRCS "main.cpp"
                             "src/diode.cpp" 
                             "src/http_request.cpp"
                             "src/moisture_sensor.cpp"
+                            "src/buzzer.cpp"
                     INCLUDE_DIRS "./include")

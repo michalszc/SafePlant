@@ -1,13 +1,25 @@
+import { useMutation } from '@apollo/client';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { LOGIN } from '../gql/login';
 
 const LoginPage = ({ navigation }: {navigation:any}) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [loginEmail2, setloginEmail2] = useState('');
+  const [loginPassword2, setloginPassword2] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
-  const handleLogin = () => {
+  const [signUp, {data, loading, error}] = useMutation(LOGIN);
+  const handleLogin = async () => {
+    try{
+      await signUp({
+        variables: {loginEmail2, loginPassword2}
+      });
     navigation.navigate('MainPage');
+    console.log("UDALO SIE")
+    }
+    catch (error) {
+      console.error('Mutation error:', error);
+      console.log("NIE UDALO SIE ")
+    }
   };
    const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -22,16 +34,16 @@ return (
     <TextInput
       style={styles.input}
       placeholder="Email"
-      onChangeText={(text) => setEmail(text)}
-      value={email}
+      onChangeText={(text) => setloginEmail2(text)}
+      value={loginEmail2}
       keyboardType="email-address"
     />
     <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
           placeholder="Password"
-          onChangeText={(text) => setPassword(text)}
-          value={password}
+          onChangeText={(text) => setloginPassword2(text)}
+          value={loginPassword2}
           secureTextEntry={!showPassword}
         />
         <TouchableOpacity style={styles.showHideButton} onPress={togglePasswordVisibility}>

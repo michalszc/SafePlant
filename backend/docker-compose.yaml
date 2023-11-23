@@ -9,5 +9,8 @@ services:
     environment:
       - PORT=${PORT}
       - MONGODB_URI=mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@mongodb:27017
+      - SECRET_ACCESS_KEY=${SECRET_ACCESS_KEY}
+      - SECRET_REFRESH_KEY=${SECRET_REFRESH_KEY}
+      # - NODE_ENV=production
     depends_on:
       - mongodb

@@ -5,6 +5,25 @@
 Our robust backend system seamlessly connects and manages your IoT ecosystem. It efficiently retrieves data from ESP32 devices via MQTT and securely stores it in a database for future analysis and reference.
 It also provides a GraphQL API tailored for our mobile application, providing a user-friendly interface to access your data. With user authentication features, it ensures that your data is only accessible to authorised individuals, increasing security and control. This backend is the trusted guardian of your data, providing seamless access, storage and protection for your IoT ecosystem.
 
+## Run locally
+
+### Set environment variables (.env):
+
+```bash
+PORT=4000
+MONGODB_USER=root
+MONGODB_PASSWORD=pass
+MONGODB_URI=mongodb://root:pass@127.0.0.1:27017
+SECRET_ACCESS_KEY=secret
+SECRET_REFRESH_KEY=secret
+```
+
+### Running in a production environment
+
+```bash
+npm run docker:prod
+```
+
 ## Folder structure
 
 ```bash

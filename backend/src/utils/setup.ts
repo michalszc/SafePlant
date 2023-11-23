@@ -19,6 +19,7 @@ import { applyMiddleware } from 'graphql-middleware';
 import { permissions } from './shield';
 import { Maybe, User } from '../__generated__/resolvers-types';
 import { getUser } from './token';
+import { Mqtt } from '../providers';
 
 export interface Context {
     pubsub: PubSub;
@@ -65,6 +66,12 @@ export async function main() {
         server: httpServer,
         path
     });
+
+    const mqtt = new Mqtt();
+    mqtt.subscribe('test', (topic, message) => {
+        console.log(topic, JSON.parse(message.toString()));
+    });
+    mqtt.listen();
 
     const pubsub = new PubSub();
 

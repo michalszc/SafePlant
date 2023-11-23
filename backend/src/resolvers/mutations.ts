@@ -58,7 +58,7 @@ const mutations: MutationResolvers = {
                 }
             };
         }).catch(err => {
-            logger.error(err);
+            logger.error(JSON.stringify(err));
 
             return {
                 status: StatusEnum.Error,
@@ -134,7 +134,7 @@ const mutations: MutationResolvers = {
                 }
             }
         })).catch(err => {
-            logger.error(err);
+            logger.error(JSON.stringify(err));
 
             return {
                 status: StatusEnum.Error,
@@ -179,7 +179,7 @@ const mutations: MutationResolvers = {
                 }
             }
         })).catch(err => {
-            logger.error(err);
+            logger.error(JSON.stringify(err));
 
             return {
                 status: StatusEnum.Error,
@@ -226,7 +226,7 @@ const mutations: MutationResolvers = {
                 }
             })
             .catch(err => {
-                logger.error(err);
+                logger.error(JSON.stringify(err));
 
                 return {
                     status: StatusEnum.Error,
@@ -268,7 +268,7 @@ const mutations: MutationResolvers = {
                 }
             };
         }).catch(err => {
-            logger.error(err);
+            logger.error(JSON.stringify(err));
 
             return {
                 status: StatusEnum.Error,
@@ -297,7 +297,7 @@ const mutations: MutationResolvers = {
                 }
             });
         } catch (err) {
-            logger.error(err);
+            logger.error(JSON.stringify(err));
 
             return Promise.resolve({
                 status: StatusEnum.Error,

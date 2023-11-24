@@ -63,8 +63,7 @@ namespace wifi {
             return ret;
         }
         
-        if (wait)
-        {
+        if (wait) {
             std::cout << "Waiting for IP!\n";
             xSemaphoreTake(ip_adrr_sph, portMAX_DELAY);
         }
@@ -84,8 +83,8 @@ namespace wifi {
 
         wifi_config_t wifi_config = {
             .sta = {
-                .ssid = "Orange_Swiatlowod_7F90",
-                .password = "qnHvc4ZnkvDuqpH6hh",
+                .ssid = "",
+                .password = "",
                 .scan_method = WIFI_ALL_CHANNEL_SCAN,
                 .sort_method = WIFI_CONNECT_AP_BY_SIGNAL
             }

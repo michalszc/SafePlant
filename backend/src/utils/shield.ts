@@ -25,4 +25,7 @@ export const permissions = shield({
     Sensor: {
         '*': isAuthenticated
     }
+},
+{
+    allowExternalErrors: true
 });

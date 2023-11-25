@@ -43,6 +43,12 @@ mosquitto_passwd -c /mosquitto/config/password <user-name-to-add>
 mosquitto_passwd -D /mosquitto/config/password <user-name-to-delete>
 ```
 
+### MQTT web client
+
+```bash
+docker run -d --name mqttx-web -p 80:80 emqx/mqttx-web
+```
+
 ## Folder structure
 
 ```bash

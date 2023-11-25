@@ -1,4 +1,5 @@
 #include "wifi_connection.h"
+#include "variables.hpp"
 
 namespace wifi {
     static SemaphoreHandle_t ip_adrr_sph;
@@ -21,8 +22,7 @@ namespace wifi {
     }
 
     static void disconnected_handler(void* connected, esp_event_base_t event_base, int32_t event_id, void* event_data) {
-        auto connect = reinterpret_cast<bool*>(connected);
-        *connect = false;
+        conn = false;
 
         std::cout << "Trying to reconnect!\n";
         esp_err_t err = esp_wifi_connect();
@@ -32,8 +32,7 @@ namespace wifi {
     }
 
     static void connected_handler(void* connected, esp_event_base_t event_base, int32_t event_id, void* event_data) {
-        auto connect = reinterpret_cast<bool*>(connected);
-        *connect = true;
+        conn = true;
     }
 
     static void got_ip_handler(void* connected, esp_event_base_t event_base, int32_t event_id, void* event_data) {
@@ -50,7 +49,7 @@ namespace wifi {
                 return ESP_ERR_NO_MEM;
             }
         }
-        bool* is_connected;
+        
         ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_DISCONNECTED, &disconnected_handler, connected));
         ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &got_ip_handler, nullptr));
         ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_CONNECTED, &connected_handler, connected));
@@ -64,8 +63,7 @@ namespace wifi {
             return ret;
         }
         
-        if (wait)
-        {
+        if (wait) {
             std::cout << "Waiting for IP!\n";
             xSemaphoreTake(ip_adrr_sph, portMAX_DELAY);
         }
@@ -85,8 +83,8 @@ namespace wifi {
 
         wifi_config_t wifi_config = {
             .sta = {
-                .ssid = "bagno",
-                .password = "niewiem1",
+                .ssid = "",
+                .password = "",
                 .scan_method = WIFI_ALL_CHANNEL_SCAN,
                 .sort_method = WIFI_CONNECT_AP_BY_SIGNAL
             }

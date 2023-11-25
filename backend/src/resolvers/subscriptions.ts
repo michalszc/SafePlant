@@ -9,7 +9,7 @@ const subscriptions: SubscriptionResolvers = {
             { pubsub }: Context
         ): AsyncIterable<SensorData> => {
             return {
-                [Symbol.asyncIterator]: () => pubsub.asyncIterator(`DATA.${id}`)
+                [Symbol.asyncIterator]: () => pubsub.asyncIterator(`DATA/${id}`)
             };
         },
         resolve: (payload: SensorData) => payload

@@ -1,6 +1,6 @@
-import { MqttClient, connect } from "mqtt";
-import { MQTT_HOST, MQTT_PASSWORD, MQTT_PORT, MQTT_USERNAME } from "../constants";
-import { logger } from "../utils";
+import { MqttClient, connect } from 'mqtt';
+import { MQTT_HOST, MQTT_PASSWORD, MQTT_PORT, MQTT_USERNAME } from '../constants';
+import { logger } from '../utils';
 
 export interface IMqtt {
     subscribe(topic: string, fn: (topic: string, message: Buffer) => void): void;
@@ -12,12 +12,12 @@ export class Mqtt {
     client: MqttClient;
     subscribedTopics: Record<string, (topic: string, message: Buffer) => void> = {};
     constructor() {
-        this.client  = connect({
+        this.client = connect({
             host: MQTT_HOST,
             port: MQTT_PORT,
             protocol: 'mqtt',
             username: MQTT_USERNAME,
-            password: MQTT_PASSWORD,
+            password: MQTT_PASSWORD
         });
         this.subscribedTopics = {};
     }

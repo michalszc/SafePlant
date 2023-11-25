@@ -19,11 +19,12 @@ import { applyMiddleware } from 'graphql-middleware';
 import { permissions } from './shield';
 import { Maybe, User } from '../__generated__/resolvers-types';
 import { getUser } from './token';
-import { Mqtt } from '../providers';
+import { Mqtt, IMqtt } from '../providers';
 
 export interface Context {
     pubsub: PubSub;
     user: Maybe<User>;
+    mqtt: IMqtt;
 }
 
 const typeDefs = readFileSync('./schema.graphql', { encoding: 'utf-8' });
@@ -69,7 +70,7 @@ export async function main() {
 
     const mqtt = new Mqtt();
     mqtt.subscribe('test', (topic, message) => {
-        console.log(topic, JSON.parse(message.toString()));
+        console.log(topic, JSON.parse(message.toString())); // eslint-disable-line no-console
     });
     mqtt.listen();
 
@@ -83,7 +84,8 @@ export async function main() {
 
             return {
                 user,
-                pubsub
+                pubsub,
+                mqtt
             };
         }
     }, wsServer);
@@ -102,7 +104,8 @@ export async function main() {
 
                 return {
                     user,
-                    pubsub
+                    pubsub,
+                    mqtt
                 };
             }
         })

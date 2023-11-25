@@ -13,16 +13,16 @@ const mutations: MutationResolvers = {
     addFlower: (
         _: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
         { input: { name, humidity, temperature } }: MutationAddFlowerArgs,
-        _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
+        { user }: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<FlowerResult> => {
         const humiditySensor = new Sensor({
-            user: '65494a083b1744f88c2622bf', // temporary
+            user: user.id,
             type: SensorTypeEnum.Humidity,
             ...humidity
         });
 
         const temperatureSensor = new Sensor({
-            user: '65494a083b1744f88c2622bf', // temporary
+            user: user.id,
             type: SensorTypeEnum.Temperature,
             ...temperature
         });
@@ -32,7 +32,7 @@ const mutations: MutationResolvers = {
             temperatureSensor.save()
         ]).then(async ([humiditySensor, temperatureSensor]) => {
             const flower = await new Flower({
-                user: '65494a083b1744f88c2622bf', // temporary
+                user: user.id,
                 name,
                 humidity: humiditySensor._id,
                 temperature: temperatureSensor._id
@@ -58,7 +58,7 @@ const mutations: MutationResolvers = {
                 }
             };
         }).catch(err => {
-            logger.error(JSON.stringify(err));
+            logger.error(err.message);
 
             return {
                 status: StatusEnum.Error,
@@ -69,16 +69,16 @@ const mutations: MutationResolvers = {
     updateFlower: async (
         _: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
         { id, input }: MutationUpdateFlowerArgs,
-        _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
+        { user }: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<FlowerResult> => {
         const flower = await Flower
-            .findById(id)
+            .findOne({
+                _id: id, user: user.id
+            })
             .populate('humidity')
             .populate('temperature');
 
         if (!flower) {
-            logger.error(`Cannot find flower with id ${id}`);
-
             throw Error(`Cannot find flower with id ${id}`);
         }
 
@@ -134,7 +134,7 @@ const mutations: MutationResolvers = {
                 }
             }
         })).catch(err => {
-            logger.error(JSON.stringify(err));
+            logger.error(err.message);
 
             return {
                 status: StatusEnum.Error,
@@ -145,16 +145,16 @@ const mutations: MutationResolvers = {
     removeFlower: async (
         _: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
         { id }: MutationRemoveFlowerArgs,
-        _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
+        { user }: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<FlowerResult> => {
         const flower = await Flower
-            .findById(id)
+            .findOne({
+                _id: id, user: user.id
+            })
             .populate('humidity')
             .populate('temperature');
 
         if (!flower) {
-            logger.error(`Cannot find flower with id ${id}`);
-
             throw Error(`Cannot find flower with id ${id}`);
         }
 
@@ -179,7 +179,7 @@ const mutations: MutationResolvers = {
                 }
             }
         })).catch(err => {
-            logger.error(JSON.stringify(err));
+            logger.error(err.message);
 
             return {
                 status: StatusEnum.Error,
@@ -226,7 +226,7 @@ const mutations: MutationResolvers = {
                 }
             })
             .catch(err => {
-                logger.error(JSON.stringify(err));
+                logger.error(err.message);
 
                 return {
                     status: StatusEnum.Error,
@@ -268,7 +268,7 @@ const mutations: MutationResolvers = {
                 }
             };
         }).catch(err => {
-            logger.error(JSON.stringify(err));
+            logger.error(err.message);
 
             return {
                 status: StatusEnum.Error,
@@ -297,7 +297,7 @@ const mutations: MutationResolvers = {
                 }
             });
         } catch (err) {
-            logger.error(JSON.stringify(err));
+            logger.error(err.message);
 
             return Promise.resolve({
                 status: StatusEnum.Error,

@@ -1,4 +1,5 @@
 #include "moisture_sensor.h"
+#include "lcd.hpp"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -9,6 +10,7 @@
 #include "esp_adc/adc_oneshot.h"
 #include "esp_adc/adc_cali.h"
 #include "esp_adc/adc_cali_scheme.h"
+#include "rom/ets_sys.h"
 
 namespace moisture {
     constexpr auto ATTEN = ADC_ATTEN_DB_11;
@@ -77,5 +79,6 @@ namespace moisture {
         int moisture_percentage = static_cast<int>(moisture);
         std::cout << "Timestamp: " << chrono::duration_cast<chrono::milliseconds>(p1.time_since_epoch()).count();
         std::cout << " Moisture level: " << moisture_percentage << "%\n"; 
+        lcd::Display::get_display().print("Moisture: " + std::to_string(moisture_percentage) + "%", 1, 0);
     }
 }

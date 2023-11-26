@@ -6,5 +6,15 @@ Introducing our advanced hardware solution designed to collect data from sensors
 
 ## Folder structure
 ```bash
-TO DO
+├── .devcontainer           # Directory with docker-related things
+├── .vscode                 # Directory with VS-Code settings
+├── main                    # Code directory 
+│   └── include             # Header files
+│   └── src                 # Source files
+│   └── CMakeLists.txt      # CMake file for module
+│   └── main.cpp            # Main application entry point
+├── .gitignore              # A list of files to ignore when pushing to Github
+├── CMakeLists.txt          # Project CMake config
+├── README.md               # The readme for the backend
+├── script                  # Command to start idf
 ```

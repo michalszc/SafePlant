@@ -7,8 +7,7 @@ import {
     SensorTypeEnum, StatusEnum, User
 } from '../__generated__/resolvers-types';
 import { Flower, Sensor, SensorData, User as UserModel } from '../providers';
-import { Context, logger } from '../utils';
-import { generateAccessToken, generateRefreshToken, refreshAccessToken } from '../utils/token';
+import { Context, logger, generateAccessToken, generateRefreshToken, refreshAccessToken } from '../utils';
 
 const mutations: MutationResolvers = {
     addFlower: (

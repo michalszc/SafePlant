@@ -18,7 +18,7 @@ import { connectMongoDB } from './mongodb';
 import { applyMiddleware } from 'graphql-middleware';
 import { permissions } from './shield';
 import { Maybe, User } from '../__generated__/resolvers-types';
-import { getUser } from './token';
+import { getUser } from '.';
 import { Mqtt, IMqtt, Sensor, SensorData } from '../providers';
 
 export interface Context {

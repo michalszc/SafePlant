@@ -7,6 +7,7 @@ idf_component_register(SRCS "main.cpp"
                             "src/buzzer.cpp"
                             "src/LCD_PCF8574_abstraction.cpp"
                             "src/lcd.cpp"
+                            "src/mqtt.cpp"
                         REQUIRES driver esp_adc dht esp_wifi
-                        PRIV_REQUIRES nvs_flash
+                        PRIV_REQUIRES nvs_flash mqtt
                     INCLUDE_DIRS "./include")

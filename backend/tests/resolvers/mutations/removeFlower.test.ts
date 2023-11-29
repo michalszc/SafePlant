@@ -3,6 +3,7 @@ import { main } from '../../../src/utils';
 import supertest from 'supertest';
 
 jest.mock('../../../src/utils/token');
+jest.mock('../../../src/providers/mqtt');
 
 describe('Mutations > Remove Flower', () => {
     let request: supertest.SuperTest<supertest.Test>;

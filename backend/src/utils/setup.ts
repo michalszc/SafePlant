@@ -18,11 +18,13 @@ import { connectMongoDB } from './mongodb';
 import { applyMiddleware } from 'graphql-middleware';
 import { permissions } from './shield';
 import { Maybe, User } from '../__generated__/resolvers-types';
-import { getUser } from './token';
+import { getUser } from '.';
+import { Mqtt, IMqtt, Sensor, SensorData } from '../providers';
 
 export interface Context {
     pubsub: PubSub;
     user: Maybe<User>;
+    mqtt: IMqtt;
 }
 
 const typeDefs = readFileSync('./schema.graphql', { encoding: 'utf-8' });
@@ -66,6 +68,7 @@ export async function main() {
         path
     });
 
+    const mqtt = new Mqtt();
     const pubsub = new PubSub();
 
     const serverCleanup = useServer({
@@ -76,7 +79,8 @@ export async function main() {
 
             return {
                 user,
-                pubsub
+                pubsub,
+                mqtt
             };
         }
     }, wsServer);
@@ -95,7 +99,8 @@ export async function main() {
 
                 return {
                     user,
-                    pubsub
+                    pubsub,
+                    mqtt
                 };
             }
         })
@@ -103,23 +108,35 @@ export async function main() {
 
     if (NODE_ENV !== Environment.TEST) {
         await connectMongoDB();
+
+        // Subscribe to all sensors
+        await Sensor.find().then(sensors => {
+            sensors.forEach(sensor => {
+                mqtt.subscribe(`DATA/${sensor.id}`, async (topic, message) => {
+                    logger.info(`${topic} ${message.toString()}`);
+                    const data: {
+                        timestamp: number;
+                        value: number;
+                    } = JSON.parse(message.toString());
+
+                    if (!('timestamp' in data) || !('value' in data)) {
+                        logger.error(`Invalid topic ${topic} message: ${message.toString()}`);
+
+                        return;
+                    }
+
+                    const sensorData = await SensorData.addData(sensor.id, data.timestamp, data.value);
+                    pubsub.publish(`DATA/${sensor.id}`, sensorData);
+                });
+            });
+        });
+        mqtt.listen();
+
         httpServer.listen(PORT, () => {
             logger.info(`🚀 Query endpoint ready at http://localhost:${PORT}/api/v1`);
             logger.info(`🚀 Subscription endpoint ready at ws://localhost:${PORT}/api/v1`);
         });
     }
-
-    // Temporary
-    // (function publishMessage() {
-    //     pubsub.publish('DATA.654d40cf3128e7fc4d6a30e4', {
-    //         id: '654d40cf3128e7fc4d6a30e4',
-    //         dateTime: '2007-12-03T10:15:30Z',
-    //         timestamp: new Date().getTime(),
-    //         numericValue: 45.2,
-    //         rawValue: '45.2'
-    //     });
-    //     setTimeout(publishMessage, 1000);
-    // })();
 
     return app;
 }

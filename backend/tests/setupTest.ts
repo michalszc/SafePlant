@@ -85,3 +85,16 @@ afterAll(async () => {
     await mongoose.disconnect();
     await mongoServer.stop();
 });
+
+jest.mock('jsonwebtoken', () => ({
+    __esModule: true,
+    default: {
+        ...jest.requireActual('jsonwebtoken'),
+        verify: jest.fn().mockImplementation(() => ({
+            id: '654e97e38835ad080eb81c99',
+            email: 'xyz@mail.to',
+            name: 'xyz'
+        })), // eslint-disable-next-line max-len
+        sign: jest.fn().mockImplementation(() => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJtb2NrVXNlciJ9.Vx5tLrlOooukPM0h6tZGQ0MfjhkjOLqCE_AxlM9Yt94')
+    }
+}));

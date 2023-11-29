@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client';
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { LOGIN } from '../gql/login';
 
 const LoginPage = ({ navigation }: {navigation:any}) => {
@@ -8,22 +8,29 @@ const LoginPage = ({ navigation }: {navigation:any}) => {
   const [loginPassword2, setloginPassword2] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [signUp, {data, loading, error}] = useMutation(LOGIN);
+
   const handleLogin = async () => {
-    try{
-      await signUp({
+      const result = await signUp({
         variables: {loginEmail2, loginPassword2}
       });
-    navigation.navigate('MainPage');
-    console.log("UDALO SIE")
+    if(result.data.login.data != null){
+      console.log(`${result.data.login.data.refreshToken}`)
+      navigation.navigate('MainPage');
     }
-    catch (error) {
-      console.error('Mutation error:', error);
-      console.log("NIE UDALO SIE ")
+    else{
+      createCredentialAlert()
     }
+
   };
+  const createCredentialAlert = () =>
+  Alert.alert('Wrong credentials!', 'Email or password is incorrect', [
+    {text: 'Try again', onPress: () => {console.log("zle dane")}},
+  ]);
+
    const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  
 
 return (
   <View style={styles.container}>

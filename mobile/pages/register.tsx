@@ -11,16 +11,11 @@ const RegisterPage = ({ navigation }: {navigation:any}) => {
   const [signUp, {data, loading, error}] = useMutation(SIGN_UP_MUTATION);
 
   const handleRegistration = async () => {
-    try{
     const result = await signUp({
       variables: {email, password, name}
     })
     console.log("udalo sie:" + email + password + name)
     navigation.navigate('MainPage');
-    }
-    catch (error) {
-      console.error('Mutation error:', error);
-    }
 
   };
   const togglePasswordVisibility = () => {

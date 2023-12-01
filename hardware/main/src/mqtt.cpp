@@ -11,8 +11,8 @@ namespace mqtt {
         switch (static_cast<esp_mqtt_event_id_t>(event_id)) {   
         case MQTT_EVENT_CONNECTED:
             MqttClient::getClient().connected = true;
-            esp_mqtt_client_publish(client, "iotaghziecanto", "ziecanto connected", 0, 1, 0);
-            esp_mqtt_client_subscribe(client, "iotaghziecanto", 0);
+            esp_mqtt_client_publish(client, "iot", "connected", 0, 1, 0);
+            esp_mqtt_client_subscribe(client, "iot", 0);
             break;
         
         case MQTT_EVENT_DISCONNECTED:
@@ -20,11 +20,14 @@ namespace mqtt {
             break;
         
         case MQTT_EVENT_SUBSCRIBED:
-            esp_mqtt_client_publish(client, "iotaghziecanto", "ziecanto subscribed", 0, 1, 0);
+            esp_mqtt_client_publish(client, "iot", "subscribed", 0, 1, 0);
             break;
 
         case MQTT_EVENT_ERROR:
             ESP_LOGI("MQTT", "ERROR OCCURED");
+            break;
+        case MQTT_EVENT_PUBLISHED:
+            ESP_LOGI("MQTT", "Sent data");
             break;
         default:
             ESP_LOGI("MQTT", "I don't know what happened");
@@ -32,9 +35,11 @@ namespace mqtt {
     }
 
     void start_mqtt() {
-
         esp_mqtt_client_config_t cfg{};
-        cfg.broker.address.uri = "mqtt://test.mosquitto.org";
+        cfg.broker.address.uri = "";
+        cfg.broker.address.port = 1883;
+        cfg.credentials.username = "esp";
+        cfg.credentials.authentication.password = "";
 
         MqttClient::getClient().client = esp_mqtt_client_init(&cfg);
         auto client = MqttClient::getClient().client;

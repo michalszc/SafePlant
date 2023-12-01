@@ -16,6 +16,8 @@ namespace moisture {
     constexpr auto ATTEN = ADC_ATTEN_DB_11;
     constexpr auto CHANNEL = ADC_CHANNEL_5;
 
+    static float moisture;
+
     bool init_adc_calibration(adc_unit_t unit,
                             adc_channel_t channel,
                             adc_atten_t atten,
@@ -68,14 +70,18 @@ namespace moisture {
         int value;
         const auto p1 = chrono::system_clock::now();
         ESP_ERROR_CHECK(adc_oneshot_read(handle, CHANNEL, &value));
-        float moisture = 100.f - (value / 4095.f)*100.f;
-        int moisture_percentage = static_cast<int>(moisture);
-        auto value_str = std::to_string(moisture_percentage);
+        moisture = 100.f - (value / 4095.f)*100.f;
+        // int moisture_percentage = static_cast<int>(moisture);
+        auto value_str = std::to_string(get_moisture());
         lcd::Display::get_display().print("Moisture: " + value_str + "%", 1, 0);
         if (mqtt::MqttClient::getClient().connected) {
             auto client = mqtt::MqttClient::getClient().client;
             std::string info = R"({ "Moisture": )" + value_str + " }"; 
-            esp_mqtt_client_publish(client, "iotaghziecanto", info.c_str(), 0, 1, 0);
+            esp_mqtt_client_publish(client, "iot", info.c_str(), 0, 1, 0);
         }
+    }
+
+    uint8_t get_moisture() {
+        return static_cast<uint8_t>(moisture);
     }
 }

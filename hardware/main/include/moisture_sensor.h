@@ -11,4 +11,5 @@ namespace moisture {
 
     void measure_moisture_task(void* params);
     void measure_moisture(adc_oneshot_unit_handle_t handle);
+    uint8_t get_moisture();
 }

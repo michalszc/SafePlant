@@ -25,7 +25,7 @@ namespace dht {
                 if (mqtt::MqttClient::getClient().connected) {
                     auto client = mqtt::MqttClient::getClient().client;
                     std::string info = R"({ "Temperature": )" + value + " }"; 
-                    esp_mqtt_client_publish(client, "iotaghziecanto", info.c_str(), 0, 1, 0);
+                    esp_mqtt_client_publish(client, "iot", info.c_str(), 0, 1, 0);
                 }
             }
 

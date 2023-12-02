@@ -1,5 +1,5 @@
 import { MqttClient, connect } from 'mqtt';
-import { MQTT_HOST, MQTT_PASSWORD, MQTT_PORT, MQTT_USERNAME } from '../constants';
+import { MQTT_CA, MQTT_CERT, MQTT_HOST, MQTT_KEY, MQTT_PASSWORD, MQTT_PORT, MQTT_USERNAME } from '../constants';
 import { logger } from '../utils';
 
 export interface IMqtt {
@@ -19,7 +19,11 @@ export class Mqtt {
             port: MQTT_PORT,
             protocol: 'mqtt',
             username: MQTT_USERNAME,
-            password: MQTT_PASSWORD
+            password: MQTT_PASSWORD,
+            ca: MQTT_CA,
+            cert: MQTT_CERT,
+            key: MQTT_KEY,
+            rejectUnauthorized: true
         });
         this.client.reconnecting = true;
         this.subscribedTopics = {};
@@ -55,6 +59,7 @@ export class Mqtt {
                 logger.warn(`No callback for topic ${topic}`);
             }
         });
+        this.client.on('error', (error) => console.error(error)); // eslint-disable-line no-console
         this.client.on('connect', () => logger.info('Connected to MQTT broker'));
         this.client.on('disconnect', () => logger.warn('Disconnected from MQTT broker'));
         this.client.on('reconnect', () => logger.warn('Reconnecting to MQTT broker'));

@@ -287,7 +287,8 @@ const mutations: MutationResolvers = {
 
                 return {
                     status: StatusEnum.Error,
-                    data: null
+                    data: null,
+                    message: err.message
                 };
             });
     },
@@ -329,7 +330,8 @@ const mutations: MutationResolvers = {
 
             return {
                 status: StatusEnum.Error,
-                data: null
+                data: null,
+                message: err.message
             };
         });
     },
@@ -338,9 +340,13 @@ const mutations: MutationResolvers = {
         { token }: MutationRefreshArgs,
         { user }: Context
     ): Promise<AuthResult> => {
-        try {
-            const accessToken = refreshAccessToken(token);
+        const accessToken = refreshAccessToken(token);
 
+        if (!accessToken) {
+            throw Error('Expired refresh token');
+        }
+
+        try {
             return Promise.resolve({
                 status: StatusEnum.Ok,
                 data: {

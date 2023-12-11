@@ -1,85 +1,96 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity,} from 'react-native';
+import { useMutation } from '@apollo/client'
+import React, { useEffect } from 'react'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { getCredentials, setCredentials } from '../credentials'
+import { REFRESH } from '../gql/refresh'
+import { colors } from './color'
 
-export default function HomePage({navigation}: {navigation: any}) {
+export default function HomePage ({ navigation }: { navigation: any }): React.JSX.Element {
+  const [refresh] = useMutation(REFRESH)
+  useEffect(() => {
+    const checkToken = async (): Promise<void> => {
+      const credentials = await getCredentials()
+      if (credentials != null) {
+        try {
+          const token = credentials.refreshToken
+          console.log(credentials.accessToken)
+          const result = await refresh({
+            variables: { token }
+          })
+          await setCredentials(result.data.refresh.data)
+          navigation.navigate('MainPage')
+        } catch { console.log('error') }
+      }
+    }
+    void checkToken()
+  }, [])
   return (
     <View style={styles.container}>
-        <View style={styles.top}>
-          <View style={styles.logo}></View>
-            <Text style={styles.name}>SafePlant</Text>
-            </View>
-        <View style={styles.bot}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Register")} >
-              <Text style={styles.button_text}>
-                  Sign up
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Login")} >
-              <Text style={styles.button_text}>
-                  Sign in
-              </Text>
-            </TouchableOpacity>
-        </View>
+      <View style={styles.top}>
+        <View style={styles.logo}></View>
+        <Text style={styles.name}>SafePlant</Text>
+      </View>
+      <View style={styles.bot}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Register')}>
+          <Text style={styles.button_text}>Sign up</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.button_text}>Sign in</Text>
+        </TouchableOpacity>
+      </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
-  },
-  top: {
-    display: 'flex',
-    height: 500,
-    width: "100%",
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logo: {
-    display: 'flex',
-    height: 350,
-    margin: 40,
-    marginTop: 90,
-    width: "85%",
-    backgroundColor: 'orange',
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  name: {
-    fontSize: 60,
-  },
-  text: {
-    fontSize: 50,
-
-  },
   bot: {
+    alignItems: 'center',
     display: 'flex',
     flexDirection: 'row',
     height: 400,
-    width: '100%',
-    alignItems: "center",
     justifyContent: 'space-around',
-
+    width: '100%'
   },
-
   button: {
-    display: 'flex',
-    justifyContent: 'center',
     alignItems: 'center',
-    height: 80,
+    backgroundColor: colors.orange,
     borderRadius: 25,
+    display: 'flex',
     flex: 1,
-    margin: 20,
-    backgroundColor: "orange",
+    height: 80,
+    justifyContent: 'center',
+    margin: 20
   },
   button_text: {
-    fontSize: 32,
+    fontSize: 32
+  },
+  container: {
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-evenly'
+  },
+  logo: {
+    alignItems: 'center',
+    backgroundColor: colors.orange,
+    borderRadius: 25,
+    display: 'flex',
+    height: 350,
+    justifyContent: 'center',
+    margin: 40,
+    marginTop: 90,
+    width: '85%'
+  },
+  name: {
+    fontSize: 60
+  },
+  top: {
+    alignItems: 'center',
+    display: 'flex',
+    height: 500,
+    justifyContent: 'center',
+    width: '100%'
   }
-  
-});
+})

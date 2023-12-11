@@ -24,7 +24,6 @@ namespace wifi {
     static void disconnected_handler(void* connected, esp_event_base_t event_base, int32_t event_id, void* event_data) {
         conn = false;
 
-        std::cout << "Trying to reconnect!\n";
         esp_err_t err = esp_wifi_connect();
         if (err != ESP_ERR_WIFI_NOT_STARTED)
             return;
@@ -54,17 +53,13 @@ namespace wifi {
         ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &got_ip_handler, nullptr));
         ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_CONNECTED, &connected_handler, connected));
 
-        std::cout << "Connecting to internet...\n";
-
         esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
         esp_err_t ret = esp_wifi_connect();
         if (ret != ESP_OK) {
-            std::cout << "Failed to connect!\n";
             return ret;
         }
         
         if (wait) {
-            std::cout << "Waiting for IP!\n";
             xSemaphoreTake(ip_adrr_sph, portMAX_DELAY);
         }
         
@@ -72,7 +67,6 @@ namespace wifi {
     }
 
     esp_err_t wifi_connect(void* connected) {
-        std::cout << "Started connection\n";
 
         auto netif = wifi_start(connected);
 

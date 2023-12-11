@@ -1,0 +1,11 @@
+user backend
+topic write NEW_DEVICE/+
+topic write UPDATE_DEVICE/+
+topic write REMOVE_DEVICE/+
+topic read DATA/+
+
+user esp
+topic read NEW_DEVICE/+
+topic read UPDATE_DEVICE/+
+topic read REMOVE_DEVICE/+
+topic write DATA/+

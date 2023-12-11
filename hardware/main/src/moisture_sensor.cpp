@@ -1,9 +1,9 @@
 #include "moisture_sensor.h"
 #include "lcd.hpp"
+#include "mqtt.hpp"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-#include <iostream>
 #include <chrono>
 
 #include "esp_log.h"
@@ -15,6 +15,8 @@
 namespace moisture {
     constexpr auto ATTEN = ADC_ATTEN_DB_11;
     constexpr auto CHANNEL = ADC_CHANNEL_5;
+
+    static adc_oneshot_unit_handle_t handle;
 
     bool init_adc_calibration(adc_unit_t unit,
                             adc_channel_t channel,
@@ -36,20 +38,12 @@ namespace moisture {
         }
 
         *out_handle = handle;
-        if (ret == ESP_OK) {
-            std::cout << "Calibration success!\n";
-        } else if (ret == ESP_ERR_NOT_SUPPORTED || !calibrated) {
-            std::cout << "eFuse not burnt, skip software calibration!\n";
-        } else {
-            std::cout << "Invalid arg or no memory!\n";
-        }
         
         return calibrated;
     }
 
     void measure_moisture_task(void* params) {
         constexpr int delay = 1000;
-        adc_oneshot_unit_handle_t handle;
         adc_oneshot_unit_init_cfg_t init_cfg = {
             .unit_id = ADC_UNIT_1
         };
@@ -65,20 +59,27 @@ namespace moisture {
         bool calibrated = init_adc_calibration(ADC_UNIT_1, CHANNEL, ATTEN, &channel_handle);
 
         while (true) {
-            measure_moisture(handle);
+            measure_moisture();
             vTaskDelay(pdMS_TO_TICKS(delay));
         }
     }
 
-    void measure_moisture(adc_oneshot_unit_handle_t handle) {
+    void measure_moisture() {
         namespace chrono = std::chrono;
-        int value;
         const auto p1 = chrono::system_clock::now();
+        auto value_str = std::to_string(get_moisture());
+        lcd::Display::get_display().print("Moisture: " + value_str + "%", 1, 0);
+        if (mqtt::MqttClient::getClient().connected) {
+            auto client = mqtt::MqttClient::getClient().client;
+            std::string info = R"({ "Moisture": )" + value_str + " }"; 
+            esp_mqtt_client_publish(client, "iot", info.c_str(), 0, 1, 0);
+        }
+    }
+
+    uint8_t get_moisture() {
+        int value;
         ESP_ERROR_CHECK(adc_oneshot_read(handle, CHANNEL, &value));
         float moisture = 100.f - (value / 4095.f)*100.f;
-        int moisture_percentage = static_cast<int>(moisture);
-        std::cout << "Timestamp: " << chrono::duration_cast<chrono::milliseconds>(p1.time_since_epoch()).count();
-        std::cout << " Moisture level: " << moisture_percentage << "%\n"; 
-        lcd::Display::get_display().print("Moisture: " + std::to_string(moisture_percentage) + "%", 1, 0);
+        return static_cast<uint8_t>(moisture);
     }
 }

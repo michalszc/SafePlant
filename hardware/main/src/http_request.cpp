@@ -9,7 +9,6 @@
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-
 #include <iostream>
 
 namespace http::rq {
@@ -40,7 +39,6 @@ namespace http::rq {
             vTaskDelay(1000 / portTICK_PERIOD_MS);
             return "Filed to send request";
         }
-        std::cout << "Request sent!\n";
 
         std::string result;
         char buf[64];
@@ -71,25 +69,19 @@ namespace http::rq {
             return -1;
         } 
 
-        std::cout << "Lookup succeded!\n";
-
         int sock = socket(res->ai_family, res->ai_socktype, 0);
         if (sock < 0) {
             freeaddrinfo(res);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
-            std::cout << "Filed to allocate a socket!\n";
             return -1;
         }
-        std::cout << "Allocated a socket!\n";
 
         if (connect(sock, res->ai_addr, res->ai_addrlen)) {
             close(sock);
             freeaddrinfo(res);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
-            std::cout <<  "Filed to connect to the socket!\n";
             return -1;
         }
-        std::cout << "Connected to the socket!\n";
         freeaddrinfo(res);
 
         return sock;
@@ -104,7 +96,6 @@ namespace http::rq {
             vTaskDelay(1000 / portTICK_PERIOD_MS);
             return 0;
         }
-        std::cout << "Set timeout!\n";
         return 1;
     }
 }

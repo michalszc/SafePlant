@@ -3,7 +3,6 @@
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-#include <iostream>
 
 #define BLINK_GPIO 2
 

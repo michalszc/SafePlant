@@ -124,6 +124,34 @@ const validateFlowersInput = inputRule('Flowers Input')(
         })
 );
 
+const validateSensorDataInput = inputRule('Sensor Data Input')(
+    (yup) =>
+        yup.object({
+            first: yup.number().min(1).max(10000),
+            last: yup.number().min(1).max(10000),
+            after: yup.string().matches(/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/, 'Invalid cursor'),
+            before: yup.string().matches(/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/, 'Invalid cursor'),
+            filter: yup.object({
+                dateTime: yup.object({
+                    gt: yup.date(),
+                    gte: yup.date(),
+                    lt: yup.date(),
+                    lte: yup.date()
+                }).default(undefined),
+                id: yup.object({
+                    eq: yup.string().matches(/^[a-f\d]{24}$/i),
+                    ne: yup.string().matches(/^[a-f\d]{24}$/i),
+                    in: yup.array().of(yup.string().matches(/^[a-f\d]{24}$/i)),
+                    nin: yup.array().of(yup.string().matches(/^[a-f\d]{24}$/i))
+                }).default(undefined)
+            }).default(undefined),
+            sort: yup.object({
+                field: yup.string().oneOf(['DATETIME', 'TIMESTAMP', 'VALUE']).required(),
+                order: yup.string().oneOf(['ASC', 'DESC']).required()
+            }).default(undefined)
+        })
+);
+
 export const permissions = shield({
     Query: {
         user: isAuthenticated,
@@ -144,7 +172,7 @@ export const permissions = shield({
         latestSensorData: and(isAuthenticated, validateID)
     },
     Sensor: {
-        '*': isAuthenticated
+        '*': and(isAuthenticated, validateSensorDataInput)
     }
 },
 {

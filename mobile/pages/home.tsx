@@ -19,7 +19,9 @@ export default function HomePage ({ navigation }: { navigation: any }): React.JS
           })
           await setCredentials(result.data.refresh.data)
           navigation.navigate('MainPage')
-        } catch { console.log('error') }
+        } catch {
+          console.log('error')
+        }
       }
     }
     void checkToken()

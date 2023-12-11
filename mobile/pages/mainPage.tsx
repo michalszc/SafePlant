@@ -18,7 +18,7 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Ionicons style={styles.hamburger} name="reorder-three" size={50} color="black" onPress={toggleSidebar}/>
+        <Ionicons style={styles.hamburger} name="reorder-three" size={50} color="black" onPress={toggleSidebar} />
         <Text style={styles.name}>SafePlant</Text>
         <View style={styles.emptyHeader}></View>
       </View>
@@ -47,22 +47,21 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
         <View style={styles.sidebar}>
           <View style={styles.sidebarHeader}>
             <View style={styles.headerTop}>
-               <Ionicons style={styles.hamburger} name="reorder-three" size={50} color="black" onPress={toggleSidebar}/>
+              <Ionicons style={styles.hamburger} name="reorder-three" size={50} color="black" onPress={toggleSidebar} />
             </View>
             <View style={styles.headerBot}></View>
           </View>
           <View style={styles.avatar}></View>
           <View style={styles.sidebarBody}>
-            <Text style ={styles.logOut} >NICKNAME</Text>
+            <Text style={styles.logOut}>NICKNAME</Text>
             <TouchableOpacity>
               <Text style={styles.logOut}>About app</Text>
-              </TouchableOpacity>
+            </TouchableOpacity>
             <TouchableOpacity onPress={logOut} /* eslint-disable-line @typescript-eslint/no-misused-promises */>
-            <Text style={styles.logOut}>Sign Out</Text>
+              <Text style={styles.logOut}>Sign Out</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.sidebarBottom}>
-          </View>
+          <View style={styles.sidebarBottom}></View>
         </View>
       )}
       <View style={styles.bottom}>
@@ -108,7 +107,6 @@ const styles = StyleSheet.create({
     top: 40,
     width: 120,
     zIndex: 3
-
   },
   body: {
     display: 'flex',
@@ -171,7 +169,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flex: 0.5,
     justifyContent: 'center'
-
   },
   logOut: {
     alignContent: 'center',
@@ -227,7 +224,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     backgroundColor: colors.orange,
     display: 'flex',
-    flex: 0.10,
+    flex: 0.1,
     justifyContent: 'center'
   },
   sidebarHeader: {

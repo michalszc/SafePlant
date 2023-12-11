@@ -9,9 +9,10 @@ import React from 'react'
 import AddPlantForm from './pages/plant_form'
 import { setContext } from '@apollo/client/link/context'
 import HomePage from './pages/home'
+import { API_URL } from './config'
 
 const Stack = createNativeStackNavigator()
-const apiUrl = 'http://localhost:4000/api/v1'
+const apiUrl = API_URL
 const httpLink = createHttpLink({
   uri: apiUrl
 })

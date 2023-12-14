@@ -12,4 +12,5 @@ namespace moisture {
     void measure_moisture_task(void* params);
     void measure_moisture();
     uint8_t get_moisture();
+    void no_beep();
 }

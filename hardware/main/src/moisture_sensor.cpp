@@ -1,6 +1,7 @@
 #include "moisture_sensor.h"
 #include "lcd.hpp"
 #include "mqtt.hpp"
+#include "buzzer.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -15,6 +16,7 @@
 namespace moisture {
     constexpr auto ATTEN = ADC_ATTEN_DB_11;
     constexpr auto CHANNEL = ADC_CHANNEL_5;
+    static bool should_peeb = true;
 
     static adc_oneshot_unit_handle_t handle;
 
@@ -65,15 +67,24 @@ namespace moisture {
     }
 
     void measure_moisture() {
+        uint8_t min = 10;
+        uint8_t max = 70;
         namespace chrono = std::chrono;
         const auto p1 = chrono::system_clock::now();
-        auto value_str = std::to_string(get_moisture());
-        lcd::Display::get_display().print("Moisture: " + value_str + "%", 1, 0);
+        auto value = get_moisture();
+        auto value_str = std::to_string(value);
+        lcd::Display::get_display().print("Moisture: " + value_str + "% ", 1, 0);
         if (mqtt::MqttClient::getClient().connected) {
             auto client = mqtt::MqttClient::getClient().client;
             std::string info = R"({ "Moisture": )" + value_str + " }"; 
-            esp_mqtt_client_publish(client, "iot", info.c_str(), 0, 1, 0);
+            esp_mqtt_client_publish(client, "DATA/123", info.c_str(), 0, 1, 0);
         }
+        if ((value < min || value > max) && should_peeb) {
+            buzz::buzz();
+        } else if (!should_peeb && !(value < min || value > max)) {
+            should_peeb = true;
+        }
+        
     }
 
     uint8_t get_moisture() {
@@ -81,5 +92,9 @@ namespace moisture {
         ESP_ERROR_CHECK(adc_oneshot_read(handle, CHANNEL, &value));
         float moisture = 100.f - (value / 4095.f)*100.f;
         return static_cast<uint8_t>(moisture);
+    }
+
+    void no_beep() {
+        should_peeb = false;
     }
 }

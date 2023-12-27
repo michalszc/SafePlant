@@ -3,8 +3,56 @@
 #include "esp_log.h"
 
 namespace ble {
+    void default_write_event_handler(esp_gatts_cb_event_t event,
+        esp_gatt_if_t gatts_if,
+        esp_ble_gatts_cb_param_t *param, 
+        uint16_t profile_num, 
+        uint16_t uuid, 
+        uint16_t handle,
+        uint16_t char_uuid,
+        void(*function)(uint8_t*));
+
     void placeholder(uint8_t* value) {
         ESP_LOGI(GATTS_TAG, "%s\n", value);
+    }
+
+    void ssid_event_handler(esp_gatts_cb_event_t event,
+        esp_gatt_if_t gatts_if,
+        esp_ble_gatts_cb_param_t *param) 
+    {
+        default_write_event_handler(event, 
+            gatts_if, param, 
+            SSID_APP_ID, 
+            SSID_UUID, 
+            SSID_HANDLE, 
+            SSID_CHAR_UUID,
+            placeholder);
+    }
+
+    void pass_event_handler(esp_gatts_cb_event_t event,
+        esp_gatt_if_t gatts_if,
+        esp_ble_gatts_cb_param_t *param) 
+    {
+        default_write_event_handler(event, 
+            gatts_if, param, 
+            PASS_APP_ID, 
+            PASS_UUID, 
+            PASS_HANDLE, 
+            PASS_CHAR_UUID,
+            placeholder);
+    }
+
+    void userid_event_handler(esp_gatts_cb_event_t event,
+        esp_gatt_if_t gatts_if,
+        esp_ble_gatts_cb_param_t *param) 
+    {
+        default_write_event_handler(event, 
+            gatts_if, param, 
+            USERID_APP_ID, 
+            USERID_UUID, 
+            USERID_HANDLE, 
+            USERID_CHAR_UUID,
+            placeholder);
     }
 
     void default_write_event_handler(esp_gatts_cb_event_t event,
@@ -53,18 +101,5 @@ namespace ble {
             default:
                 break;
         }
-    }
-
-    void wifi_profile_event_handler(esp_gatts_cb_event_t event,
-        esp_gatt_if_t gatts_if,
-        esp_ble_gatts_cb_param_t *param) 
-    {
-        default_write_event_handler(event, 
-            gatts_if, param, 
-            SSID_APP_ID, 
-            SSID_UUID, 
-            SSID_HANDLE, 
-            SSID_CHAR_UUID,
-            placeholder);
     }
 }

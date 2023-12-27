@@ -32,6 +32,8 @@ namespace ble {
         if (esp_ble_gattc_app_register(CLIENT_APP_ID) != ESP_OK) return;
         if (esp_ble_gatts_app_register(MOISTURE_APP_ID) != ESP_OK) return;
         if (esp_ble_gatts_app_register(SSID_APP_ID) != ESP_OK) return;
+        if (esp_ble_gatts_app_register(PASS_APP_ID) != ESP_OK) return;
+        if (esp_ble_gatts_app_register(USERID_APP_ID) != ESP_OK) return;
 
         ESP_ERROR_CHECK(esp_ble_gatt_set_local_mtu(500));
     }

@@ -43,13 +43,6 @@ namespace ble {
                     esp_log_buffer_hex(GATTS_TAG, param->conf.value, param->conf.len);
                 }
                 break;
-            case ESP_GATTS_WRITE_EVT:
-                ESP_LOGI(GATTS_TAG, "%s\n", param->write.value);
-                if (param->write.need_rsp){
-                    esp_ble_gatts_send_response(gatts_if, param->write.conn_id, param->write.trans_id, ESP_GATT_OK, NULL);
-                }
-                
-                break;
             default:
                 break;
         }
@@ -116,9 +109,9 @@ namespace ble {
         gl_profile_tab[MOISTURE_APP_ID].char_uuid.uuid.uuid16 = MOISTURE_CHAR_UUID;
 
         esp_ble_gatts_start_service(gl_profile_tab[MOISTURE_APP_ID].service_handle);
-        moisture_property = ESP_GATT_CHAR_PROP_BIT_READ | ESP_GATT_CHAR_PROP_BIT_WRITE;
+        moisture_property = ESP_GATT_CHAR_PROP_BIT_READ;
         ESP_ERROR_CHECK(esp_ble_gatts_add_char(gl_profile_tab[MOISTURE_APP_ID].service_handle, &gl_profile_tab[MOISTURE_APP_ID].char_uuid,
-                                                        ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,
+                                                        ESP_GATT_PERM_READ,
                                                         moisture_property,
                                                         &char1_val, NULL));
     }

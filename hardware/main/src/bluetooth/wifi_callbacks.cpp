@@ -7,10 +7,9 @@
 #include "esp_spiffs.h"
 
 namespace ble {
-    static bool ssid = false;
-    static bool pass = false;
-    static bool uid = false;
-
+    static bool is_ssid{};
+    static bool is_pass{};
+    
     void default_write_event_handler(esp_gatts_cb_event_t event,
         esp_gatt_if_t gatts_if,
         esp_ble_gatts_cb_param_t *param, 
@@ -25,37 +24,30 @@ namespace ble {
     }
 
     void write_ssid(uint8_t* value) {
-        std::string ssid(reinterpret_cast<char*>(value));
+        // std::string ssid(reinterpret_cast<char*>(value));
         std::ofstream file("/storage/ssid.txt");
-        file << ssid;
+        file << std::string(reinterpret_cast<char*>(value));
         file.close();
 
-        ssid = true;
-        if (pass && uid) {
-            wifi::wifi_connect();
-        }
+        is_ssid = true;
     }
 
     void write_password(uint8_t* value) {
-        std::string pass(reinterpret_cast<char*>(value));
+        // std::string pass(reinterpret_cast<char*>(value));
         std::ofstream file("/storage/pass.txt");
-        file << pass;
+        file << std::string(reinterpret_cast<char*>(value));
         file.close();
 
-        pass = true;
-        if (ssid && uid) {
-            wifi::wifi_connect();
-        }
+        is_pass = true;
     }
 
     void write_uid(uint8_t* value) {
-        std::string uid(reinterpret_cast<char*>(value));
+        // std::string uid(reinterpret_cast<char*>(value));
         std::ofstream file("/storage/uid.txt");
-        file << uid;
+        file << std::string(reinterpret_cast<char*>(value));
         file.close();
 
-        uid = true;
-        if (pass && ssid) {
+        if (is_ssid && is_pass) {
             wifi::wifi_connect();
         }
     }

@@ -1,8 +1,16 @@
 #include "bluetooth/ble.hpp"
+#include "wifi_connection.h"
 
 #include "esp_log.h"
+#include <string>
+#include <fstream>
+#include "esp_spiffs.h"
 
 namespace ble {
+    static bool ssid = false;
+    static bool pass = false;
+    static bool uid = false;
+
     void default_write_event_handler(esp_gatts_cb_event_t event,
         esp_gatt_if_t gatts_if,
         esp_ble_gatts_cb_param_t *param, 
@@ -16,6 +24,42 @@ namespace ble {
         ESP_LOGI(GATTS_TAG, "%s\n", value);
     }
 
+    void write_ssid(uint8_t* value) {
+        std::string ssid(reinterpret_cast<char*>(value));
+        std::ofstream file("/storage/ssid.txt");
+        file << ssid;
+        file.close();
+
+        ssid = true;
+        if (pass && uid) {
+            wifi::wifi_connect();
+        }
+    }
+
+    void write_password(uint8_t* value) {
+        std::string pass(reinterpret_cast<char*>(value));
+        std::ofstream file("/storage/pass.txt");
+        file << pass;
+        file.close();
+
+        pass = true;
+        if (ssid && uid) {
+            wifi::wifi_connect();
+        }
+    }
+
+    void write_uid(uint8_t* value) {
+        std::string uid(reinterpret_cast<char*>(value));
+        std::ofstream file("/storage/uid.txt");
+        file << uid;
+        file.close();
+
+        uid = true;
+        if (pass && ssid) {
+            wifi::wifi_connect();
+        }
+    }
+
     void ssid_event_handler(esp_gatts_cb_event_t event,
         esp_gatt_if_t gatts_if,
         esp_ble_gatts_cb_param_t *param) 
@@ -26,7 +70,7 @@ namespace ble {
             SSID_UUID, 
             SSID_HANDLE, 
             SSID_CHAR_UUID,
-            placeholder);
+            write_ssid);
     }
 
     void pass_event_handler(esp_gatts_cb_event_t event,
@@ -39,7 +83,7 @@ namespace ble {
             PASS_UUID, 
             PASS_HANDLE, 
             PASS_CHAR_UUID,
-            placeholder);
+            write_password);
     }
 
     void userid_event_handler(esp_gatts_cb_event_t event,
@@ -52,7 +96,7 @@ namespace ble {
             USERID_UUID, 
             USERID_HANDLE, 
             USERID_CHAR_UUID,
-            placeholder);
+            write_uid);
     }
 
     void default_write_event_handler(esp_gatts_cb_event_t event,

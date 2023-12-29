@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include "esp_log.h"
+#include <cstring>
 
 namespace wifi {
     static SemaphoreHandle_t ip_adrr_sph;
@@ -78,30 +79,26 @@ namespace wifi {
             .authmode = WIFI_AUTH_OPEN
         };
 
-        std::string ssid, pass, uid;
-        std::ifstream file("/storage/ssid.txt");
-        std::getline(file, ssid);
-        file.close();
-        file.open("/storage/pass.txt");
-        std::getline(file, pass);
-        file.close();
-        file.open("/storage/uid.txt");
-        std::getline(file, uid);
-        file.close();
-
-        ESP_LOGI("DATA", "Jestem tu");
-        ESP_LOGI("DATA", "%s", ssid.c_str());
-        ESP_LOGI("DATA", "%s", pass.c_str());
-        ESP_LOGI("DATA", "%s", uid.c_str());
+        std::string ssid, pass;
+        std::ifstream* file = new std::ifstream("/storage/ssid.txt");
+        std::getline(*file, ssid);
+        file->close();
+        file->open("/storage/pass.txt");
+        std::getline(*file, pass);
+        file->close();
+        delete file;
 
         wifi_config_t wifi_config = {
             .sta = {
-                .ssid = "Orange_Swiatlowod_7F90",
-                .password = "qnHvc4ZnkvDuqpH6hh",
+                .ssid = {},
+                .password = {},
                 .scan_method = WIFI_ALL_CHANNEL_SCAN,
                 .sort_method = WIFI_CONNECT_AP_BY_SIGNAL
             }
         };
+
+        memcpy(&wifi_config.sta.ssid, ssid.c_str(), ssid.size());
+        memcpy(&wifi_config.sta.password, pass.c_str(), pass.size());
 
         wifi_config.sta.threshold = threshold;
         return wifi_do_connect(wifi_config, true);

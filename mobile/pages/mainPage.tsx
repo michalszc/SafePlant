@@ -1,12 +1,43 @@
-import React, { useState } from 'react'
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, BackHandler, FlatList } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { colors } from './color'
 import { removeAllKeys } from '../credentials'
+import { Device } from 'react-native-ble-plx'
+import { requestBluetoothPermission, scanForDevices } from '../ble'
+import { useQuery } from '@apollo/client';
+import { GET_FLOWERS } from '../gql/getFlowers';
 
 function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
   const [showSidebar, setShowSidebar] = useState(false)
+  const [isModalVisible, setModalVisible] = useState(false)
+  const [devices, setDevices] = useState<Device[]>([])
+  const { loading, error, data, refetch} = useQuery(GET_FLOWERS);
 
+  useEffect(() => {
+    refetch()
+  });
+
+  if (loading) console.log('Loading...');
+  else if (error) console.log(`Error! ${error.message}`);
+  else if(data) console.log("Pobralo")
+
+  const searchForDevices = async (): Promise<void> => {
+    requestBluetoothPermission()
+    const scannedDevices = await scanForDevices()
+    setDevices(Array.from(scannedDevices))
+  }
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate('MainPage')
+      return true; 
+    };
+  
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+  
+    return () => backHandler.remove(); // Don't forget to remove the event listener when the component unmounts
+  }, []);
   const toggleSidebar = (): void => {
     setShowSidebar(!showSidebar)
   }
@@ -14,7 +45,7 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
     await removeAllKeys()
     navigation.navigate('Home')
   }
-
+  let flowers = data?.flowers.edges
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -23,24 +54,13 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
         <View style={styles.emptyHeader}></View>
       </View>
       <ScrollView style={styles.body}>
-        <TouchableOpacity style={styles.plant}>
-          <Text style={styles.textSize}>Roslina</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.plant}>
-          <Text style={styles.textSize}>Roslina</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.plant}>
-          <Text style={styles.textSize}>Roslina</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.plant}>
-          <Text style={styles.textSize}>Roslina</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.plant}>
-          <Text style={styles.textSize}>Roslina</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.plant}>
-          <Text style={styles.textSize}>Roslina</Text>
-        </TouchableOpacity>
+        {
+          data && flowers.map((item:any) => (
+            <TouchableOpacity key={item.node.id} style={styles.plant}>
+              <Text style={styles.textSize}>{item.node.name}</Text>
+            </TouchableOpacity>
+          ))
+        }
       </ScrollView>
       {showSidebar && <View style={styles.overlay} />}
       {showSidebar && (
@@ -71,7 +91,8 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => {
-                navigation.navigate('AddPlantForm')
+                // navigation.navigate('BluetoothDevices')
+                setModalVisible(true)
               }}
             >
               <Ionicons style={styles.add} size={70} name="add" color="white" />
@@ -79,9 +100,36 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
           </View>
         </View>
       </View>
-    </View>
+      {isModalVisible && <View style={styles.overlay} />}
+      {isModalVisible && (
+        <View style={styles.bleDevices}>
+          <View style={styles.bleHeader}>
+            <Text style={styles.title}>Select your device</Text>
+            <Ionicons style={styles.exitIcon} name="close" size={24} color="black" onPress={() => setModalVisible(false)} />
+          </View>
+          <View style={styles.bleBody}>
+            <FlatList
+              data={devices}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity style={styles.item} onPress={() =>{navigation.navigate("AddPlantForm"); setModalVisible(false)}}>
+                  <Text style={styles.subtitle}>{item.name ? item.name : "UnKnown"}</Text>
+                  <Text style={styles.subtitle}>{item.id}</Text>
+                </TouchableOpacity>
+              )}></FlatList>
+          </View>
+          <View style={styles.bleBottom}>
+            <TouchableOpacity onPress={() => {searchForDevices()}} style={styles.searchDevice}>
+              <Text style={styles.title}>Search</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      </View>
   )
 }
+
 
 const styles = StyleSheet.create({
   add: {
@@ -244,7 +292,94 @@ const styles = StyleSheet.create({
     height: 80,
     justifyContent: 'center',
     width: 80
-  }
+  },
+  bleDevices: {
+    borderRadius: 30,  
+    margin: 40,
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    display: 'flex',
+    position: 'absolute',
+    top: 100,
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    height: 600,
+    width: 350,
+    zIndex: 999,
+  },
+  bleHeader: {
+    alignItems: 'center',
+    backgroundColor: colors.orange,
+    display: 'flex',
+    flexDirection: 'row',
+    flex: 0.1,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    justifyContent: 'center',
+    width: '100%'
+  },
+  bleBody: {
+    display: 'flex',
+    backgroundColor: colors.white,
+    flex: 0.65,
+    width: '100%'
+  },
+  bleBottom: {
+    alignItems: 'center',
+    backgroundColor: colors.orange,
+    display: 'flex',
+    flexDirection: 'row',
+    flex: 0.1,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    justifyContent: 'center',
+    width: '100%'
+  },
+  devicesContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+},  
+item: {
+    backgroundColor: colors.orange,
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 20,
+},
+title: {
+    fontSize: 24,
+    color: colors.white,
+},
+subtitle: {
+    fontSize: 18,
+    color: colors.white,
+},
+searchDevice: {
+    alignContent: 'center',
+    display: 'flex',
+    flexDirection: 'row', 
+    backgroundColor: colors.orange,
+    borderRadius: 15,
+    borderWidth: 2,
+    borderColor: colors.white,
+    height: 45,
+    width: 150,
+    justifyContent: 'center',
+    marginBottom: 5,
+    marginHorizontal: 20
+},
+exitIcon: {
+    alignItems: 'center',
+    color: colors.white,
+    display: 'flex',
+    marginRight: 20
+},
 })
 
 export default MainPage

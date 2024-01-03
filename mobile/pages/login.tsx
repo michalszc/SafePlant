@@ -12,6 +12,7 @@ const LoginPage = ({ navigation }: { navigation: any }): React.JSX.Element => {
   const [login] = useMutation(LOGIN)
 
   const handleLogin = async (): Promise<void> => {
+    console.log("loguje")
     const result = await login({
       variables: { loginEmail2, loginPassword2 }
     })

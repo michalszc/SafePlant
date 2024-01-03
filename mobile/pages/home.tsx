@@ -7,6 +7,7 @@ import { colors } from './color'
 
 export default function HomePage ({ navigation }: { navigation: any }): React.JSX.Element {
   const [refresh] = useMutation(REFRESH)
+  const [loginDone, setLoginDone] = React.useState(false)
   useEffect(() => {
     const checkToken = async (): Promise<void> => {
       const credentials = await getCredentials()
@@ -18,14 +19,21 @@ export default function HomePage ({ navigation }: { navigation: any }): React.JS
             variables: { token }
           })
           await setCredentials(result.data.refresh.data)
-          navigation.navigate('MainPage')
+          console.log("zalogowalo")
+          setLoginDone(true)
         } catch {
-          console.log('error')
+          console.log('nie zalogowalo')
+          setLoginDone(false)
         }
       }
     }
     void checkToken()
   }, [])
+  useEffect(() => { 
+    if (loginDone) {
+      navigation.navigate('MainPage')
+    }
+  })
   return (
     <View style={styles.container}>
       <View style={styles.top}>

@@ -25,7 +25,8 @@ export default function HomePage ({ navigation }: { navigation: any }): React.JS
       }
     }
     void checkToken()
-  }, [])
+  }, []);
+ 
   return (
     <View style={styles.container}>
       <View style={styles.top}>

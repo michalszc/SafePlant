@@ -8,7 +8,7 @@ export const setCredentials = async (keys: keys): Promise<void> => {
   try {
     await AsyncStorage.setItem('keys', JSON.stringify(keys))
   } catch (e) {
-    console.log(e)
+    console.error(e);
   }
 }
 

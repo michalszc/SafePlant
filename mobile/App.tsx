@@ -6,7 +6,6 @@ import { ApolloClient, createHttpLink, InMemoryCache, ApolloProvider } from '@ap
 import MainPage from './pages/mainPage'
 import { getCredentials } from './credentials'
 import React from 'react'
-import AddPlantForm from './pages/plant_form'
 import { setContext } from '@apollo/client/link/context'
 import HomePage from './pages/home'
 import { API_URL } from './config'
@@ -36,7 +35,7 @@ export default function App (): React.JSX.Element {
     })
   } catch {
     client = new ApolloClient({
-      uri: apiUrl,
+      uri: API_URL,
       cache: new InMemoryCache()
     })
   }
@@ -48,7 +47,6 @@ export default function App (): React.JSX.Element {
           <Stack.Screen name="Login" component={LoginPage} options={{ headerShown: false }} />
           <Stack.Screen name="Register" component={RegisterPage} options={{ headerShown: false }} />
           <Stack.Screen name="MainPage" component={MainPage} options={{ headerShown: false }} />
-          <Stack.Screen name="AddPlantForm" component={AddPlantForm} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     </ApolloProvider>

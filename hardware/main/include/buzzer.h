@@ -2,5 +2,6 @@
 #include "driver/gpio.h"
 
 namespace buzz {
-    void buzz(void* connected);
+    void prepare();
+    void buzz();
 }

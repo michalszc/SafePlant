@@ -20,6 +20,7 @@ import { permissions } from './shield';
 import { Maybe, User } from '../__generated__/resolvers-types';
 import { getUser } from '.';
 import { Mqtt, IMqtt, Sensor, SensorData } from '../providers';
+import depthLimit from 'graphql-depth-limit';
 
 export interface Context {
     pubsub: PubSub;
@@ -56,7 +57,9 @@ export const createApolloServer = (
                 };
             }
         }
-    ]
+    ],
+    includeStacktraceInErrorResponses: false,
+    validationRules: [depthLimit(5)] // don't allow more than 5 levels of nesting
 });
 
 export async function main() {

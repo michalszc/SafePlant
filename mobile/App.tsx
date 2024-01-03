@@ -12,9 +12,8 @@ import HomePage from './pages/home'
 import { API_URL } from './config'
 
 const Stack = createNativeStackNavigator()
-const apiUrl = API_URL
 const httpLink = createHttpLink({
-  uri: apiUrl
+  uri: API_URL
 })
 
 export default function App (): React.JSX.Element {

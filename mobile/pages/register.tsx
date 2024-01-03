@@ -28,7 +28,7 @@ const RegisterPage = ({ navigation }: { navigation: any }): React.JSX.Element =>
     }
   }
   const togglePasswordVisibility = (): void => {
-    setShowPassword(!showPassword)
+    setShowPassword(p => !p)
   }
 
   return (

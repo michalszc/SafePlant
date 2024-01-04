@@ -2,18 +2,17 @@
 
 #include <memory>
 
-#include "driver/i2c_master.h"
-#include "LCD_PCF8574_abstraction.h"
+#include "lcd_display.h"
 #include "rom/ets_sys.h"
 
 namespace lcd {
-    LCD_PCF8574 create();
+    LCDDisplay create();
     i2c_master_dev_handle_t init_handle();
 
     class Display {
     protected:
         Display() : _lcd(create()) {}
-        LCD_PCF8574 _lcd;
+        LCDDisplay _lcd;
 
     public:
         Display(Display&) = delete;

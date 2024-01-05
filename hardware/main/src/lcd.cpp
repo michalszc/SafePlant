@@ -2,8 +2,6 @@
 
 namespace lcd {
 
-    // Display* Display::_display = nullptr;
-
     i2c_master_dev_handle_t init_handle() {
         i2c_master_bus_config_t i2c_mst_config = {
             .i2c_port = I2C_NUM_0,

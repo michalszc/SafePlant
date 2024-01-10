@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,  } from 'react'
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, BackHandler, FlatList } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { colors } from './color'
@@ -7,6 +7,7 @@ import { Device } from 'react-native-ble-plx'
 import { requestBluetoothPermission, scanForDevices } from '../ble'
 import { useQuery } from '@apollo/client';
 import { GET_FLOWERS } from '../gql/getFlowers';
+import { useFocusEffect } from '@react-navigation/native';
 
 function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
   const [showSidebar, setShowSidebar] = useState(false)
@@ -14,9 +15,12 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
   const [devices, setDevices] = useState<Device[]>([])
   const { loading, error, data, refetch} = useQuery(GET_FLOWERS);
 
-  useEffect(() => {
-    refetch()
-  });
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch()
+    }, [])
+  );
+
 
   if (loading) console.log('Loading...');
   else if (error) console.log(`Error! ${error.message}`);
@@ -28,6 +32,16 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
     setDevices(Array.from(scannedDevices))
   }
 
+  useEffect(() => {
+    if (isModalVisible) {
+      const interval = setInterval(() => {
+        searchForDevices();
+      }, 6000);
+
+      return () => clearInterval(interval);
+    }
+  }, [isModalVisible]);
+  
   useEffect(() => {
     const backAction = () => {
       navigation.navigate('MainPage')
@@ -46,6 +60,7 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
     navigation.navigate('Home')
   }
   let flowers = data?.flowers.edges
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -57,7 +72,7 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
         {
           data && flowers.map((item:any) => (
             <TouchableOpacity key={item.node.id} style={styles.plant}>
-              <Text style={styles.textSize}>{item.node.name}</Text>
+              <Text style={styles.textSize}>{item.node.name }</Text>
             </TouchableOpacity>
           ))
         }
@@ -105,14 +120,20 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
         <View style={styles.bleDevices}>
           <View style={styles.bleHeader}>
             <Text style={styles.title}>Select your device</Text>
-            <Ionicons style={styles.exitIcon} name="close" size={24} color="black" onPress={() => setModalVisible(false)} />
+            <Ionicons style={styles.exitIcon} name="close" size={24} color="black" onPress={() => {setModalVisible(false);setDevices([]);}} />
           </View>
           <View style={styles.bleBody}>
-            <FlatList
+             <FlatList
               data={devices}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
-                <TouchableOpacity style={styles.item} onPress={() =>{navigation.navigate("AddPlantForm"); setModalVisible(false)}}>
+                <TouchableOpacity style={styles.item} onPress={() =>{
+                  // connectToDevice(item, "fe", "Value tempych chyuji");
+                  navigation.navigate("SendWifiForm", {device: item}); 
+                  setModalVisible(false);
+                  setDevices([]);
+                  
+                  }}>
                   <Text style={styles.subtitle}>{item.name ? item.name : "UnKnown"}</Text>
                   <Text style={styles.subtitle}>{item.id}</Text>
                 </TouchableOpacity>

@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView } from 'react-native'
 import { useMutation } from '@apollo/client'
 import { colors } from './color'
 import { ADD_FLOWER } from '../gql/addFlower'
+import { getDevice, removeDevice } from '../credentials'
 
 
 function AddPlantForm ({ navigation }: { navigation: any }): React.JSX.Element {
@@ -43,9 +44,9 @@ function AddPlantForm ({ navigation }: { navigation: any }): React.JSX.Element {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-
+        <Text style={styles.name}>SafePlant</Text>
       </View>
-      <View style={styles.body}>
+      <ScrollView contentContainerStyle={styles.body}>
       <Text>Plant Name: </Text>
       <TextInput
         style={styles.input}
@@ -133,6 +134,8 @@ function AddPlantForm ({ navigation }: { navigation: any }): React.JSX.Element {
         }}
         value={minTemperature.toString()}
       />
+      </ScrollView>
+      <View style={styles.bottom}>
       <TouchableOpacity
         style={styles.submitButton}
         onPress={async () => {
@@ -143,7 +146,6 @@ function AddPlantForm ({ navigation }: { navigation: any }): React.JSX.Element {
         <Text style={styles.submitButtonText}>Submit</Text>
       </TouchableOpacity>
       </View>
-      <View style={styles.bottom}></View>
     </View>
   )
 }
@@ -160,36 +162,33 @@ const styles = StyleSheet.create({
     width: '80%'
   },
   container: {
-    alignItems: 'center',
     display: 'flex',
     flex: 1,
   },
   headerFont: {
     fontSize: 24,
-    marginBottom: 20
+    marginBottom: 20,
   },
   header: {
     alignItems: 'center',
     backgroundColor: colors.orange,
     display: 'flex',
     flexDirection: 'row',
-    flex: 0.10,
-    justifyContent: 'space-between',
+    height: 100,
+    justifyContent: 'center',
     width: '100%'
   },
   body: {
-    alignItems: 'center',
     display: 'flex',
-    flex: 0.8,
-    justifyContent: 'center',
-    width: '100%',
+    flexGrow: 0,
     marginTop: 20,
+    alignItems: 'center',
   },
   bottom: {
     alignItems: 'center',
     display: 'flex',
-    flex: 0.1,
     width: '100%',
+    height: 100,
     backgroundColor: colors.orange,
   },
   input: {
@@ -224,14 +223,26 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: colors.orange,
+    borderColor: colors.white,
+    borderWidth: 2,
+    borderRadius: 20,
     padding: 10,
-    margin: 15,
-    height: 40,
+    margin: 20,
+    zIndex: 3,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   submitButtonText: {
+    display: 'flex',
     color: colors.white,
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+    fontSize: 26,
+  },
+  name: {
+      fontSize: 45
+    },
 })
+
 
 export default AddPlantForm

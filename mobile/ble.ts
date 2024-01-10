@@ -42,22 +42,7 @@ const scanOptions = {
   allowDuplicates: false
 }
 
-export function scanAndConnect () {
-  manager.startDeviceScan(null, scanOptions, (error, device) => {
-    if (error) {
-      // Handle error (scanning will be stopped automatically)
-      return
-    }
 
-    if (device != null && (device.id === 'FC:B4:67:50:C6:6E')) {
-      console.log('gut')
-      connectToDevice(device)
-      manager.stopDeviceScan()
-    } else {
-      console.log(device?.id)
-    }
-  })
-}
 
 export function scanForDevices(): Promise<Set<Device>> {
   const devices = new Set<Device>();
@@ -91,15 +76,15 @@ export function scanForDevices(): Promise<Set<Device>> {
   });
 }
 
-function readCharacteristic (device: Device) {
+export function readCharacteristic (device: Device) {
   device.discoverAllServicesAndCharacteristics()
     .then(async (deviceWithServices: Device) => {
       return await deviceWithServices.services()
     })
     .then(async (services: Service[]) => {
       console.log(services.length)
-      console.log('Services:', services)
       const serviceUUID = services[2].uuid
+      console.log('Service UUID: ', serviceUUID)
       return await device.characteristicsForService(serviceUUID)
     })
     .then(async (characteristics: Characteristic[]) => {
@@ -117,33 +102,38 @@ function readCharacteristic (device: Device) {
       console.error('Connection error:', error)
     })
 }
+function matchService(services: Service[], uuidPattern: string): string | null {
+  for (let i = 0; i < services.length; i++) {
+    console.log(services[i].uuid)
+    if (services[i].uuid.indexOf(uuidPattern) > -1) {
+      return services[i].uuid;
+    }
+  }
+  return null;
+  
+}
 
-function writeCharacteristic (device: Device) {
+export function writeCharacteristic (device: Device, uuidPattern: string, value: string) {
   device.discoverAllServicesAndCharacteristics()
     .then(async (deviceWithServices: Device) => {
       return await deviceWithServices.services()
     })
     .then(async (services: Service[]) => {
       console.log(services.length)
-      console.log('Services:', services)
-      const serviceUUID = services[2].uuid
+      const serviceUUID = matchService(services, uuidPattern);
+      if (serviceUUID == null) {
+        throw new Error('Service not found');
+      }
+      console.log('Service UUID: ', serviceUUID)
       return await device.characteristicsForService(serviceUUID)
     })
     .then((characteristics: Characteristic[]) => {
-      const value = encode('Tempy chuj Zieciak')
-      device.writeCharacteristicWithoutResponseForService(characteristics[0].serviceUUID, characteristics[0].uuid, value)
+
+      device.writeCharacteristicWithoutResponseForService(characteristics[0].serviceUUID, characteristics[0].uuid, encode(value))
       console.log('Done')
+      return true;
     })
     .catch((error: Error) => {
       console.error('Connection error:', error)
     })
-}
-
-function connectToDevice (device: Device) {
-  device
-    .connect()
-    .then( (connectedDevice) => {
-      writeCharacteristic(connectedDevice);
-    })
-    
 }

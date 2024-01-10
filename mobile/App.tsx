@@ -11,7 +11,7 @@ import AddPlantForm from './pages/plantForm'
 import { setContext } from '@apollo/client/link/context'
 import HomePage from './pages/home'
 import { API_URL } from './config'
-import BluetoothDevices from './pages/bleDevices'
+import SendWifiForm from './pages/wifiForm'
 
 const Stack = createNativeStackNavigator()
 const apiUrl = API_URL
@@ -52,7 +52,7 @@ export default function App (): React.JSX.Element {
           <Stack.Screen name="Login" component={LoginPage} options={{ headerShown: false }} />
           <Stack.Screen name="Register" component={RegisterPage} options={{ headerShown: false }} />
           <Stack.Screen name="MainPage" component={MainPage} options={{ headerShown: false }} />
-          <Stack.Screen name="BluetoothDevices" component={BluetoothDevices} options={{ headerShown: false }} />
+          <Stack.Screen name="SendWifiForm" component={SendWifiForm} options={{ headerShown: false }} />
           <Stack.Screen name="AddPlantForm" component={AddPlantForm} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>

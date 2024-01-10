@@ -73,11 +73,13 @@ namespace moisture {
         const auto p1 = chrono::system_clock::now();
         auto value = get_moisture();
         auto value_str = std::to_string(value);
-        lcd::Display::get_display().print("Moisture: " + value_str + "% ", 1, 0);
+        // lcd::Display::get_display().print("Moisture: " + value_str + "% ", 1, 0);
         if (mqtt::MqttClient::getClient().connected) {
             auto client = mqtt::MqttClient::getClient().client;
             std::string info = R"({ "Moisture": )" + value_str + " }"; 
-            esp_mqtt_client_publish(client, "DATA/123", info.c_str(), 0, 1, 0);
+            ESP_LOGI("MQTT", "idzie moisture na: %s", info.c_str());
+            auto topic = "DATA/"+mqtt::MqttClient::getClient().humidity["id"].get<std::string>(); 
+            esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
         }
         if ((value < min || value > max) && should_peeb) {
             buzz::buzz();

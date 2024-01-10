@@ -21,11 +21,12 @@ namespace dht {
             if (dht_read_float_data(SENSOR_TYPE, CONFIG_EXAMPLE_DATA_GPIO, &humidity, &temperature) == ESP_OK) {
                 const auto p1 = std::chrono::system_clock::now();
                 auto value = std::to_string(static_cast<int>(temperature));
-                lcd::Display::get_display().print("Temp: " + value + "\337C", 0, 0);
+                // lcd::Display::get_display().print("Temp: " + value + "\337C", 0, 0);
                 if (mqtt::MqttClient::getClient().connected) {
                     auto client = mqtt::MqttClient::getClient().client;
                     std::string info = R"({ "Temperature": )" + value + " }"; 
-                    esp_mqtt_client_publish(client, "DATA/321", info.c_str(), 0, 1, 0);
+                    auto topic = "DATA/"+mqtt::MqttClient::getClient().humidity["id"].get<std::string>();
+                    esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
                 }
             }
 

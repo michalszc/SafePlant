@@ -21,14 +21,31 @@ namespace mqtt {
         delete file;
         if (data == "REMOVE_DEVICE") {
             esp_spiffs_format(nullptr);
-            esp_mqtt_client_subscribe(client, ("NEW_DEVICE/"+uid).c_str(), 0);
-            esp_mqtt_client_subscribe(client, ("UPDATE_DEVICE/"+uid).c_str(), 0);
-            esp_mqtt_client_subscribe(client, ("REMOVE_DEVICE/"+uid).c_str(), 0);
+            esp_mqtt_client_unsubscribe(client, ("NEW_DEVICE/"+uid).c_str());
+            esp_mqtt_client_unsubscribe(client, ("UPDATE_DEVICE/"+uid).c_str());
+            esp_mqtt_client_unsubscribe(client, ("REMOVE_DEVICE/"+uid).c_str());
             MqttClient::getClient().connected = false;
             return;
         }
         if (crop_topic == "NEW_DEVICE/"+uid) {
             ESP_LOGI("MQTT", "Jestem w new_device");
+            using json = nlohmann::json;
+            json device = json::parse(data);
+            json humidity = device["humidity"];
+            json temperature = device["temperature"];
+            MqttClient::getClient().connected = true;
+            MqttClient::getClient().humidity = humidity;
+            MqttClient::getClient().temperature = temperature;
+
+            std::ofstream* file = new std::ofstream("/storage/moisture.json");
+            *file << humidity;
+            file->close();
+            file->open("/storage/temperature.json");
+            *file << temperature;
+            file->close();
+            delete file;
+        }
+        if (crop_topic == "UPDATE_DEVICE/"+uid) {
             using json = nlohmann::json;
             json device = json::parse(data);
             json humidity = device["humidity"];
@@ -62,6 +79,7 @@ namespace mqtt {
             esp_mqtt_client_subscribe(client, ("NEW_DEVICE/"+uid).c_str(), 0);
             esp_mqtt_client_subscribe(client, ("UPDATE_DEVICE/"+uid).c_str(), 0);
             esp_mqtt_client_subscribe(client, ("REMOVE_DEVICE/"+uid).c_str(), 0);
+            MqttClient::getClient().connected = true;
         }
             break;
         
@@ -94,16 +112,16 @@ namespace mqtt {
 
     void start_mqtt() {
         esp_mqtt_client_config_t cfg{};
-        cfg.broker.address.uri = "";
-        cfg.broker.address.port = 8883;
-        cfg.broker.verification.certificate = "";
-        cfg.broker.verification.certificate_len = sizeof("");
-        cfg.credentials.username = "esp";
-        cfg.credentials.authentication.password = "";
-        cfg.credentials.authentication.certificate = ""; 
-        cfg.credentials.authentication.certificate_len = sizeof("CERT");
-        cfg.credentials.authentication.key = "";
-        cfg.credentials.authentication.key_len = sizeof("");
+        cfg.broker.address.uri = "mqtt://test.mosquitto.org";
+        cfg.broker.address.port = 1883;
+        // cfg.broker.verification.certificate = "";
+        // cfg.broker.verification.certificate_len = sizeof("");
+        // cfg.credentials.username = "esp";
+        // cfg.credentials.authentication.password = "";
+        // cfg.credentials.authentication.certificate = ""; 
+        // cfg.credentials.authentication.certificate_len = sizeof("CERT");
+        // cfg.credentials.authentication.key = "";
+        // cfg.credentials.authentication.key_len = sizeof("");
 
         MqttClient::getClient().client = esp_mqtt_client_init(&cfg);
         auto client = MqttClient::getClient().client;

@@ -25,7 +25,6 @@ namespace ble {
     }
 
     void write_ssid(uint8_t* value) {
-        ESP_LOGI("TEMPY CHUJ", "ssid: %s", reinterpret_cast<char*>(value));
         std::ofstream* file = new std::ofstream("/storage/ssid.txt");
         *file << std::string(reinterpret_cast<char*>(value));
         file->close();
@@ -35,7 +34,6 @@ namespace ble {
     }
 
     void write_password(uint8_t* value) {
-        ESP_LOGI("TEMPY CHUJ", "pass: %s", reinterpret_cast<char*>(value));
         std::ofstream* file = new std::ofstream("/storage/pass.txt");
         *file << std::string(reinterpret_cast<char*>(value));
         file->close();
@@ -45,7 +43,6 @@ namespace ble {
     }
 
     void write_uid(uint8_t* value) {
-        ESP_LOGI("TEMPY CHUJ", "id: %s", reinterpret_cast<char*>(value));
         std::ofstream* file = new std::ofstream("/storage/uid.txt");
         *file << std::string(reinterpret_cast<char*>(value));
         file->close();

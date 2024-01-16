@@ -16,6 +16,7 @@ namespace lcd {
 
         i2c_master_bus_handle_t bus_handle;
         ESP_ERROR_CHECK(i2c_new_master_bus(&i2c_mst_config, &bus_handle));
+        
 
         i2c_device_config_t dev_cfg = {
             .dev_addr_length = I2C_ADDR_BIT_LEN_7,

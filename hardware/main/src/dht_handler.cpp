@@ -23,10 +23,9 @@ namespace dht {
                 auto value = std::to_string(static_cast<int>(temperature));
                 lcd::Display::get_display().print("Temp: " + value + "\337C", 0, 0);
                 if (mqtt::MqttClient::getClient().connected) {
-                    std::string id = "klmnop"; 
                     auto client = mqtt::MqttClient::getClient().client;
                     std::string info = "{ \"timestamp\":" + time_str + ",\"value\": " + value + "}";
-                    auto topic = "DATA/"+id;//mqtt::MqttClient::getClient().humidity["id"].get<std::string>();
+                    auto topic = "DATA/"+mqtt::MqttClient::getClient().humidity["id"].get<std::string>();
                     esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
                 }
             }

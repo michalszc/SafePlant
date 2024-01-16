@@ -16,6 +16,20 @@ namespace diode {
     static lcd_info_t led_ch[3];
 
     void blink_wifi(void* connected);
+
+    enum State {
+        PARING,
+        CONNECTED,
+        WORKING,
+        ERROR
+    };
+    static State app_state;
+
+    void set_state(State state);
     void init_rgb();
-    void rgb_led_connected();
+    void paring();
+    void connected();
+    void works();
+    void error();
+    void status_diode(void* params);
 }

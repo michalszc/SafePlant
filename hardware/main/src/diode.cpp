@@ -74,10 +74,55 @@ namespace diode {
         ESP_ERROR_CHECK(ledc_update_duty(led_ch[2].mode, led_ch[2].channel));
     }
 
-    void rgb_led_connected() {
-        set_color(255, 0, 0);
+    void set_state(State state) {
+        app_state = state;
+    }
+
+    void paring() {
+        set_color(0, 0, 255);
         vTaskDelay(300 / portTICK_PERIOD_MS);
         set_color(0, 0, 0);
         vTaskDelay(300 / portTICK_PERIOD_MS);
+    }
+
+    void connected() {
+        set_color(0, 0, 255);
+        vTaskDelay(300 / portTICK_PERIOD_MS);
+    }
+
+    void works() {
+        set_color(0, 255, 0);
+        vTaskDelay(300 / portTICK_PERIOD_MS);
+    }
+
+    void error() {
+        set_color(255, 0, 0);
+        vTaskDelay(300 / portTICK_PERIOD_MS);
+    }
+
+    void status_diode(void* params) {
+        diode::init_rgb();
+        while (true) {
+            switch (app_state) {
+                case State::PARING:
+                    paring();
+                    break;
+
+                case State::CONNECTED:
+                    connected();
+                    break;
+
+                case State::WORKING:
+                    works();
+                    break;
+
+                case State::ERROR:
+                    error();
+                    break;
+                
+                default:
+                    break;
+            }
+        }
     }
 }

@@ -5,13 +5,13 @@
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-#include <chrono>
 
 #include "esp_log.h"
 #include "esp_adc/adc_oneshot.h"
 #include "esp_adc/adc_cali.h"
 #include "esp_adc/adc_cali_scheme.h"
 #include "rom/ets_sys.h"
+#include "esp_timer.h"
 
 namespace moisture {
     constexpr auto ATTEN = ADC_ATTEN_DB_11;
@@ -69,16 +69,15 @@ namespace moisture {
     void measure_moisture() {
         uint8_t min = 10;
         uint8_t max = 70;
-        namespace chrono = std::chrono;
-        const auto p1 = chrono::system_clock::now();
+        auto time_str = std::to_string(esp_timer_get_time() / 1000);
         auto value = get_moisture();
         auto value_str = std::to_string(value);
-        // lcd::Display::get_display().print("Moisture: " + value_str + "% ", 1, 0);
+        lcd::Display::get_display().print("Moisture: " + value_str + "% ", 1, 0);
         if (mqtt::MqttClient::getClient().connected) {
+            std::string id = "abcdefgh";
             auto client = mqtt::MqttClient::getClient().client;
-            std::string info = R"({ "Moisture": )" + value_str + " }"; 
-            ESP_LOGI("MQTT", "idzie moisture na: %s", info.c_str());
-            auto topic = "DATA/"+mqtt::MqttClient::getClient().humidity["id"].get<std::string>(); 
+            std::string info = "{ \"timestamp\":" + time_str + ",\"value\": " + value_str + "}"; 
+            auto topic = "DATA/"+id;//+mqtt::MqttClient::getClient().humidity["id"].get<std::string>(); 
             esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
         }
         if ((value < min || value > max) && should_peeb) {

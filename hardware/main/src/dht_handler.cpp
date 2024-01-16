@@ -2,9 +2,9 @@
 #include "lcd.hpp"
 
 #include <dht.h>
-#include <chrono>
 #include <string>
 
+#include "esp_timer.h"
 #include "esp_wifi.h"
 #include "rom/ets_sys.h"
 #include "mqtt.hpp"
@@ -19,13 +19,13 @@ namespace dht {
 
         while (true) {
             if (dht_read_float_data(SENSOR_TYPE, CONFIG_EXAMPLE_DATA_GPIO, &humidity, &temperature) == ESP_OK) {
-                const auto p1 = std::chrono::system_clock::now();
+                auto time_str = std::to_string(esp_timer_get_time() / 1000);
                 auto value = std::to_string(static_cast<int>(temperature));
                 lcd::Display::get_display().print("Temp: " + value + "\337C", 0, 0);
                 if (mqtt::MqttClient::getClient().connected) {
                     std::string id = "klmnop"; 
                     auto client = mqtt::MqttClient::getClient().client;
-                    std::string info = R"({ "Temperature": )" + value + " }"; 
+                    std::string info = "{ \"timestamp\":" + time_str + ",\"value\": " + value + "}";
                     auto topic = "DATA/"+id;//mqtt::MqttClient::getClient().humidity["id"].get<std::string>();
                     esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
                 }

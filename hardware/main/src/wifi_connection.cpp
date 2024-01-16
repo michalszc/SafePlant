@@ -7,6 +7,7 @@
 
 namespace wifi {
     static SemaphoreHandle_t ip_adrr_sph;
+    constexpr size_t MAX_RECONNECT = 5;
 
     esp_netif_t* wifi_start() {
         wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
@@ -27,11 +28,16 @@ namespace wifi {
 
     static void disconnected_handler(void* connected, esp_event_base_t event_base, int32_t event_id, void* event_data) {
         conn = false;
-
-        esp_err_t err = esp_wifi_connect();
-        if (err != ESP_ERR_WIFI_NOT_STARTED)
-            return;
-        ESP_ERROR_CHECK(err);
+        if (Config::get().counter < MAX_RECONNECT) {
+            ESP_LOGI("WIFI", "%d", Config::get().counter);
+            ++Config::get().counter;
+            esp_err_t err = esp_wifi_connect();
+            if (err != ESP_ERR_WIFI_NOT_STARTED)
+                return;
+            ESP_ERROR_CHECK(err);
+        } else {
+            xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
+        }
     }
 
     static void connected_handler(void* connected, esp_event_base_t event_base, int32_t event_id, void* event_data) {
@@ -97,8 +103,8 @@ namespace wifi {
             }
         };
 
-        memcpy(&wifi_config.sta.ssid, ssid.c_str(), ssid.size());
-        memcpy(&wifi_config.sta.password, pass.c_str(), pass.size());
+        memcpy(&wifi_config.sta.ssid, Config::get().ssid.c_str(), ssid.size());
+        memcpy(&wifi_config.sta.password, Config::get().ssid.c_str(), pass.size());
 
         wifi_config.sta.threshold = threshold;
         return wifi_do_connect(wifi_config, true);

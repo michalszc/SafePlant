@@ -19,7 +19,7 @@ export default function HomePage ({ navigation }: { navigation: any }): React.JS
             variables: { token }
           })
           await setCredentials(result.data.refresh.data)
-          console.log("zalogowalo")
+          console.log('zalogowalo')
           setLoginDone(true)
         } catch {
           console.log('nie zalogowalo')
@@ -29,7 +29,7 @@ export default function HomePage ({ navigation }: { navigation: any }): React.JS
     }
     void checkToken()
   }, [])
-  useEffect(() => { 
+  useEffect(() => {
     if (loginDone) {
       navigation.navigate('MainPage')
     }

@@ -7,7 +7,7 @@ export const manager = new BleManager()
 const decode = (str: string): string => Buffer.from(str, 'base64').toString('binary')
 const encode = (str: string): string => Buffer.from(str, 'binary').toString('base64')
 
-export const requestBluetoothPermission = async () => {
+export const requestBluetoothPermission = async (): Promise<any> => {
   if (Platform.OS === 'ios') {
     return true
   }
@@ -42,41 +42,39 @@ const scanOptions = {
   allowDuplicates: false
 }
 
+export async function scanForDevices (): Promise<Set<Device>> {
+  const devices = new Set<Device>()
+  let devicesIDs = new Set<string>()
 
-
-export function scanForDevices(): Promise<Set<Device>> {
-  const devices = new Set<Device>();
-  let devicesIDs = new Set<string>(); 
-
-  return new Promise((resolve, reject) => {
+  return await new Promise((resolve, reject) => {
     manager.startDeviceScan(null, scanOptions, (error, device) => {
-      if (error) {
+      if (error != null) {
         // Handle error
-        console.error('Error during scanning:', error);
-        reject(error);
-        return;
+        console.error('Error during scanning:', error)
+        reject(error)
+        return
       }
       // Check if device exists and add it to the set
-      if (device) {
-        console.log('Device found:', device.id);
-        if(device.id && !devicesIDs.has(device.id)){
-          devices.add(device);
-          devicesIDs.add(device.id);
-        } 
+      if (device != null) {
+        console.log('Device found:', device.id)
+        if (device.id != null && !devicesIDs.has(device.id)) {
+          devices.add(device)
+          devicesIDs.add(device.id)
+        }
       }
-    });
+    })
 
     // Stop scanning after 5 seconds
     setTimeout(() => {
-      manager.stopDeviceScan();
-      devicesIDs = new Set<string>(); // Clear devicesIDs before resolving
-      resolve(devices);
-      console.log('Devices found:', Array.from(devices).map(device => device.id)); 
-    }, 5000);
-  });
+      manager.stopDeviceScan()
+      devicesIDs = new Set<string>() // Clear devicesIDs before resolving
+      resolve(devices)
+      console.log('Devices found:', Array.from(devices).map(device => device.id))
+    }, 5000)
+  })
 }
 
-export function readCharacteristic (device: Device) {
+export function readCharacteristic (device: Device): void {
   device.discoverAllServicesAndCharacteristics()
     .then(async (deviceWithServices: Device) => {
       return await deviceWithServices.services()
@@ -92,7 +90,7 @@ export function readCharacteristic (device: Device) {
     })
     .then((characteristic: Characteristic) => {
       console.log('Characteristic: ', characteristic)
-      if (characteristic.value) {
+      if (characteristic.value != null) {
         const value = decode(characteristic.value)
         console.log('Value: w %: ', value)
       }
@@ -102,36 +100,34 @@ export function readCharacteristic (device: Device) {
       console.error('Connection error:', error)
     })
 }
-function matchService(services: Service[], uuidPattern: string): string | null {
+function matchService (services: Service[], uuidPattern: string): string | null {
   for (let i = 0; i < services.length; i++) {
     console.log(services[i].uuid)
-    if (services[i].uuid.indexOf(uuidPattern) > -1) {
-      return services[i].uuid;
+    if (services[i].uuid.includes(uuidPattern)) {
+      return services[i].uuid
     }
   }
-  return null;
-  
+  return null
 }
 
-export function writeCharacteristic (device: Device, uuidPattern: string, value: string) {
+export function writeCharacteristic (device: Device, uuidPattern: string, value: string): void {
   device.discoverAllServicesAndCharacteristics()
     .then(async (deviceWithServices: Device) => {
       return await deviceWithServices.services()
     })
     .then(async (services: Service[]) => {
       console.log(services.length)
-      const serviceUUID = matchService(services, uuidPattern);
+      const serviceUUID = matchService(services, uuidPattern)
       if (serviceUUID == null) {
-        throw new Error('Service not found');
+        throw new Error('Service not found')
       }
       console.log('Service UUID: ', serviceUUID)
       return await device.characteristicsForService(serviceUUID)
     })
-    .then((characteristics: Characteristic[]) => {
-
-      device.writeCharacteristicWithoutResponseForService(characteristics[0].serviceUUID, characteristics[0].uuid, encode(value))
+    .then(async (characteristics: Characteristic[]) => {
+      await device.writeCharacteristicWithoutResponseForService(characteristics[0].serviceUUID, characteristics[0].uuid, encode(value))
       console.log('Done')
-      return true;
+      return true
     })
     .catch((error: Error) => {
       console.error('Connection error:', error)

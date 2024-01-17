@@ -1,19 +1,19 @@
-interface Flower{
-    name: string,
-    humidity: {
-        frequency: number,
-        validRange: {
-        max: number,
-        min: number
-        }
-    },
-    temperature: {
-        frequency: number,
-        validRange: {
-        max: number,
-        min: number
-        }
+interface Flower {
+  name: string
+  humidity: {
+    frequency: number
+    validRange: {
+      max: number
+      min: number
     }
   }
+  temperature: {
+    frequency: number
+    validRange: {
+      max: number
+      min: number
+    }
+  }
+}
 
-export default Flower;
+export default Flower

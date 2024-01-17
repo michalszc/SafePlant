@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Device } from 'react-native-ble-plx'
+import { type Device } from 'react-native-ble-plx'
 interface keys {
   accessToken: string
   refreshToken: string

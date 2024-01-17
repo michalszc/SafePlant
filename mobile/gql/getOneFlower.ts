@@ -21,4 +21,3 @@ query Query($flowerId: ObjectID!) {
     }
   }
 `
-  

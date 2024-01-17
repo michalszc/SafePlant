@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
 import { useMutation } from '@apollo/client'
 import { SIGN_UP_MUTATION } from '../gql/signup'
@@ -12,7 +12,7 @@ const RegisterPage = ({ navigation }: { navigation: any }): React.JSX.Element =>
   const [showPassword, setShowPassword] = useState(false)
   const [signUp] = useMutation(SIGN_UP_MUTATION)
 
-  const handleRegistration = async (): Promise<void> => {
+  const handleRegistration = useCallback(async (): Promise<void> => {
     const result = await signUp({
       variables: { email, password, name }
     })
@@ -22,15 +22,15 @@ const RegisterPage = ({ navigation }: { navigation: any }): React.JSX.Element =>
         const keys = result.data.signUp.data
         await setCredentials(keys)
         navigation.navigate('MainPage')
-      }else{
-        if(result.errors != null) {
-          alert(result.errors[0].message);
+      } else {
+        if (result.errors != null) {
+          alert(result.errors[0].message)
         }
       }
     } catch (error: any) {
       alert(error.message)
     }
-  }
+  }, [email, password, name, signUp, navigation])
   const togglePasswordVisibility = (): void => {
     setShowPassword(!showPassword)
   }

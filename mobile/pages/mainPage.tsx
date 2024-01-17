@@ -1,13 +1,13 @@
-import React, { useEffect, useState,  } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, BackHandler, FlatList, Image } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { colors } from './color'
 import { removeAllKeys } from '../credentials'
-import { Device } from 'react-native-ble-plx'
+import { type Device } from 'react-native-ble-plx'
 import { requestBluetoothPermission, scanForDevices } from '../ble'
-import { useMutation, useQuery } from '@apollo/client';
-import { GET_FLOWERS } from '../gql/getFlowers';
-import { useFocusEffect } from '@react-navigation/native';
+import { useMutation, useQuery } from '@apollo/client'
+import { GET_FLOWERS } from '../gql/getFlowers'
+import { useFocusEffect } from '@react-navigation/native'
 import { GET_USER } from '../gql/user'
 import { REMOVE_FLOWER } from '../gql/removeFlower'
 
@@ -15,48 +15,51 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
   const [showSidebar, setShowSidebar] = useState(false)
   const [isModalVisible, setModalVisible] = useState(false)
   const [devices, setDevices] = useState<Device[]>([])
-  const { loading, error, data, refetch} = useQuery(GET_FLOWERS);
+  const { loading, error, data, refetch } = useQuery(GET_FLOWERS)
   const user = useQuery(GET_USER)
   const [removeFlower] = useMutation(REMOVE_FLOWER)
 
   useFocusEffect(
     React.useCallback(() => {
       refetch()
-      setDevices([]);
+        .catch((error: any) => {
+          console.log(error)
+        }
+        )
+      setDevices([])
     }, [])
-  );
+  )
 
-
-  if (loading) console.log('Loading...');
-  else if (error) console.log(`Error! ${error.message}`);
-  else if(data) console.log("Pobralo")
+  if (loading) console.log('Loading...') /* eslint-disable-line @typescript-eslint/strict-boolean-expressions */
+  else if (error) console.log(`Error! ${error.message}`)/* eslint-disable-line @typescript-eslint/strict-boolean-expressions */
+  else if (data) console.log('Pobralo')/* eslint-disable-line @typescript-eslint/strict-boolean-expressions */
 
   const searchForDevices = async (): Promise<void> => {
-    requestBluetoothPermission()
+    await requestBluetoothPermission()
     const scannedDevices = await scanForDevices()
     setDevices(Array.from(scannedDevices))
   }
 
   useEffect(() => {
     if (isModalVisible) {
-      const interval = setInterval(() => {
-        searchForDevices();
-      }, 6000);
+      const interval = setInterval(async () => { /* eslint-disable-line @typescript-eslint/no-misused-promises */
+        await searchForDevices()
+      }, 6000)
 
-      return () => clearInterval(interval);
+      return () => { clearInterval(interval) }
     }
-  }, [isModalVisible]);
-  
+  }, [isModalVisible])
+
   useEffect(() => {
-    const backAction = () => {
+    const backAction = (): boolean => {
       navigation.navigate('MainPage')
-      return true; 
-    };
-  
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-  
-    return () => backHandler.remove(); 
-  }, []);
+      return true
+    }
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction)
+
+    return () => { backHandler.remove() }
+  }, [])
   const toggleSidebar = (): void => {
     setShowSidebar(!showSidebar)
   }
@@ -65,20 +68,20 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
     navigation.navigate('Home')
   }
   const removePlant = async (id: string): Promise<void> => {
-    try{
-    const result = await removeFlower({
-      variables: {
-        removeFlowerId: id
-      }
-    })
-    console.log(result)
-    refetch()
-  } catch (e:any) {
-    alert(e.message)
-    console.log(e)
+    try {
+      const result = await removeFlower({
+        variables: {
+          removeFlowerId: id
+        }
+      })
+      console.log(result)
+      await refetch()
+    } catch (e: any) {
+      alert(e.message)
+      console.log(e)
+    }
   }
-  }
-  let flowers = data?.flowers.edges
+  const flowers = data?.flowers.edges
 
   return (
     <View style={styles.container}>
@@ -88,19 +91,28 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
         <View style={styles.emptyHeader}></View>
       </View>
       <ScrollView style={styles.body}>
-        {
-          data && flowers.map((item:any) => (
+        {data && /* eslint-disable-line @typescript-eslint/strict-boolean-expressions */
+          flowers.map((item: any) => (
             <TouchableOpacity key={item.node.id} style={styles.plant}>
-              <Text style={styles.textSize}>{item.node.name.length < 9 ? item.node.name : `${item.node.name.substring(0,8)}...`  }</Text>
-              <TouchableOpacity style={styles.removePlantButton} onPress={() => {removePlant(item.node.id)}}>
-                <Image source={require('../assets/delete.png')} style={styles.buttonIcon}/>
+              <Text style={styles.textSize}>
+                {item.node.name.length < 9 ? item.node.name : `${item.node.name.substring(0, 8)}...`}
+              </Text>
+              <TouchableOpacity
+                style={styles.removePlantButton}
+                onPress={async () => { /* eslint-disable-line  @typescript-eslint/no-misused-promises */
+                  await removePlant(item.node.id)
+                }}
+              >
+                <Image source={require('../assets/delete.png')} style={styles.buttonIcon} />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.editPlantButton} onPress={() => navigation.navigate('EditPlantForm', {id: item.node.id})}>
-                <Image source={require('../assets/edit.png')} style={styles.buttonIcon}/>
+              <TouchableOpacity
+                style={styles.editPlantButton}
+                onPress={() => navigation.navigate('EditPlantForm', { id: item.node.id })}
+              >
+                <Image source={require('../assets/edit.png')} style={styles.buttonIcon} />
               </TouchableOpacity>
             </TouchableOpacity>
-          ))
-        }
+          ))}
       </ScrollView>
       {showSidebar && <View style={styles.overlay} />}
       {showSidebar && (
@@ -130,8 +142,8 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
           <View style={styles.whiteCircle}>
             <TouchableOpacity
               style={styles.addButton}
-              onPress={() => {
-                searchForDevices()
+              onPress={async () => { /* eslint-disable-line @typescript-eslint/no-misused-promises */
+                await searchForDevices()
                 setModalVisible(true)
               }}
             >
@@ -145,7 +157,16 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
         <View style={styles.bleDevices}>
           <View style={styles.bleHeader}>
             <Text style={styles.title}>Select your device</Text>
-            <Ionicons style={styles.exitIcon} name="close" size={24} color="black" onPress={() => {setModalVisible(false);setDevices([]);}} />
+            <Ionicons
+              style={styles.exitIcon}
+              name="close"
+              size={24}
+              color="black"
+              onPress={() => {
+                setModalVisible(false)
+                setDevices([])
+              }}
+            />
           </View>
           <View style={styles.bleBody}>
             {devices.length === 0 && (
@@ -154,34 +175,40 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
               </View>
             )}
             {devices.length > 0 && (
-             <FlatList
-              data={devices}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.item} onPress={() =>{
-                  navigation.navigate("AddPlantForm"); 
-                  setModalVisible(false);
-                  setDevices([]);
-                  
-                  }}>
-                  <Text style={styles.subtitle}>{item.name ? item.name : "UnKnown"}</Text>
-                  <Text style={styles.subtitle}>{item.id}</Text>
-                </TouchableOpacity>
-              )}></FlatList>
+              <FlatList
+                data={devices}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.item}
+                    onPress={() => {
+                      navigation.navigate('AddPlantForm')
+                      setModalVisible(false)
+                      setDevices([])
+                    }}
+                  >
+                    <Text style={styles.subtitle}>{item.name ? item.name : 'UnKnown' /* eslint-disable-line @typescript-eslint/strict-boolean-expressions */}</Text>
+                    <Text style={styles.subtitle}>{item.id}</Text>
+                  </TouchableOpacity>
+                )}
+              ></FlatList>
             )}
           </View>
           <View style={styles.bleBottom}>
-            <TouchableOpacity onPress={() => {searchForDevices()}} style={styles.searchDevice}>
+            <TouchableOpacity
+              onPress={async () => { /* eslint-disable-line @typescript-eslint/no-misused-promises */
+                await searchForDevices()
+              }}
+              style={styles.searchDevice}
+            >
               <Text style={styles.title}>Search</Text>
             </TouchableOpacity>
           </View>
         </View>
       )}
-
-      </View>
+    </View>
   )
 }
-
 
 const styles = StyleSheet.create({
   add: {
@@ -208,6 +235,51 @@ const styles = StyleSheet.create({
     width: 120,
     zIndex: 3
   },
+  bleBody: {
+    backgroundColor: colors.white,
+    display: 'flex',
+    flex: 0.7,
+    width: '100%'
+  },
+  bleBottom: {
+    alignItems: 'center',
+    backgroundColor: colors.orange,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    display: 'flex',
+    flexDirection: 'row',
+    flex: 0.1,
+    justifyContent: 'center',
+    width: '100%'
+  },
+  bleDevices: {
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    borderRadius: 30,
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    height: 600,
+    justifyContent: 'space-between',
+    margin: 40,
+    position: 'absolute',
+    top: 100,
+    width: 350,
+    zIndex: 999
+  },
+
+  bleHeader: {
+    alignItems: 'center',
+    backgroundColor: colors.orange,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    display: 'flex',
+    flexDirection: 'row',
+    flex: 0.1,
+    justifyContent: 'center',
+    width: '100%'
+  },
+
   body: {
     display: 'flex',
     flex: 0.65,
@@ -219,6 +291,10 @@ const styles = StyleSheet.create({
     flex: 0.2,
     width: '100%'
   },
+  buttonIcon: {
+    height: 40,
+    width: 40
+  },
   container: {
     alignItems: 'center',
     backgroundColor: colors.white,
@@ -227,7 +303,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-between'
   },
-
   content: {
     alignItems: 'center',
     backgroundColor: colors.orange,
@@ -235,7 +310,15 @@ const styles = StyleSheet.create({
     flex: 0.68,
     width: '100%'
   },
-
+  editPlantButton: {
+    alignItems: 'flex-end',
+    display: 'flex',
+    justifyContent: 'center',
+    marginRight: 20,
+    marginTop: 20,
+    position: 'absolute',
+    right: 60
+  },
   emptyBox: {
     backgroundColor: colors.white,
     flex: 0.32
@@ -244,6 +327,13 @@ const styles = StyleSheet.create({
     height: 50,
     marginRight: 20,
     width: 50
+  },
+  exitIcon: {
+    color: colors.white,
+    marginBottom: 10,
+    marginTop: 10,
+    position: 'absolute',
+    right: 20
   },
   hamburger: {
     alignItems: 'flex-start',
@@ -269,6 +359,22 @@ const styles = StyleSheet.create({
     display: 'flex',
     flex: 0.5,
     justifyContent: 'center'
+  },
+  item: {
+    backgroundColor: colors.orange,
+    borderRadius: 20,
+    marginHorizontal: 16,
+    marginVertical: 8,
+    padding: 20
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center'
+  },
+  loadingFont: {
+    color: colors.black,
+    fontSize: 24
   },
   logOut: {
     alignContent: 'center',
@@ -301,7 +407,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 40,
     marginRight: 40,
-    margin: 30,
+    margin: 30
+  },
+  removePlantButton: {
+    alignItems: 'flex-end',
+    display: 'flex',
+    justifyContent: 'center',
+    marginRight: 20,
+    marginTop: 20,
+    position: 'absolute',
+    right: 5
+  },
+  searchDevice: {
+    alignContent: 'center',
+    backgroundColor: colors.orange,
+    borderColor: colors.white,
+    borderRadius: 15,
+    borderWidth: 2,
+    display: 'flex',
+    flexDirection: 'row',
+    height: 45,
+    justifyContent: 'center',
+    marginBottom: 5,
+    marginHorizontal: 20,
+    width: 150
   },
   sidebar: {
     backgroundColor: colors.white,
@@ -332,9 +461,17 @@ const styles = StyleSheet.create({
     flex: 0.22,
     width: '100%'
   },
+  subtitle: {
+    color: colors.white,
+    fontSize: 18
+  },
   textSize: {
-    marginLeft: 30,
-    fontSize: 35
+    fontSize: 35,
+    marginLeft: 30
+  },
+  title: {
+    color: colors.white,
+    fontSize: 24
   },
   whiteCircle: {
     alignItems: 'center',
@@ -345,122 +482,7 @@ const styles = StyleSheet.create({
     height: 80,
     justifyContent: 'center',
     width: 80
-  },
-  bleDevices: {
-    borderRadius: 30,  
-    margin: 40,
-    alignItems: 'center',
-    backgroundColor: colors.white,
-    display: 'flex',
-    position: 'absolute',
-    top: 100,
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    height: 600,
-    width: 350,
-    zIndex: 999,
-  },
-  bleHeader: {
-    alignItems: 'center',
-    backgroundColor: colors.orange,
-    display: 'flex',
-    flexDirection: 'row',
-    flex: 0.1,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    justifyContent: 'center',
-    width: '100%'
-  },
-  bleBody: {
-    display: 'flex',
-    backgroundColor: colors.white,
-    flex: 0.7,
-    width: '100%'
-  },
-  bleBottom: {
-    alignItems: 'center',
-    backgroundColor: colors.orange,
-    display: 'flex',
-    flexDirection: 'row',
-    flex: 0.1,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    justifyContent: 'center',
-    width: '100%'
-  },
-  devicesContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-},  
-item: {
-    backgroundColor: colors.orange,
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 20,
-},
-title: {
-    fontSize: 24,
-    color: colors.white,
-},
-loadingFont: {
-    fontSize: 24,
-    color: colors.black,
-},
-subtitle: {
-    fontSize: 18,
-    color: colors.white,
-},
-searchDevice: {
-    alignContent: 'center',
-    display: 'flex',
-    flexDirection: 'row', 
-    backgroundColor: colors.orange,
-    borderRadius: 15,
-    borderWidth: 2,
-    borderColor: colors.white,
-    height: 45,
-    width: 150,
-    justifyContent: 'center',
-    marginBottom: 5,
-    marginHorizontal: 20
-},
-exitIcon: {
-    color: colors.white,
-    position: 'absolute',
-    right: 20,
-    marginTop: 10,
-    marginBottom: 10,
-},
-removePlantButton: {
-  alignItems: 'flex-end',
-  display: 'flex',
-  justifyContent: 'center',
-  marginRight: 20,
-  marginTop: 20,
-  position: 'absolute',
-  right: 5,
-},
-buttonIcon: {
-  height: 40,
-  width: 40
-},
-editPlantButton: {
-  alignItems: 'flex-end',
-  display: 'flex',
-  justifyContent: 'center',
-  marginRight: 20,
-  marginTop: 20,
-  position: 'absolute',
-  right: 60,
-}
+  }
 })
-
 
 export default MainPage

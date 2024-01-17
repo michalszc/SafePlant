@@ -7,4 +7,3 @@ mutation UpdateFlower($updateFlowerId: ObjectID!, $input: UpdateFlowerInput!) {
     }
   }
 `
-  

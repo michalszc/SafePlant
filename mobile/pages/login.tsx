@@ -12,7 +12,7 @@ const LoginPage = ({ navigation }: { navigation: any }): React.JSX.Element => {
   const [login] = useMutation(LOGIN)
 
   const handleLogin = async (): Promise<void> => {
-    console.log("loguje")
+    console.log('loguje')
     const result = await login({
       variables: { loginEmail2, loginPassword2 }
     })
@@ -21,10 +21,10 @@ const LoginPage = ({ navigation }: { navigation: any }): React.JSX.Element => {
         const keys = result.data.login.data
         await setCredentials(keys)
         navigation.navigate('MainPage')
-      }else {
-        alert("Wrong email or password")
+      } else {
+        alert('Wrong email or password')
       }
-    } catch (error:any){
+    } catch (error: any) {
       alert(error.message)
     }
   }

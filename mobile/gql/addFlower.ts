@@ -7,4 +7,3 @@ export const ADD_FLOWER = gql`
     }
   }
 `
-  

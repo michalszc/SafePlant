@@ -1,5 +1,6 @@
 #include "bluetooth/ble.hpp"
 #include "wifi_connection.h"
+#include "mqtt.hpp"
 
 #include "esp_log.h"
 #include <string>
@@ -24,31 +25,32 @@ namespace ble {
     }
 
     void write_ssid(uint8_t* value) {
-        // std::string ssid(reinterpret_cast<char*>(value));
-        std::ofstream file("/storage/ssid.txt");
-        file << std::string(reinterpret_cast<char*>(value));
-        file.close();
+        std::ofstream* file = new std::ofstream("/storage/ssid.txt");
+        *file << std::string(reinterpret_cast<char*>(value));
+        file->close();
+        delete file;
 
         is_ssid = true;
     }
 
     void write_password(uint8_t* value) {
-        // std::string pass(reinterpret_cast<char*>(value));
-        std::ofstream file("/storage/pass.txt");
-        file << std::string(reinterpret_cast<char*>(value));
-        file.close();
+        std::ofstream* file = new std::ofstream("/storage/pass.txt");
+        *file << std::string(reinterpret_cast<char*>(value));
+        file->close();
+        delete file;
 
         is_pass = true;
     }
 
     void write_uid(uint8_t* value) {
-        // std::string uid(reinterpret_cast<char*>(value));
-        std::ofstream file("/storage/uid.txt");
-        file << std::string(reinterpret_cast<char*>(value));
-        file.close();
+        std::ofstream* file = new std::ofstream("/storage/uid.txt");
+        *file << std::string(reinterpret_cast<char*>(value));
+        file->close();
+        delete file;
 
         if (is_ssid && is_pass) {
             wifi::wifi_connect();
+            mqtt::start_mqtt();
         }
     }
 
@@ -129,6 +131,9 @@ namespace ble {
                 gl_profile_tab[profile_num].conn_id = param->connect.conn_id;
                 break;
             case ESP_GATTS_WRITE_EVT:
+                if (is_ssid && is_pass) {
+                    esp_ble_gatts_close(gatts_if, param->connect.conn_id);
+                }
                 function(param->write.value);
                 if (param->write.need_rsp){
                     esp_ble_gatts_send_response(gatts_if, param->write.conn_id, param->write.trans_id, ESP_GATT_OK, NULL);

@@ -15,9 +15,8 @@ import SendWifiForm from './pages/wifiForm'
 import EditPlantForm from './pages/EditPlantPage'
 
 const Stack = createNativeStackNavigator()
-const apiUrl = API_URL
 const httpLink = createHttpLink({
-  uri: apiUrl
+  uri: API_URL
 })
 
 export default function App (): React.JSX.Element {
@@ -40,7 +39,7 @@ export default function App (): React.JSX.Element {
     })
   } catch {
     client = new ApolloClient({
-      uri: apiUrl,
+      uri: API_URL,
       cache: new InMemoryCache()
     })
   }

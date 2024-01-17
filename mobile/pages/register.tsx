@@ -32,7 +32,7 @@ const RegisterPage = ({ navigation }: { navigation: any }): React.JSX.Element =>
     }
   }, [email, password, name, signUp, navigation])
   const togglePasswordVisibility = (): void => {
-    setShowPassword(!showPassword)
+    setShowPassword(p => !p)
   }
 
   return (

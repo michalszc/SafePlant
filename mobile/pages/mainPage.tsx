@@ -143,8 +143,9 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
             <TouchableOpacity
               style={styles.addButton}
               onPress={async () => { /* eslint-disable-line @typescript-eslint/no-misused-promises */
-                await searchForDevices()
                 setModalVisible(true)
+                setDevices([])
+                await searchForDevices()
               }}
             >
               <Ionicons style={styles.add} size={70} name="add" color="white" />

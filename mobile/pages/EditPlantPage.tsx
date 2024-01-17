@@ -66,6 +66,22 @@ function EditPlantForm ({ navigation, route }: { navigation: any, route: any }):
       alert('Please enter valid numbers')
       return null
     } else {
+      if (newMinHumidity > newMaxHumidity) {
+        alert('Min humidity cannot be greater than max humidity')
+        return null
+      }
+      if (newMinTemperature > newMaxTemperature) {
+        alert('Min temperature cannot be greater than max temperature')
+        return null
+      }
+      if (newMaxHumidity > 100) {
+        alert('Max humidity cannot be greater than 100')
+        return null
+      }
+      if (newMinHumidity < 0) {
+        alert('Min humidity cannot be less than 0')
+        return null
+      }
       const newFlower: Flower = {
         name,
         humidity: {

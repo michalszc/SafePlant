@@ -34,6 +34,14 @@ function AddPlantForm ({ navigation }: { navigation: any }): React.JSX.Element {
       alert('Please enter valid numbers')
       return null
     } else {
+      if (newMinHumidity > newMaxHumidity) {
+        alert('Min humidity cannot be greater than max humidity')
+        return null
+      }
+      if (newMinTemperature > newMaxTemperature) {
+        alert('Min temperature cannot be greater than max temperature')
+        return null
+      }
       const newFlower: Flower = {
         name,
         humidity: {

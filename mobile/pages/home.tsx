@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client'
 import React, { useEffect } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native'
 import { getCredentials, setCredentials } from '../credentials'
 import { REFRESH } from '../gql/refresh'
 import { colors } from './color'
@@ -37,7 +37,9 @@ export default function HomePage ({ navigation }: { navigation: any }): React.JS
   return (
     <View style={styles.container}>
       <View style={styles.top}>
-        <View style={styles.logo}></View>
+        <View style={styles.logo}>
+          <Image style={{ tintColor: colors.white }} source={require('../assets/plant.png')}/>
+        </View>
         <Text style={styles.name}>SafePlant</Text>
       </View>
       <View style={styles.bot}>

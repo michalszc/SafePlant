@@ -123,7 +123,7 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
             </View>
             <View style={styles.headerBot}></View>
           </View>
-          <View style={styles.avatar}></View>
+          <Image source={require('../assets/avatar.png')} style={styles.avatar} />
           <View style={styles.sidebarBody}>
             <Text style={styles.logOut}>{user.data.user.name}</Text>
             <TouchableOpacity>
@@ -183,9 +183,10 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
                   <TouchableOpacity
                     style={styles.item}
                     onPress={() => {
-                      navigation.navigate('AddPlantForm')
-                      setModalVisible(false)
+                      navigation.navigate('WifiForm', { device: item })
                       setDevices([])
+                      // navigation.navigate('AddPlantForm') // commented for future testing
+                      setModalVisible(false)
                     }}
                   >
                     <Text style={styles.subtitle}>{item.name ? item.name : 'UnKnown' /* eslint-disable-line @typescript-eslint/strict-boolean-expressions */}</Text>
@@ -227,13 +228,13 @@ const styles = StyleSheet.create({
     width: 70
   },
   avatar: {
-    backgroundColor: colors.gray,
-    borderRadius: 60,
-    height: 120,
-    left: 90,
+    backgroundColor: colors.white,
+    borderRadius: 90,
+    height: 180,
+    left: 70,
     position: 'absolute',
     top: 40,
-    width: 120,
+    width: 180,
     zIndex: 3
   },
   bleBody: {
@@ -381,7 +382,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     color: colors.black,
     display: 'flex',
-    fontSize: 35,
+    fontSize: 40,
     fontWeight: 'bold',
     justifyContent: 'center',
     marginLeft: 20,
@@ -448,7 +449,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: colors.white,
     display: 'flex',
-    flex: 0.68
+    flex: 0.64
   },
   sidebarBottom: {
     alignContent: 'center',
@@ -459,7 +460,7 @@ const styles = StyleSheet.create({
   },
   sidebarHeader: {
     display: 'flex',
-    flex: 0.22,
+    flex: 0.26,
     width: '100%'
   },
   subtitle: {

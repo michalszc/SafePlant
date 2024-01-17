@@ -17,7 +17,6 @@ export default function StartingPage ({ navigation }: { navigation: any }): Reac
     const checkToken = async (): Promise<void> => {
       const credentials = await getCredentials()
       if (credentials != null) {
-        try {
           const token = credentials.refreshToken
           console.log(credentials.accessToken)
           const result = await refresh({
@@ -26,10 +25,8 @@ export default function StartingPage ({ navigation }: { navigation: any }): Reac
           await setCredentials(result.data.refresh.data)
           console.log('zalogowalo')
           setLoginDone(LoginStatus.LoggedIn)
-        } catch {
-          console.log('nie zalogowalo')
-          setLoginDone(LoginStatus.LoggedOut)
-        }
+      }else{
+        setLoginDone(LoginStatus.LoggedOut)
       }
     }
     checkToken()

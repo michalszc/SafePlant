@@ -6,13 +6,13 @@ import { ADD_FLOWER } from '../gql/addFlower'
 import type Flower from './flowerInterface'
 
 function AddPlantForm ({ navigation }: { navigation: any }): React.JSX.Element {
-  const [name, setName] = useState('')
-  const [frequencyHumidity, setFrequencyHumidity] = useState('')
-  const [maxHumidity, setMaxHumidity] = useState('')
-  const [minHumidity, setMinHumidity] = useState('')
-  const [frequencyTemperature, setFrequencyTemperature] = useState('')
-  const [maxTemperature, setMaxTemperature] = useState('')
-  const [minTemperature, setMinTemperature] = useState('')
+  const [name, setName] = useState('Plant Name')
+  const [frequencyHumidity, setFrequencyHumidity] = useState('30000')
+  const [maxHumidity, setMaxHumidity] = useState('100')
+  const [minHumidity, setMinHumidity] = useState('0')
+  const [frequencyTemperature, setFrequencyTemperature] = useState('30000')
+  const [maxTemperature, setMaxTemperature] = useState('60')
+  const [minTemperature, setMinTemperature] = useState('0')
 
   const [addFlower] = useMutation(ADD_FLOWER)
 

@@ -6,34 +6,7 @@ import { REFRESH } from '../gql/refresh'
 import { colors } from './color'
 
 export default function HomePage ({ navigation }: { navigation: any }): React.JSX.Element {
-  const [refresh] = useMutation(REFRESH)
-  const [loginDone, setLoginDone] = React.useState(false)
-  useEffect(() => {
-    const checkToken = async (): Promise<void> => {
-      const credentials = await getCredentials()
-      if (credentials != null) {
-        try {
-          const token = credentials.refreshToken
-          console.log(credentials.accessToken)
-          const result = await refresh({
-            variables: { token }
-          })
-          await setCredentials(result.data.refresh.data)
-          console.log('zalogowalo')
-          setLoginDone(true)
-        } catch {
-          console.log('nie zalogowalo')
-          setLoginDone(false)
-        }
-      }
-    }
-    void checkToken()
-  }, [])
-  useEffect(() => {
-    if (loginDone) {
-      navigation.navigate('MainPage')
-    }
-  })
+  
   return (
     <View style={styles.container}>
       <View style={styles.top}>

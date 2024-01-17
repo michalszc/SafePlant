@@ -114,7 +114,7 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
             </TouchableOpacity>
           ))}
       </ScrollView>
-      {showSidebar && <View style={styles.overlay} />}
+      {showSidebar && <TouchableOpacity style={styles.overlay} onPress={toggleSidebar} />}
       {showSidebar && (
         <View style={styles.sidebar}>
           <View style={styles.sidebarHeader}>
@@ -183,9 +183,9 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
                   <TouchableOpacity
                     style={styles.item}
                     onPress={() => {
-                      navigation.navigate('WifiForm', { device: item })
+                      // navigation.navigate('WifiForm', { device: item })
+                      navigation.navigate('AddPlantForm') // commented for future testing
                       setDevices([])
-                      // navigation.navigate('AddPlantForm') // commented for future testing
                       setModalVisible(false)
                     }}
                   >
@@ -341,7 +341,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     color: colors.white,
     display: 'flex',
-    marginLeft: 20
+    marginLeft: 20,
+    marginTop: 20,
   },
   header: {
     alignItems: 'center',
@@ -398,7 +399,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
-    zIndex: 998
+    zIndex: 998,
+
   },
   plant: {
     alignItems: 'flex-start',
@@ -449,7 +451,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: colors.white,
     display: 'flex',
-    flex: 0.64
+    flex: 0.68
   },
   sidebarBottom: {
     alignContent: 'center',
@@ -460,7 +462,7 @@ const styles = StyleSheet.create({
   },
   sidebarHeader: {
     display: 'flex',
-    flex: 0.26,
+    flex: 0.22,
     width: '100%'
   },
   subtitle: {

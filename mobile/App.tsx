@@ -13,6 +13,7 @@ import HomePage from './pages/home'
 import { API_URL } from './config'
 import SendWifiForm from './pages/wifiForm'
 import EditPlantForm from './pages/EditPlantPage'
+import StartingPage from './pages/startingPage'
 
 const Stack = createNativeStackNavigator()
 const httpLink = createHttpLink({
@@ -47,7 +48,8 @@ export default function App (): React.JSX.Element {
   return (
     <ApolloProvider client={client}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
+        <Stack.Navigator initialRouteName="StartingPage">
+          <Stack.Screen name="StartingPage" component={StartingPage} options={{ headerShown: false }} />
           <Stack.Screen name="Home" component={HomePage} options={{ headerShown: false }} />
           <Stack.Screen name="Login" component={LoginPage} options={{ headerShown: false }} />
           <Stack.Screen name="Register" component={RegisterPage} options={{ headerShown: false }} />

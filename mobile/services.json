@@ -1,0 +1,211 @@
+[
+    {
+        "_manager": {
+            "_activePromises": [Object
+            ],
+            "_activeSubscriptions": [Object
+            ],
+            "_errorCodesToMessagesMapping": [Object
+            ],
+            "_eventEmitter": [NativeEventEmitter
+            ],
+            "_scanEventSubscription": null,
+            "_uniqueId": 6
+        },
+        "deviceID": "FC:B4:67:50:C6:6E",
+        "id": 1,
+        "isPrimary": true,
+        "uuid": "00001801-0000-1000-8000-00805f9b34fb"
+    },
+    {
+        "_manager": {
+            "_activePromises": [Object
+            ],
+            "_activeSubscriptions": [Object
+            ],
+            "_errorCodesToMessagesMapping": [Object
+            ],
+            "_eventEmitter": [NativeEventEmitter
+            ],
+            "_scanEventSubscription": null,
+            "_uniqueId": 6
+        },
+        "deviceID": "FC:B4:67:50:C6:6E",
+        "id": 7,
+        "isPrimary": true,
+        "uuid": "00001800-0000-1000-8000-00805f9b34fb"
+    },
+    {
+        "_manager": {
+            "_activePromises": [Object
+            ],
+            "_activeSubscriptions": [Object
+            ],
+            "_errorCodesToMessagesMapping": [Object
+            ],
+            "_eventEmitter": [NativeEventEmitter
+            ],
+            "_scanEventSubscription": null,
+            "_uniqueId": 6
+        },
+        "deviceID": "FC:B4:67:50:C6:6E",
+        "id": 11,
+        "isPrimary": true,
+        "uuid": "000000ee-0000-1000-8000-00805f9b34fb"
+    },
+    {
+        "_manager": {
+            "_activePromises": [Object
+            ],
+            "_activeSubscriptions": [Object
+            ],
+            "_errorCodesToMessagesMapping": [Object
+            ],
+            "_eventEmitter": [NativeEventEmitter
+            ],
+            "_scanEventSubscription": null,
+            "_uniqueId": 6
+        },
+        "deviceID": "FC:B4:67:50:C6:6E",
+        "id": 13,
+        "isPrimary": true,
+        "uuid": "000000fe-0000-1000-8000-00805f9b34fb"
+    }
+]
+[
+    {
+        "_manager": {
+            "_activePromises": [Object
+            ],
+            "_activeSubscriptions": [Object
+            ],
+            "_errorCodesToMessagesMapping": [Object
+            ],
+            "_eventEmitter": [NativeEventEmitter
+            ],
+            "_scanEventSubscription": null,
+            "_uniqueId": 7
+        },
+        "deviceID": "FC:B4:67:50:C6:6E",
+        "id": 12,
+        "isIndicatable": false,
+        "isNotifiable": false,
+        "isNotifying": false,
+        "isReadable": true,
+        "isWritableWithResponse": true,
+        "isWritableWithoutResponse": false,
+        "serviceID": 11,
+        "serviceUUID": "000000ee-0000-1000-8000-00805f9b34fb",
+        "uuid": "0000ee01-0000-1000-8000-00805f9b34fb",
+        "value": null
+    }
+]
+
+[
+    {
+        "_manager": {
+            "_activePromises": [Object
+            ],
+            "_activeSubscriptions": [Object
+            ],
+            "_errorCodesToMessagesMapping": [Object
+            ],
+            "_eventEmitter": [NativeEventEmitter
+            ],
+            "_scanEventSubscription": null,
+            "_uniqueId": 7
+        },
+        "deviceID": "FC:B4:67:50:C6:6E",
+        "id": 14,
+        "isIndicatable": false,
+        "isNotifiable": false,
+        "isNotifying": false,
+        "isReadable": false,
+        "isWritableWithResponse": true,
+        "isWritableWithoutResponse": false,
+        "serviceID": 13,
+        "serviceUUID": "000000fe-0000-1000-8000-00805f9b34fb",
+        "uuid": "0000ff00-0000-1000-8000-00805f9b34fb",
+        "value": null
+    }
+]
+[
+    {
+        "_manager": {
+            "_activePromises": [Object
+            ],
+            "_activeSubscriptions": [Object
+            ],
+            "_errorCodesToMessagesMapping": [Object
+            ],
+            "_eventEmitter": [NativeEventEmitter
+            ],
+            "_scanEventSubscription": null,
+            "_uniqueId": 7
+        },
+        "deviceID": "FC:B4:67:50:C6:6E",
+        "id": 8,
+        "isIndicatable": false,
+        "isNotifiable": false,
+        "isNotifying": false,
+        "isReadable": true,
+        "isWritableWithResponse": false,
+        "isWritableWithoutResponse": false,
+        "serviceID": 7,
+        "serviceUUID": "00001800-0000-1000-8000-00805f9b34fb",
+        "uuid": "00002a00-0000-1000-8000-00805f9b34fb",
+        "value": null
+    },
+    {
+        "_manager": {
+            "_activePromises": [Object
+            ],
+            "_activeSubscriptions": [Object
+            ],
+            "_errorCodesToMessagesMapping": [Object
+            ],
+            "_eventEmitter": [NativeEventEmitter
+            ],
+            "_scanEventSubscription": null,
+            "_uniqueId": 7
+        },
+        "deviceID": "FC:B4:67:50:C6:6E",
+        "id": 9,
+        "isIndicatable": false,
+        "isNotifiable": false,
+        "isNotifying": false,
+        "isReadable": true,
+        "isWritableWithResponse": false,
+        "isWritableWithoutResponse": false,
+        "serviceID": 7,
+        "serviceUUID": "00001800-0000-1000-8000-00805f9b34fb",
+        "uuid": "00002a01-0000-1000-8000-00805f9b34fb",
+        "value": null
+    },
+    {
+        "_manager": {
+            "_activePromises": [Object
+            ],
+            "_activeSubscriptions": [Object
+            ],
+            "_errorCodesToMessagesMapping": [Object
+            ],
+            "_eventEmitter": [NativeEventEmitter
+            ],
+            "_scanEventSubscription": null,
+            "_uniqueId": 7
+        },
+        "deviceID": "FC:B4:67:50:C6:6E",
+        "id": 10,
+        "isIndicatable": false,
+        "isNotifiable": false,
+        "isNotifying": false,
+        "isReadable": true,
+        "isWritableWithResponse": false,
+        "isWritableWithoutResponse": false,
+        "serviceID": 7,
+        "serviceUUID": "00001800-0000-1000-8000-00805f9b34fb",
+        "uuid": "00002aa6-0000-1000-8000-00805f9b34fb",
+        "value": null
+    }
+]

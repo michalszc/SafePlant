@@ -5,13 +5,14 @@ import { AppRegistry } from 'react-native'
 import RegisterPage from './pages/register'
 import { ApolloClient, createHttpLink, InMemoryCache, ApolloProvider } from '@apollo/client'
 import MainPage from './pages/mainPage'
-import { getCredentials } from './credentials'
+import { getCredentials, removeAllKeys } from './credentials'
 import React from 'react'
 import AddPlantForm from './pages/plantForm'
 import { setContext } from '@apollo/client/link/context'
 import HomePage from './pages/home'
 import { API_URL } from './config'
 import SendWifiForm from './pages/wifiForm'
+import EditPlantForm from './pages/EditPlantPage'
 
 const Stack = createNativeStackNavigator()
 const apiUrl = API_URL
@@ -54,6 +55,7 @@ export default function App (): React.JSX.Element {
           <Stack.Screen name="MainPage" component={MainPage} options={{ headerShown: false }} />
           <Stack.Screen name="SendWifiForm" component={SendWifiForm} options={{ headerShown: false }} />
           <Stack.Screen name="AddPlantForm" component={AddPlantForm} options={{ headerShown: false }} />
+          <Stack.Screen name="EditPlantForm" component={EditPlantForm} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     </ApolloProvider>

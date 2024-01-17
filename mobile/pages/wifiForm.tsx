@@ -6,6 +6,7 @@ import { Device } from 'react-native-ble-plx'
 import { useQuery } from '@apollo/client'
 import { GET_USER } from '../gql/user'
 import { useFocusEffect } from '@react-navigation/native'
+import { getCredentials } from '../credentials'
 
 function SendWifiForm({ navigation, route }: { navigation: any, route:any }): React.JSX.Element {
   const [name, setName] = useState('')
@@ -16,10 +17,13 @@ function SendWifiForm({ navigation, route }: { navigation: any, route:any }): Re
   const togglePasswordVisibility = (): void => {
     setShowPassword(!showPassword)
   }
+
   useFocusEffect(
+
     React.useCallback(() => {
       refetch()
     }, [])
+
   );
   
   const device:Device = route.params.device

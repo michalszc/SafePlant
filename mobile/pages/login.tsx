@@ -21,8 +21,12 @@ const LoginPage = ({ navigation }: { navigation: any }): React.JSX.Element => {
         const keys = result.data.login.data
         await setCredentials(keys)
         navigation.navigate('MainPage')
+      }else {
+        alert("Wrong email or password")
       }
-    } catch {}
+    } catch (error:any){
+      alert(error.message)
+    }
   }
 
   const togglePasswordVisibility = (): void => {

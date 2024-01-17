@@ -1,23 +1,52 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState } from 'react'
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView } from 'react-native'
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { colors } from './color'
-import { ADD_FLOWER } from '../gql/addFlower'
-import { getDevice, removeDevice } from '../credentials'
+import { GET_ONE_FLOWER } from '../gql/getOneFlower'
 import Flower  from "./flowerInterface"
+import { UPDATE_FLOWER } from '../gql/updateFlower'
+import { useFocusEffect } from '@react-navigation/native'
 
 
-function AddPlantForm ({ navigation }: { navigation: any }): React.JSX.Element {
-  const [name, setName] = useState('')
+
+function EditPlantForm ({ navigation, route }: { navigation: any, route:any}): React.JSX.Element {
+    const id = route.params.id
+    console.log(id)
+    const { loading, error, data, refetch} = useQuery(GET_ONE_FLOWER, {
+        variables: { flowerId: id },
+    })
+    const [name, setName] = useState('')
     const [frequencyHumidity, setFrequencyHumidity] = useState("")
     const [maxHumidity, setMaxHumidity] = useState("")
     const [minHumidity, setMinHumidity] = useState("")
     const [frequencyTemperature, setFrequencyTemperature] = useState("")
     const [maxTemperature, setMaxTemperature] = useState("")
     const [minTemperature, setMinTemperature] = useState("")
-
-  const [addFlower, { data }] = useMutation(ADD_FLOWER)
-
+    const [updateFlower] = useMutation(UPDATE_FLOWER)
+    useFocusEffect(
+        React.useCallback(() => {
+          refetch();
+        }, [])
+      );
+    const flower = data?.flower
+    useEffect(() => {
+        if(flower) {
+            console.log("Query: ", data.flower)
+            // console.log("Flower: ",flower)
+            setName(flower.name)
+            setFrequencyHumidity(flower.humidity.frequency.toString())
+            setMaxHumidity(flower.humidity.validRange.max.toString())
+            setMinHumidity(flower.humidity.validRange.min.toString())
+            setFrequencyTemperature(flower.temperature.frequency.toString())
+            setMaxTemperature(flower.temperature.validRange.max.toString())
+            setMinTemperature(flower.temperature.validRange.min.toString())
+            console.log("Done")
+        }
+    },[flower])
+    if(loading) return (<Text>Loading...</Text>)
+    if(error) return (<Text>Error...</Text>)
+    
+ 
   const getNewFlower = () => {
     const newFrequencyHumidity = parseInt(frequencyHumidity)
     const newMaxHumidity = parseInt(maxHumidity)
@@ -49,17 +78,18 @@ function AddPlantForm ({ navigation }: { navigation: any }): React.JSX.Element {
     return newFlower
   }
 }
-
+     
   const handleSubmit = async () => {
-    const flower = getNewFlower()
-    if(flower === null) return;
-    let result = await addFlower({
+    const newFlower = getNewFlower()
+    if(newFlower == null) return;
+    let result = await updateFlower({
       variables: {
-        input: flower
+        updateFlowerId: id,
+        input: newFlower
       }
     })
-    console.log(result)
     navigation.navigate('MainPage');
+    console.log(result)
   }
   return (
     <View style={styles.container}>
@@ -131,7 +161,7 @@ function AddPlantForm ({ navigation }: { navigation: any }): React.JSX.Element {
           await handleSubmit();
         }}
       >
-        <Text style={styles.submitButtonText}>Add Flower</Text>
+        <Text style={styles.submitButtonText}>Update Flower</Text>
       </TouchableOpacity>
       </View>
     </View>
@@ -233,4 +263,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default AddPlantForm
+export default EditPlantForm;

@@ -22,9 +22,13 @@ const RegisterPage = ({ navigation }: { navigation: any }): React.JSX.Element =>
         const keys = result.data.signUp.data
         await setCredentials(keys)
         navigation.navigate('MainPage')
+      }else{
+        if(result.errors != null) {
+          alert(result.errors[0].message);
+        }
       }
-    } catch (error) {
-      console.log('error:', error)
+    } catch (error: any) {
+      alert(error.message)
     }
   }
   const togglePasswordVisibility = (): void => {

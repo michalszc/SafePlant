@@ -1,23 +1,28 @@
 import React, { useEffect, useState,  } from 'react'
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, BackHandler, FlatList } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, BackHandler, FlatList, Image } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { colors } from './color'
 import { removeAllKeys } from '../credentials'
 import { Device } from 'react-native-ble-plx'
 import { requestBluetoothPermission, scanForDevices } from '../ble'
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { GET_FLOWERS } from '../gql/getFlowers';
 import { useFocusEffect } from '@react-navigation/native';
+import { GET_USER } from '../gql/user'
+import { REMOVE_FLOWER } from '../gql/removeFlower'
 
 function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
   const [showSidebar, setShowSidebar] = useState(false)
   const [isModalVisible, setModalVisible] = useState(false)
   const [devices, setDevices] = useState<Device[]>([])
   const { loading, error, data, refetch} = useQuery(GET_FLOWERS);
+  const user = useQuery(GET_USER)
+  const [removeFlower] = useMutation(REMOVE_FLOWER)
 
   useFocusEffect(
     React.useCallback(() => {
       refetch()
+      setDevices([]);
     }, [])
   );
 
@@ -50,7 +55,7 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
   
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
   
-    return () => backHandler.remove(); // Don't forget to remove the event listener when the component unmounts
+    return () => backHandler.remove(); 
   }, []);
   const toggleSidebar = (): void => {
     setShowSidebar(!showSidebar)
@@ -58,6 +63,20 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
   const logOut = async (): Promise<void> => {
     await removeAllKeys()
     navigation.navigate('Home')
+  }
+  const removePlant = async (id: string): Promise<void> => {
+    try{
+    const result = await removeFlower({
+      variables: {
+        removeFlowerId: id
+      }
+    })
+    console.log(result)
+    refetch()
+  } catch (e:any) {
+    alert(e.message)
+    console.log(e)
+  }
   }
   let flowers = data?.flowers.edges
 
@@ -72,7 +91,13 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
         {
           data && flowers.map((item:any) => (
             <TouchableOpacity key={item.node.id} style={styles.plant}>
-              <Text style={styles.textSize}>{item.node.name }</Text>
+              <Text style={styles.textSize}>{item.node.name.length < 9 ? item.node.name : `${item.node.name.substring(0,8)}...`  }</Text>
+              <TouchableOpacity style={styles.removePlantButton} onPress={() => {removePlant(item.node.id)}}>
+                <Image source={require('../assets/delete.png')} style={styles.buttonIcon}/>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.editPlantButton} onPress={() => navigation.navigate('EditPlantForm', {id: item.node.id})}>
+                <Image source={require('../assets/edit.png')} style={styles.buttonIcon}/>
+              </TouchableOpacity>
             </TouchableOpacity>
           ))
         }
@@ -88,7 +113,7 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
           </View>
           <View style={styles.avatar}></View>
           <View style={styles.sidebarBody}>
-            <Text style={styles.logOut}>NICKNAME</Text>
+            <Text style={styles.logOut}>{user.data.user.name}</Text>
             <TouchableOpacity>
               <Text style={styles.logOut}>About app</Text>
             </TouchableOpacity>
@@ -106,7 +131,7 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => {
-                // navigation.navigate('BluetoothDevices')
+                searchForDevices()
                 setModalVisible(true)
               }}
             >
@@ -123,13 +148,18 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
             <Ionicons style={styles.exitIcon} name="close" size={24} color="black" onPress={() => {setModalVisible(false);setDevices([]);}} />
           </View>
           <View style={styles.bleBody}>
+            {devices.length === 0 && (
+              <View style={styles.loadingContainer}>
+                <Text style={styles.loadingFont}>Loading...</Text>
+              </View>
+            )}
+            {devices.length > 0 && (
              <FlatList
               data={devices}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <TouchableOpacity style={styles.item} onPress={() =>{
-                  // connectToDevice(item, "fe", "Value tempych chyuji");
-                  navigation.navigate("SendWifiForm", {device: item}); 
+                  navigation.navigate("AddPlantForm"); 
                   setModalVisible(false);
                   setDevices([]);
                   
@@ -138,6 +168,7 @@ function MainPage ({ navigation }: { navigation: any }): React.JSX.Element {
                   <Text style={styles.subtitle}>{item.id}</Text>
                 </TouchableOpacity>
               )}></FlatList>
+            )}
           </View>
           <View style={styles.bleBottom}>
             <TouchableOpacity onPress={() => {searchForDevices()}} style={styles.searchDevice}>
@@ -262,7 +293,7 @@ const styles = StyleSheet.create({
     zIndex: 998
   },
   plant: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     backgroundColor: colors.orange,
     borderRadius: 20,
     display: 'flex',
@@ -270,7 +301,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 40,
     marginRight: 40,
-    margin: 30
+    margin: 30,
   },
   sidebar: {
     backgroundColor: colors.white,
@@ -302,6 +333,7 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   textSize: {
+    marginLeft: 30,
     fontSize: 35
   },
   whiteCircle: {
@@ -343,7 +375,7 @@ const styles = StyleSheet.create({
   bleBody: {
     display: 'flex',
     backgroundColor: colors.white,
-    flex: 0.65,
+    flex: 0.7,
     width: '100%'
   },
   bleBottom: {
@@ -377,6 +409,10 @@ title: {
     fontSize: 24,
     color: colors.white,
 },
+loadingFont: {
+    fontSize: 24,
+    color: colors.black,
+},
 subtitle: {
     fontSize: 18,
     color: colors.white,
@@ -396,11 +432,35 @@ searchDevice: {
     marginHorizontal: 20
 },
 exitIcon: {
-    alignItems: 'center',
     color: colors.white,
-    display: 'flex',
-    marginRight: 20
+    position: 'absolute',
+    right: 20,
+    marginTop: 10,
+    marginBottom: 10,
 },
+removePlantButton: {
+  alignItems: 'flex-end',
+  display: 'flex',
+  justifyContent: 'center',
+  marginRight: 20,
+  marginTop: 20,
+  position: 'absolute',
+  right: 5,
+},
+buttonIcon: {
+  height: 40,
+  width: 40
+},
+editPlantButton: {
+  alignItems: 'flex-end',
+  display: 'flex',
+  justifyContent: 'center',
+  marginRight: 20,
+  marginTop: 20,
+  position: 'absolute',
+  right: 60,
+}
 })
+
 
 export default MainPage

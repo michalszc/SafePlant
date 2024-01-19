@@ -49,7 +49,7 @@ namespace ble {
         delete file;
 
         if (is_ssid && is_pass) {
-            wifi::wifi_connect();
+            wifi::wifi_init_sta();
             mqtt::start_mqtt();
         }
     }

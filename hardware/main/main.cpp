@@ -82,11 +82,14 @@ extern "C" void app_main() {
         delete file;
 
         // connect to wifi
-        ESP_ERROR_CHECK(wifi::wifi_connect());
+        if (wifi::init_sta() == ESP_OK) {
+            // if connection successful run mqtt
+            mqtt::start_mqtt();
+        } else {
+            // in other way run ble
+            ble::start_ble_server();
+        }
 
-        // if connection successful run mqtt
-
-        // in other way run ble
         diode::set_state(diode::State::CONNECTED);
     }
 

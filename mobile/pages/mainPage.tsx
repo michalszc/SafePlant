@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     color: colors.white,
     display: 'flex',
     marginLeft: 20,
-    marginTop: 20,
+    marginTop: 20
   },
   header: {
     alignItems: 'center',
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
-    zIndex: 998,
+    zIndex: 998
 
   },
   plant: {

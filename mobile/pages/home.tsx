@@ -1,12 +1,8 @@
-import { useMutation } from '@apollo/client'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native'
-import { getCredentials, setCredentials } from '../credentials'
-import { REFRESH } from '../gql/refresh'
 import { colors } from './color'
 
 export default function HomePage ({ navigation }: { navigation: any }): React.JSX.Element {
-  
   return (
     <View style={styles.container}>
       <View style={styles.top}>

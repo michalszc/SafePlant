@@ -12,7 +12,7 @@ export default function StartingPage ({ navigation }: { navigation: any }): Reac
     LoggedOut,
     Unknown
   }
-  const [loginDone, setLoginDone] = React.useState(LoginStatus.Unknown)
+  const [loginDone, setLoginDone] = useState(LoginStatus.Unknown)
   useEffect(() => {
     const checkToken = async (): Promise<void> => {
       const credentials = await getCredentials()

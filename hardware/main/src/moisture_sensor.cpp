@@ -92,6 +92,19 @@ namespace moisture {
         
     }
 
+    void send_old() {
+        auto client = mqtt::MqttClient::getClient().client;
+        auto topic = "DATA/"+mqtt::MqttClient::getClient().humidity["id"].get<std::string>();
+        std::ifstream file("storage/moisture_data.txt");
+        std::string info;
+        while (!file.eof()) {
+            std::getline(file, info);
+            if (!file.empty()) {
+                esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
+            }
+        }
+    }
+
     uint8_t get_moisture() {
         int value;
         ESP_ERROR_CHECK(adc_oneshot_read(handle, CHANNEL, &value));

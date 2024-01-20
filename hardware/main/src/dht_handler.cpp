@@ -38,4 +38,17 @@ namespace dht {
             vTaskDelay(pdMS_TO_TICKS(2000));
         }
     }
+
+    void send_old() {
+        auto client = mqtt::MqttClient::getClient().client;
+        auto topic = "DATA/"+mqtt::MqttClient::getClient().temperature["id"].get<std::string>();
+        std::ifstream file("storage/temperature_data.txt");
+        std::string info;
+        while (!file.eof()) {
+            std::getline(file, info);
+            if (!file.empty()) {
+                esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
+            }
+        }
+    }
 }

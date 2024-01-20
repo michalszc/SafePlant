@@ -42,7 +42,12 @@ extern "C" void app_main() {
     esp_vfs_spiffs_conf_t cfg = {
         .base_path = "/storage",
         .partition_label = nullptr,
-        .max_files = 5,
+        .max_files = 5,    // buzz::prepare();
+    // ESP_ERROR_CHECK(wifi::wifi_connect());
+    // xTaskCreate(dht::dht_test, "dht_test", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
+    // xTaskCreate(moisture::measure_moisture_task, "moisture", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
+    // ble::start_ble_server();
+    // mqtt::start_mqtt();
         .format_if_mount_failed = true
     };
 

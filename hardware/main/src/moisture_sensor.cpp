@@ -81,7 +81,8 @@ namespace moisture {
             auto topic = "DATA/"+mqtt::MqttClient::getClient().humidity["id"].get<std::string>(); 
             esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
         } else {
-            // save to file
+            std::ofstream file("storage/moisture_data.txt", std::ios::app);
+            file << info << std::endl;
         }
         if ((value < min || value > max) && should_peeb) {
             buzz::buzz();

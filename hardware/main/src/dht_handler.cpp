@@ -24,13 +24,14 @@ namespace dht {
                 auto time_str = std::to_string(tv_now.tv_sec * 1000);
                 auto value = std::to_string(static_cast<int>(temperature));
                 lcd::Display::get_display().print("Temp: " + value + "\337C", 0, 0);
+                std::string info = "{ \"timestamp\":" + time_str + ",\"value\": " + value + "}";
                 if (mqtt::MqttClient::getClient().connected) {
                     auto client = mqtt::MqttClient::getClient().client;
-                    std::string info = "{ \"timestamp\":" + time_str + ",\"value\": " + value + "}";
                     auto topic = "DATA/"+mqtt::MqttClient::getClient().humidity["id"].get<std::string>();
                     esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
                 } else {
-                    // save to file
+                    std::ofstream file("storage/temperature_data.txt", std::ios::app);
+                    file << info << std::endl;
                 }
             }
 

@@ -4,7 +4,6 @@
 #include "esp_log.h"
 #include "esp_event.h"
 #include <string>
-#include <fstream>
 #include "esp_spiffs.h"
 
 namespace mqtt {

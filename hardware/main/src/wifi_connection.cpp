@@ -28,6 +28,7 @@ namespace wifi {
                 xEventGroupSetBits(s_wifi_event_group, BIT1);
             }
         } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
+            conn = true;
             ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
             Config::get().counter = 0;
             xEventGroupSetBits(s_wifi_event_group, BIT0);
@@ -53,15 +54,6 @@ namespace wifi {
             .authmode = WIFI_AUTH_OPEN
         };
 
-        std::string ssid, pass;
-        std::ifstream* file = new std::ifstream("/storage/ssid.txt");
-        std::getline(*file, ssid);
-        file->close();
-        file->open("/storage/pass.txt");
-        std::getline(*file, pass);
-        file->close();
-        delete file;
-
         wifi_config_t wifi_config = {
             .sta = {
                 .ssid = {},
@@ -70,9 +62,9 @@ namespace wifi {
                 .sort_method = WIFI_CONNECT_AP_BY_SIGNAL
             }
         };
-
-        memcpy(&wifi_config.sta.ssid, Config::get().ssid.c_str(), ssid.size());
-        memcpy(&wifi_config.sta.password, Config::get().pass.c_str(), pass.size());
+    
+        memcpy(&wifi_config.sta.ssid, Config::get().ssid.c_str(), Config::get().ssid.size());
+        memcpy(&wifi_config.sta.password, Config::get().pass.c_str(), Config::get().pass.size());
 
         wifi_config.sta.threshold = threshold;
         

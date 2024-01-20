@@ -79,7 +79,11 @@ namespace ble {
         file->close();
         delete file;
 
-        is_ssid = true;
+        wifi::Config::get().ssid = reinterpret_cast<char*>(value);
+        if (!wifi::Config::get().pass.empty()) {
+            wifi::init_sta();
+            mqtt::start_mqtt();
+        }
     }
 
     void write_password(uint8_t* value) {
@@ -88,7 +92,13 @@ namespace ble {
         file->close();
         delete file;
 
-        is_pass = true;
+        wifi::Config::get().pass = reinterpret_cast<char*>(value);
+        ESP_LOGI("WIFI", "%s %s", wifi::Config::get().ssid.c_str(), wifi::Config::get().pass.c_str());
+        if (!wifi::Config::get().ssid.empty()) {
+            ESP_LOGI("WIFI", "%s %s", wifi::Config::get().ssid.c_str(), wifi::Config::get().pass.c_str());
+            wifi::init_sta();
+            mqtt::start_mqtt();
+        }
     }
 
     void write_uid(uint8_t* value) {
@@ -97,7 +107,9 @@ namespace ble {
         file->close();
         delete file;
 
-        if (is_ssid && is_pass) {
+        mqtt::MqttClient::getClient().uid = reinterpret_cast<char*>(value);
+
+        if (!wifi::Config::get().ssid.empty() && !wifi::Config::get().pass.empty()) {
             wifi::init_sta();
             mqtt::start_mqtt();
         }

@@ -4,6 +4,7 @@
 #include "json.hpp"
 
 #include <string>
+#include <fstream>
 
 namespace mqtt {
     using json = nlohmann::json;
@@ -14,23 +15,24 @@ namespace mqtt {
 
             return mqtt_client;
         }
-    
+
         esp_mqtt_client_handle_t client;
+        std::string uid;
         json humidity;
         json temperature;
         bool connected{};
-    };
 
-    struct Data {
-        std::string id;
-        int frequency;
-        uint8_t min;
-        uint8_t max;
-    };
+        void read_cfg() {
+            using json = nlohmann::json;
+            
+            std::ifstream* file = new std::ifstream("/storage/moisture.json");
+            MqttClient::getClient().humidity = json::parse(*file);
+            delete file;
 
-    struct Device {
-        Data humidity;
-        Data temperature;
+            file = new std::ifstream("/storage/temperature.json");
+            MqttClient::getClient().humidity = json::parse(*file);
+            delete file;
+        }
     };
 
     void start_mqtt();

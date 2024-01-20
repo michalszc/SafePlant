@@ -87,9 +87,13 @@ extern "C" void app_main() {
         // connect to wifi
         if (wifi::init_sta() == ESP_OK) {
             // if connection successful run mqtt
+            mqtt::MqttClient::getClient().read_cfg();
             mqtt::start_mqtt();
         } else {
             // in other way run ble
+            wifi::Config::get().ssid.clear();
+            wifi::Config::get().pass.clear();
+
             diode::set_state(diode::State::PARING);
             wifi::Config::get().sould_connect = wifi::Config::ShouldConnect::PARTIALLY;
             ble::start_ble_server();

@@ -75,11 +75,13 @@ namespace moisture {
         auto value = get_moisture();
         auto value_str = std::to_string(value);
         lcd::Display::get_display().print("Moisture: " + value_str + "% ", 1, 0);
+        std::string info = "{ \"timestamp\":" + time_str + ",\"value\": " + value_str + "}"; 
         if (mqtt::MqttClient::getClient().connected) {
             auto client = mqtt::MqttClient::getClient().client;
-            std::string info = "{ \"timestamp\":" + time_str + ",\"value\": " + value_str + "}"; 
             auto topic = "DATA/"+mqtt::MqttClient::getClient().humidity["id"].get<std::string>(); 
             esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
+        } else {
+            // save to file
         }
         if ((value < min || value > max) && should_peeb) {
             buzz::buzz();

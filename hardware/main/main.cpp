@@ -18,6 +18,26 @@
 #include <freertos/task.h>
 #include <fstream>
 
+void save_time(void* params) {
+    while(true) {
+        std::ifstream* file = new std::ifstream("storage/time.txt");
+        std::string time;
+        std::getline(*file, time);
+        delete file;
+
+        timeval tv_now;
+        gettimeofday(&tv_now, nullptr);
+        auto now = static_cast<long long>(tv_now.tv_sec * 1000); 
+        if (time.empty() || now > std::stoll(time)) {
+            std::ofstream* file = new std::ofstream("storage/time.txt");
+            *file << now;
+            delete file;
+        }
+
+        vTaskDelay(60000 / portTICK_PERIOD_MS);
+    }
+}
+
 extern "C" void app_main() {
     esp_vfs_spiffs_conf_t cfg = {
         .base_path = "/storage",
@@ -58,6 +78,7 @@ extern "C" void app_main() {
     // buzz::prepare();
     xTaskCreate(diode::status_diode, "status", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::blink_wifi, "blink_connection", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
+    xTaskCreate(save_time, "current_time", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
 
     wifi::init();
 

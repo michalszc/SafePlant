@@ -29,6 +29,8 @@ namespace dht {
                     std::string info = "{ \"timestamp\":" + time_str + ",\"value\": " + value + "}";
                     auto topic = "DATA/"+mqtt::MqttClient::getClient().humidity["id"].get<std::string>();
                     esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
+                } else {
+                    // save to file
                 }
             }
 

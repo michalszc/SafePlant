@@ -72,7 +72,7 @@ namespace wifi {
         };
 
         memcpy(&wifi_config.sta.ssid, Config::get().ssid.c_str(), ssid.size());
-        memcpy(&wifi_config.sta.password, Config::get().ssid.c_str(), pass.size());
+        memcpy(&wifi_config.sta.password, Config::get().pass.c_str(), pass.size());
 
         wifi_config.sta.threshold = threshold;
         

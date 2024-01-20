@@ -51,6 +51,7 @@ extern "C" void app_main() {
     //     vTaskDelay(300 / portTICK_PERIOD_MS);
     // }
 
+    buzz::prepare();
     xTaskCreate(diode::status_diode, "status", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::blink_wifi, "blink_connection", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
 

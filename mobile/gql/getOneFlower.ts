@@ -1,6 +1,6 @@
-import { gql } from '@apollo/client'
+import { gql } from '@apollo/client';
 
-export const GET_ONE_FLOWER = gql`
+export const GET_FLOWER = gql`
 query Query($flowerId: ObjectID!) {
     flower(id: $flowerId) {
       humidity {
@@ -20,4 +20,4 @@ query Query($flowerId: ObjectID!) {
       }
     }
   }
-`
+`;

@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import { gql } from '@apollo/client';
 
 export const UPDATE_FLOWER = gql`
 mutation UpdateFlower($updateFlowerId: ObjectID!, $input: UpdateFlowerInput!) {
@@ -6,4 +6,4 @@ mutation UpdateFlower($updateFlowerId: ObjectID!, $input: UpdateFlowerInput!) {
       status
     }
   }
-`
+`;

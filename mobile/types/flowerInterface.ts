@@ -16,4 +16,4 @@ interface Flower {
   }
 }
 
-export default Flower
+export default Flower;

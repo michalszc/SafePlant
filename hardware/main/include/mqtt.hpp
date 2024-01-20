@@ -33,7 +33,6 @@ namespace mqtt {
             file = new std::ifstream("/storage/temperature.json");
             MqttClient::getClient().temperature = json::parse(*file);
             delete file;
-            ESP_LOGI("moisture", "%s", mqtt::MqttClient::getClient().humidity["id"].get<std::string>().c_str());
         }
     };
 

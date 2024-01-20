@@ -36,7 +36,7 @@ extern "C" void app_main() {
     xTaskCreate(diode::blink_wifi, "blink_connection", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
 
     wifi::init();
-
+  
     struct stat st;
     if (stat("/storage/uid.txt", &st) != 0) {
         // when no user id 

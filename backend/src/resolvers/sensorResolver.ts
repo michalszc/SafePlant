@@ -11,7 +11,7 @@ const sensor: SensorResolvers = {
     data: (
         { id }: Sensor, // eslint-disable-line @typescript-eslint/no-unused-vars
         { first, last, before, after, filter, sort }: Partial<SensorDataArgs>,
-        _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
+        { user }: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<Data> => {
         let sortField: string = 'dateTime';
         let sortOrder: number = 1;
@@ -36,6 +36,7 @@ const sensor: SensorResolvers = {
         }
 
         let filters: FilterQuery<typeof SensorData> = {
+            user: user.id,
             sensor: id
         };
         if (before) {
@@ -129,7 +130,7 @@ const sensor: SensorResolvers = {
                 };
             })
             .catch(err => {
-                logger.error(err);
+                logger.error(err.message);
 
                 throw err;
             });

@@ -25,7 +25,7 @@ namespace dht {
                 if (mqtt::MqttClient::getClient().connected) {
                     auto client = mqtt::MqttClient::getClient().client;
                     std::string info = "{ \"timestamp\":" + time_str + ",\"value\": " + value + "}";
-                    auto topic = "DATA/"+mqtt::MqttClient::getClient().humidity["id"].get<std::string>();
+                    auto topic = "DATA/"+mqtt::MqttClient::getClient().temperature["id"].get<std::string>();
                     esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
                 }
             }

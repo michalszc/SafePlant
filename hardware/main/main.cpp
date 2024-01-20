@@ -27,30 +27,6 @@ extern "C" void app_main() {
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-    // diode::init_rgb();
-    // while(true) {
-    //     diode::set_color(0,255,0);
-    //     vTaskDelay(300 / portTICK_PERIOD_MS);
-
-    //     diode::set_color(0,0,255);
-    //     vTaskDelay(300 / portTICK_PERIOD_MS);
-
-    //     diode::set_color(255,0,0);
-    //     vTaskDelay(300 / portTICK_PERIOD_MS);
-
-    //     diode::set_color(255,255,0);
-    //     vTaskDelay(300 / portTICK_PERIOD_MS);
-
-    //     diode::set_color(255,140,0);
-    //     vTaskDelay(300 / portTICK_PERIOD_MS);
-
-    //     diode::set_color(255,20,147);
-    //     vTaskDelay(300 / portTICK_PERIOD_MS);
-
-    //     diode::set_color(138,43,226);
-    //     vTaskDelay(300 / portTICK_PERIOD_MS);
-    // }
-
     // buzz::prepare();
     xTaskCreate(diode::status_diode, "status", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::blink_wifi, "blink_connection", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
@@ -101,10 +77,4 @@ extern "C" void app_main() {
     }
     xTaskCreate(dht::dht_test, "dht_test", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(moisture::measure_moisture_task, "moisture", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
-    // buzz::prepare();
-    // ESP_ERROR_CHECK(wifi::wifi_connect());
-    // xTaskCreate(dht::dht_test, "dht_test", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
-    // xTaskCreate(moisture::measure_moisture_task, "moisture", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
-    // ble::start_ble_server();
-    // mqtt::start_mqtt();
 }

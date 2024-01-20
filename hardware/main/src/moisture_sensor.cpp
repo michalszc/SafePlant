@@ -103,10 +103,12 @@ namespace moisture {
         std::string info;
         while (!file.eof()) {
             std::getline(file, info);
-            if (!file.empty()) {
+            if (!info.empty()) {
                 esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
             }
         }
+        file.close();
+        std::ofstream p("storage/moisture_data.txt");
     }
 
     uint8_t get_moisture() {

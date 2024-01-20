@@ -1,4 +1,4 @@
-#include "dht_handler.h"
+#include "dht_handler.hpp"
 #include "lcd.hpp"
 
 #include <dht.h>
@@ -50,9 +50,11 @@ namespace dht {
         std::string info;
         while (!file.eof()) {
             std::getline(file, info);
-            if (!file.empty()) {
+            if (!info.empty()) {
                 esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
             }
         }
+        file.close();
+        std::ofstream p("storage/moisture_data.txt");
     }
 }

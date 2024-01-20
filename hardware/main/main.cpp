@@ -1,4 +1,4 @@
-#include "dht_handler.h"
+#include "dht_handler.hpp"
 #include "wifi_connection.h"
 #include "diode.hpp"
 #include "nvs_flash.h"

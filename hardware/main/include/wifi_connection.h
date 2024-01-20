@@ -21,6 +21,7 @@ namespace wifi {
         std::string pass;
         int counter{};
         ShouldConnect sould_connect;
+        long long time;
 
         static Config& get() {
             static Config cfg;

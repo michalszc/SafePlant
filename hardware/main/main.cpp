@@ -2,7 +2,7 @@
 #include "wifi_connection.h"
 #include "diode.hpp"
 #include "nvs_flash.h"
-#include "moisture_sensor.h"
+#include "moisture_sensor.hpp"
 #include "buzzer.h"
 #include "lcd.hpp"
 #include "mqtt.hpp"
@@ -32,9 +32,19 @@ void save_time(void* params) {
             std::ofstream* file = new std::ofstream("storage/time.txt");
             *file << now;
             delete file;
+            wifi::Config::get().time = now;
         }
 
         vTaskDelay(60000 / portTICK_PERIOD_MS);
+    }
+}
+
+void load_time() {
+    std::ifstream file("storage/time.txt");
+    std::string time;
+    std::getline(file, time);
+    if (!time.empty()) {
+        wifi::Config::get().time = std::stoll(time);
     }
 }
 
@@ -50,6 +60,8 @@ extern "C" void app_main() {
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+    load_time();
 
     // buzz::prepare();
     xTaskCreate(diode::status_diode, "status", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);

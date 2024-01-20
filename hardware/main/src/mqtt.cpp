@@ -4,7 +4,6 @@
 #include "esp_log.h"
 #include "esp_event.h"
 #include <string>
-#include <fstream>
 #include "esp_spiffs.h"
 
 namespace mqtt {
@@ -28,7 +27,6 @@ namespace mqtt {
             return;
         }
         if (crop_topic == "NEW_DEVICE/"+uid) {
-            ESP_LOGI("MQTT", "Jestem w new_device");
             using json = nlohmann::json;
             json device = json::parse(data);
             json humidity = device["humidity"];
@@ -70,11 +68,7 @@ namespace mqtt {
 
         switch (static_cast<esp_mqtt_event_id_t>(event_id)) {   
         case MQTT_EVENT_CONNECTED: {
-            std::string uid;
-            std::ifstream* file = new std::ifstream("/storage/uid.txt");
-            std::getline(*file, uid);
-            file->close();
-            delete file;
+            auto uid = MqttClient::getClient().uid;
             ESP_LOGI("MQTT", "Topic: %s", uid.c_str());
             esp_mqtt_client_subscribe(client, ("NEW_DEVICE/"+uid).c_str(), 0);
             esp_mqtt_client_subscribe(client, ("UPDATE_DEVICE/"+uid).c_str(), 0);
@@ -92,10 +86,6 @@ namespace mqtt {
             break;
 
         case MQTT_EVENT_DATA: 
-            ESP_LOGI("MQTT", "MQTT_EVENT_DATA");
-            // printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-            // printf("DATA=%.*s\r\n", event->data_len, event->data);
-            ESP_LOGI("MQTT", "Reciving data");
             recive_msg(event->data, event->data_len, event->topic, event->topic_len, client);
             break;
 

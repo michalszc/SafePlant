@@ -9,7 +9,11 @@
 #include "bluetooth/ble.hpp"
 #include "json.hpp"
 
+#include "esp_sntp.h"
+#include "esp_netif_sntp.h"
+#include "esp_netif_types.h"
 #include "esp_spiffs.h"
+#include "esp_timer.h"
 #include "sys/stat.h"
 #include <freertos/task.h>
 #include <fstream>
@@ -55,6 +59,8 @@ extern "C" void app_main() {
     xTaskCreate(diode::status_diode, "status", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::blink_wifi, "blink_connection", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
 
+    wifi::init();
+
     struct stat st;
     if (stat("/storage/uid.txt", &st) != 0) {
         // when no user id 
@@ -86,6 +92,11 @@ extern "C" void app_main() {
 
         // connect to wifi
         if (wifi::init_sta() == ESP_OK) {
+            // synchronize time
+            esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
+            esp_netif_sntp_init(&config);
+            esp_netif_sntp_sync_wait(pdMS_TO_TICKS(10000));
+
             // if connection successful run mqtt
             mqtt::MqttClient::getClient().read_cfg();
             mqtt::start_mqtt();

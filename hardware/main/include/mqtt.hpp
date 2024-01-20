@@ -3,6 +3,7 @@
 
 #include "json.hpp"
 
+#include "esp_log.h"
 #include <string>
 #include <fstream>
 
@@ -30,8 +31,9 @@ namespace mqtt {
             delete file;
 
             file = new std::ifstream("/storage/temperature.json");
-            MqttClient::getClient().humidity = json::parse(*file);
+            MqttClient::getClient().temperature = json::parse(*file);
             delete file;
+            ESP_LOGI("moisture", "%s", mqtt::MqttClient::getClient().humidity["id"].get<std::string>().c_str());
         }
     };
 

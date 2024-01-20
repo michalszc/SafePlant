@@ -30,7 +30,7 @@ namespace mqtt {
             delete file;
 
             file = new std::ifstream("/storage/temperature.json");
-            MqttClient::getClient().humidity = json::parse(*file);
+            MqttClient::getClient().temperature = json::parse(*file);
             delete file;
         }
     };

@@ -1,5 +1,5 @@
 import winston from 'winston';
-import { LOGS } from '../constants';
+import { Environment, LOGS, NODE_ENV } from '../constants';
 import { ApolloServerPlugin } from '@apollo/server';
 
 const logger = winston.createLogger({
@@ -37,20 +37,22 @@ export default logger;
 export const loggerPlugin: ApolloServerPlugin = {
     // Fires whenever a GraphQL request is received from a client.
     async requestDidStart(requestContext) { // eslint-disable-line require-await
-        logger.info(`Request started! Query:\n ${requestContext.request.query}`);
+        if (NODE_ENV === Environment.PRODUCTION) {
+            logger.info(`Request started! Query:\n ${requestContext.request.query}`);
 
-        return {
-            // Fires whenever Apollo Server will parse a GraphQL
-            // request to create its associated document AST.
-            async parsingDidStart() { // eslint-disable-line require-await
-                logger.info('Parsing started!');
-            },
+            return {
+                // Fires whenever Apollo Server will parse a GraphQL
+                // request to create its associated document AST.
+                async parsingDidStart() { // eslint-disable-line require-await
+                    logger.info('Parsing started!');
+                },
 
-            // Fires whenever Apollo Server will validate a
-            // request's document AST against your GraphQL schema.
-            async validationDidStart() { // eslint-disable-line require-await
-                logger.info('Validation started!');
-            }
-        };
+                // Fires whenever Apollo Server will validate a
+                // request's document AST against your GraphQL schema.
+                async validationDidStart() { // eslint-disable-line require-await
+                    logger.info('Validation started!');
+                }
+            };
+        }
     }
 };

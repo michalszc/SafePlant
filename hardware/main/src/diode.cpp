@@ -63,7 +63,7 @@ namespace diode {
         }
     }
 
-    static void set_color(uint8_t red, uint8_t green, uint8_t blue) {
+    void set_color(uint8_t red, uint8_t green, uint8_t blue) {
         ESP_ERROR_CHECK(ledc_set_duty(led_ch[0].mode, led_ch[0].channel, red));
         ESP_ERROR_CHECK(ledc_update_duty(led_ch[0].mode, led_ch[0].channel));
 
@@ -76,6 +76,13 @@ namespace diode {
 
     void set_state(State state) {
         app_state = state;
+    }
+
+    void init() {
+        set_color(255,20,147);
+        vTaskDelay(300 / portTICK_PERIOD_MS);
+        set_color(0, 0, 0);
+        vTaskDelay(300 / portTICK_PERIOD_MS);
     }
 
     void paring() {
@@ -104,6 +111,10 @@ namespace diode {
         diode::init_rgb();
         while (true) {
             switch (app_state) {
+                case State::INIT:
+                    init();
+                    break;
+
                 case State::PARING:
                     paring();
                     break;

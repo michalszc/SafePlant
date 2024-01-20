@@ -51,7 +51,7 @@ extern "C" void app_main() {
     //     vTaskDelay(300 / portTICK_PERIOD_MS);
     // }
 
-    buzz::prepare();
+    // buzz::prepare();
     xTaskCreate(diode::status_diode, "status", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::blink_wifi, "blink_connection", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
 
@@ -60,6 +60,8 @@ extern "C" void app_main() {
         // when no user id 
 
         // run ble service
+        diode::set_state(diode::State::PARING);
+        wifi::Config::get().sould_connect = wifi::Config::ShouldConnect::FULL;
         ble::start_ble_server();
     } else {
         // when config file
@@ -88,12 +90,13 @@ extern "C" void app_main() {
             mqtt::start_mqtt();
         } else {
             // in other way run ble
+            diode::set_state(diode::State::PARING);
+            wifi::Config::get().sould_connect = wifi::Config::ShouldConnect::PARTIALLY;
             ble::start_ble_server();
         }
-
-        diode::set_state(diode::State::CONNECTED);
     }
-
+    xTaskCreate(dht::dht_test, "dht_test", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
+    xTaskCreate(moisture::measure_moisture_task, "moisture", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     // buzz::prepare();
     // ESP_ERROR_CHECK(wifi::wifi_connect());
     // xTaskCreate(dht::dht_test, "dht_test", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);

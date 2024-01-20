@@ -18,6 +18,7 @@ namespace diode {
     void blink_wifi(void* connected);
 
     enum State {
+        INIT,
         PARING,
         CONNECTED,
         WORKING,
@@ -27,9 +28,11 @@ namespace diode {
 
     void set_state(State state);
     void init_rgb();
+    void init();
     void paring();
     void connected();
     void works();
     void error();
     void status_diode(void* params);
+    void set_color(uint8_t red, uint8_t green, uint8_t blue);
 }

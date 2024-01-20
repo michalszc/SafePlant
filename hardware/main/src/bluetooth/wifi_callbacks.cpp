@@ -35,12 +35,19 @@ namespace ble {
                 gl_profile_tab[profile_num].char_uuid.len = ESP_UUID_LEN_16;
                 gl_profile_tab[profile_num].char_uuid.uuid.uuid16 = char_uuid;
 
-                esp_ble_gatts_start_service(gl_profile_tab[profile_num].service_handle);
-                ssid_property = ESP_GATT_CHAR_PROP_BIT_WRITE;
+                if (profile_num == USERID_APP_ID) {
+                    if (wifi::Config::get().sould_connect == wifi::Config::ShouldConnect::FULL) {
+                        esp_ble_gatts_start_service(gl_profile_tab[profile_num].service_handle);
+                    }
+                } else {
+                    if (wifi::Config::get().sould_connect != wifi::Config::ShouldConnect::NO) {
+                        esp_ble_gatts_start_service(gl_profile_tab[profile_num].service_handle);
+                    }
+                }
                 ESP_ERROR_CHECK(esp_ble_gatts_add_char(gl_profile_tab[profile_num].service_handle,
                                                         &gl_profile_tab[profile_num].char_uuid,
                                                         ESP_GATT_PERM_WRITE,
-                                                        ssid_property, nullptr, nullptr));
+                                                        ESP_GATT_CHAR_PROP_BIT_WRITE, nullptr, nullptr));
                 break;
             case ESP_GATTS_ADD_CHAR_EVT:
                 gl_profile_tab[profile_num].char_handle = param->add_char.attr_handle;

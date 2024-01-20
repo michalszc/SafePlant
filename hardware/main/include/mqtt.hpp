@@ -3,6 +3,7 @@
 
 #include "json.hpp"
 
+#include "esp_log.h"
 #include <string>
 #include <fstream>
 

@@ -69,7 +69,9 @@ namespace moisture {
     void measure_moisture() {
         uint8_t min = 10;
         uint8_t max = 70;
-        auto time_str = std::to_string(esp_timer_get_time() / 1000);
+        timeval tv_now;
+        gettimeofday(&tv_now, nullptr);
+        auto time_str = std::to_string(tv_now.tv_sec * 1000);
         auto value = get_moisture();
         auto value_str = std::to_string(value);
         lcd::Display::get_display().print("Moisture: " + value_str + "% ", 1, 0);

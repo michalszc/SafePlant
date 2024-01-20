@@ -8,6 +8,7 @@
 
 namespace wifi {
     esp_err_t init_sta();
+    void init();
 
     struct Config {
         enum ShouldConnect {

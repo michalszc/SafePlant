@@ -10,7 +10,6 @@
 #include <cstring>
 
 namespace wifi {
-    static SemaphoreHandle_t ip_adrr_sph;
     static EventGroupHandle_t s_wifi_event_group;
     constexpr size_t MAX_RECONNECT = 3;
 
@@ -37,10 +36,6 @@ namespace wifi {
 
     esp_err_t init_sta() {
         s_wifi_event_group = xEventGroupCreate();
-        esp_netif_create_default_wifi_sta();
-
-        wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-        ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
         esp_event_handler_instance_t instance_any_id;
         esp_event_handler_instance_t instance_got_ip;
@@ -83,5 +78,12 @@ namespace wifi {
             return ESP_OK;
         }
         return ESP_ERR_WIFI_NOT_CONNECT;
+    }
+
+    void init() {
+        esp_netif_create_default_wifi_sta();
+
+        wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+        ESP_ERROR_CHECK(esp_wifi_init(&cfg));
     }
 }

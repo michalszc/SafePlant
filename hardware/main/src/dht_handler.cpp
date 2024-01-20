@@ -19,7 +19,9 @@ namespace dht {
 
         while (true) {
             if (dht_read_float_data(SENSOR_TYPE, CONFIG_EXAMPLE_DATA_GPIO, &humidity, &temperature) == ESP_OK) {
-                auto time_str = std::to_string(esp_timer_get_time() / 1000);
+                timeval tv_now;
+                gettimeofday(&tv_now, nullptr);
+                auto time_str = std::to_string(tv_now.tv_sec * 1000);
                 auto value = std::to_string(static_cast<int>(temperature));
                 lcd::Display::get_display().print("Temp: " + value + "\337C", 0, 0);
                 if (mqtt::MqttClient::getClient().connected) {

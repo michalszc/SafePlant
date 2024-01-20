@@ -32,7 +32,7 @@ void save_time(void* params) {
             std::ofstream* file = new std::ofstream("storage/time.txt");
             *file << now;
             delete file;
-            wifi::Config::get().time = now;
+            mqtt::MqttClient::getClient().time = now;
         }
 
         vTaskDelay(60000 / portTICK_PERIOD_MS);
@@ -44,7 +44,7 @@ void load_time() {
     std::string time;
     std::getline(file, time);
     if (!time.empty()) {
-        wifi::Config::get().time = std::stoll(time);
+        mqtt::MqttClient::getClient().time = std::stoll(time);
     }
 }
 

@@ -71,7 +71,11 @@ namespace moisture {
         uint8_t max = 70;
         timeval tv_now;
         gettimeofday(&tv_now, nullptr);
-        auto time_str = std::to_string(tv_now.tv_sec * 1000);
+        auto time = static_cast<long long>(tv_now.tv_sec * 1000 + tv_now.tv_usec / 1000);
+        if (time < mqtt::MqttClient::getClient().time) {
+            time += mqtt::MqttClient::getClient().time;
+        }
+        auto time_str = std::to_string(time);
         auto value = get_moisture();
         auto value_str = std::to_string(value);
         lcd::Display::get_display().print("Moisture: " + value_str + "% ", 1, 0);

@@ -41,7 +41,7 @@ void save_time(void* params) {
 }
 
 void load_time() {
-    std::ifstream file("storage/time.txt");
+    std::ifstream file("/storage/time.txt");
     std::string time;
     std::getline(file, time);
     if (!time.empty()) {

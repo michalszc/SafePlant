@@ -45,7 +45,7 @@ namespace moisture {
     }
 
     void measure_moisture_task(void* params) {
-        constexpr int delay = mqtt::MqttClient::getClient().humidity["frequency"].get<int>() * 1000;
+        int delay = mqtt::MqttClient::getClient().humidity["frequency"].get<int>() * 1000;
         adc_oneshot_unit_init_cfg_t init_cfg = {
             .unit_id = ADC_UNIT_1
         };

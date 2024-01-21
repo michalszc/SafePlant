@@ -85,7 +85,7 @@ namespace moisture {
             auto topic = "DATA/"+mqtt::MqttClient::getClient().humidity["id"].get<std::string>(); 
             esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
         } else {
-            std::ofstream file("storage/moisture_data.txt", std::ios::app);
+            std::ofstream file("/storage/moisture_data.txt", std::ios::app);
             file << info << std::endl;
         }
         if ((value < min || value > max) && should_peeb) {
@@ -94,21 +94,6 @@ namespace moisture {
             should_peeb = true;
         }
         
-    }
-
-    void send_old() {
-        auto client = mqtt::MqttClient::getClient().client;
-        auto topic = "DATA/"+mqtt::MqttClient::getClient().humidity["id"].get<std::string>();
-        std::ifstream file("storage/moisture_data.txt");
-        std::string info;
-        while (!file.eof()) {
-            std::getline(file, info);
-            if (!info.empty()) {
-                esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
-            }
-        }
-        file.close();
-        std::ofstream p("storage/moisture_data.txt");
     }
 
     uint8_t get_moisture() {

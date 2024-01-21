@@ -1,13 +1,14 @@
-#include "dht_handler.h"
+#include "dht_handler.hpp"
 #include "wifi_connection.h"
 #include "diode.hpp"
 #include "nvs_flash.h"
-#include "moisture_sensor.h"
+#include "moisture_sensor.hpp"
 #include "buzzer.h"
 #include "lcd.hpp"
 #include "mqtt.hpp"
 #include "bluetooth/ble.hpp"
 #include "json.hpp"
+#include "button.hpp"
 
 #include "esp_sntp.h"
 #include "esp_netif_sntp.h"
@@ -17,6 +18,36 @@
 #include "sys/stat.h"
 #include <freertos/task.h>
 #include <fstream>
+
+void save_time(void* params) {
+    while(true) {
+        std::ifstream* file = new std::ifstream("/storage/time.txt");
+        std::string time;
+        std::getline(*file, time);
+        delete file;
+
+        timeval tv_now;
+        gettimeofday(&tv_now, nullptr);
+        auto now = static_cast<long long>(tv_now.tv_sec * 1000); 
+        if (time.empty() || now > std::stoll(time)) {
+            std::ofstream* file = new std::ofstream("/storage/time.txt");
+            *file << now;
+            delete file;
+            mqtt::MqttClient::getClient().time = now;
+        }
+
+        vTaskDelay(60000 / portTICK_PERIOD_MS);
+    }
+}
+
+void load_time() {
+    std::ifstream file("/storage/time.txt");
+    std::string time;
+    std::getline(file, time);
+    if (!time.empty()) {
+        mqtt::MqttClient::getClient().time = std::stoll(time);
+    }
+}
 
 extern "C" void app_main() {
     esp_vfs_spiffs_conf_t cfg = {
@@ -30,10 +61,14 @@ extern "C" void app_main() {
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-
-    // buzz::prepare();
+  
+    load_time();
+  
+    buzz::prepare();
+    xTaskCreate(button::button_task, "button", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::status_diode, "status", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::blink_wifi, "blink_connection", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
+    xTaskCreate(save_time, "current_time", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
 
     wifi::init();
   

@@ -12,6 +12,7 @@ idf_component_register(SRCS "main.cpp"
                             "src/bluetooth/wifi_callbacks.cpp"
                             "src/bluetooth/moisture_callback.cpp"
                             "src/bluetooth/client.cpp"
+                            "src/button.cpp"
                         REQUIRES driver esp_adc dht esp_wifi lwip esp_netif
                         PRIV_REQUIRES nvs_flash mqtt bt spiffs
                     INCLUDE_DIRS "./include")

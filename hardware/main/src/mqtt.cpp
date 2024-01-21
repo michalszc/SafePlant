@@ -5,8 +5,42 @@
 #include "esp_event.h"
 #include <string>
 #include "esp_spiffs.h"
+#include "sys/stat.h"
 
 namespace mqtt {
+    void send_old_data() {
+        auto client = mqtt::MqttClient::getClient().client;
+        auto topic = "DATA/"+mqtt::MqttClient::getClient().temperature["id"].get<std::string>();
+        std::ifstream file;
+        std::string info;
+        struct stat st;
+        if (stat("/storage/temperature_data.txt", &st) == 0) {
+            file.open("/storage/temperature_data.txt");
+            while (!file.eof()) {
+                std::getline(file, info);
+                if (!info.empty()) {
+                    esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
+                }
+            }
+        }
+        file.close();
+        std::ofstream p("storage/moisture_data.txt");
+        p.close();
+
+        topic = "DATA/"+mqtt::MqttClient::getClient().humidity["id"].get<std::string>();
+        if (stat("/storage/moisture_data.txt", &st) == 0) {
+            file.open("/storage/moisture_data.txt");
+            while (!file.eof()) {
+                std::getline(file, info);
+                if (!info.empty()) {
+                    esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
+                }
+            }
+        }
+        file.close();
+        p.open("/storage/moisture_data.txt");
+        p.close();
+    }
 
     void recive_msg(const char* msg, size_t msg_len, const char* topic, size_t topic_len, esp_mqtt_client_handle_t client) {
         std::string data(msg, msg_len);
@@ -74,6 +108,7 @@ namespace mqtt {
             esp_mqtt_client_subscribe(client, ("UPDATE_DEVICE/"+uid).c_str(), 0);
             esp_mqtt_client_subscribe(client, ("REMOVE_DEVICE/"+uid).c_str(), 0);
             MqttClient::getClient().connected = true;
+            send_old_data();
         }
             break;
         

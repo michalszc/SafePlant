@@ -21,6 +21,7 @@ namespace mqtt {
         std::string uid;
         json humidity;
         json temperature;
+        long long time;
         bool connected{};
 
         void read_cfg() {

@@ -1,4 +1,4 @@
-#include "moisture_sensor.h"
+#include "moisture_sensor.hpp"
 #include "lcd.hpp"
 #include "mqtt.hpp"
 #include "buzzer.h"
@@ -71,15 +71,22 @@ namespace moisture {
         uint8_t max = 70;
         timeval tv_now;
         gettimeofday(&tv_now, nullptr);
-        auto time_str = std::to_string(tv_now.tv_sec * 1000);
+        auto time = static_cast<long long>(tv_now.tv_sec * 1000 + tv_now.tv_usec / 1000);
+        if (time < mqtt::MqttClient::getClient().time) {
+            time += mqtt::MqttClient::getClient().time;
+        }
+        auto time_str = std::to_string(time);
         auto value = get_moisture();
         auto value_str = std::to_string(value);
         lcd::Display::get_display().print("Moisture: " + value_str + "% ", 1, 0);
+        std::string info = "{ \"timestamp\":" + time_str + ",\"value\": " + value_str + "}"; 
         if (mqtt::MqttClient::getClient().connected) {
             auto client = mqtt::MqttClient::getClient().client;
-            std::string info = "{ \"timestamp\":" + time_str + ",\"value\": " + value_str + "}"; 
             auto topic = "DATA/"+mqtt::MqttClient::getClient().humidity["id"].get<std::string>(); 
             esp_mqtt_client_publish(client, topic.c_str(), info.c_str(), 0, 1, 0);
+        } else {
+            std::ofstream file("/storage/moisture_data.txt", std::ios::app);
+            file << info << std::endl;
         }
         if ((value < min || value > max) && should_peeb) {
             buzz::buzz();

@@ -18,6 +18,7 @@ namespace dht {
         float temperature, humidity;
 
         while (true) {
+            int delay = mqtt::MqttClient::getClient().temperature["frequency"].get<int>() * 1000;
             if (dht_read_float_data(SENSOR_TYPE, CONFIG_EXAMPLE_DATA_GPIO, &humidity, &temperature) == ESP_OK) {
                 timeval tv_now;
                 gettimeofday(&tv_now, nullptr);
@@ -39,7 +40,7 @@ namespace dht {
                 }
             }
 
-            vTaskDelay(pdMS_TO_TICKS(2000));
+            vTaskDelay(pdMS_TO_TICKS(delay));
         }
     }
 }

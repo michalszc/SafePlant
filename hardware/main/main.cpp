@@ -8,6 +8,7 @@
 #include "mqtt.hpp"
 #include "bluetooth/ble.hpp"
 #include "json.hpp"
+#include "button.hpp"
 
 #include "esp_sntp.h"
 #include "esp_netif_sntp.h"
@@ -63,7 +64,8 @@ extern "C" void app_main() {
   
     load_time();
   
-    // buzz::prepare();
+    buzz::prepare();
+    xTaskCreate(button::button_task, "button", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::status_diode, "status", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::blink_wifi, "blink_connection", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
     xTaskCreate(save_time, "current_time", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);

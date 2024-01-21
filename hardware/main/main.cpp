@@ -60,16 +60,16 @@ extern "C" void app_main() {
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-
+  
     load_time();
-
+  
     // buzz::prepare();
     xTaskCreate(diode::status_diode, "status", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::blink_wifi, "blink_connection", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
     xTaskCreate(save_time, "current_time", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
 
     wifi::init();
-
+  
     struct stat st;
     if (stat("/storage/uid.txt", &st) != 0) {
         // when no user id 

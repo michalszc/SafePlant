@@ -11,7 +11,7 @@ const queries: QueryResolvers = {
     flowers: (
         _: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
         { first, last, before, after, filter, sort }: Partial<QueryFlowersArgs>,
-        _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
+        { user }: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<Flowers> => {
         let sortField: string = '_id';
         let sortOrder: number = 1;
@@ -33,7 +33,9 @@ const queries: QueryResolvers = {
             sortOrder *= -1;
         }
 
-        let filters: FilterQuery<typeof FlowerModel> = {};
+        let filters: FilterQuery<typeof FlowerModel> = {
+            user: user.id
+        };
         if (before) {
             const key = sortOrder === 1 ? '$lt' : '$gt';
             filters = { ...filters, _id: { [key]: Buffer.from(before, 'base64').toString('ascii') } };
@@ -136,7 +138,7 @@ const queries: QueryResolvers = {
                 };
             })
             .catch(err => {
-                logger.error(err);
+                logger.error(err.message);
 
                 throw err;
             });
@@ -144,31 +146,39 @@ const queries: QueryResolvers = {
     flower: (
         _: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
         { id }: RequireFields<QueryFlowerArgs, 'id'>,
-        _context: Context // eslint-disable-line @typescript-eslint/no-unused-vars
+        { user }: Context // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<Flower> => {
-        return FlowerModel.findById(id)
+        return FlowerModel.findOne({
+            _id: id, user: user.id
+        })
             .populate('humidity')
             .populate('temperature')
-            .then(flower => ({
-                id,
-                name: flower.name,
-                humidity: {
-                    id: flower.humidity._id.toString(),
-                    type: SensorTypeEnum.Humidity,
-                    frequency: flower.humidity.frequency,
-                    validRange: flower.humidity.validRange,
-                    data: null
-                },
-                temperature: {
-                    id: flower.temperature._id.toString(),
-                    type: SensorTypeEnum.Temperature,
-                    frequency: flower.temperature.frequency,
-                    validRange: flower.temperature.validRange,
-                    data: null
+            .then(flower => {
+                if (!flower) {
+                    throw Error(`Cannot find flower with id ${id}`);
                 }
-            }))
+
+                return ({
+                    id,
+                    name: flower.name,
+                    humidity: {
+                        id: flower.humidity._id.toString(),
+                        type: SensorTypeEnum.Humidity,
+                        frequency: flower.humidity.frequency,
+                        validRange: flower.humidity.validRange,
+                        data: null
+                    },
+                    temperature: {
+                        id: flower.temperature._id.toString(),
+                        type: SensorTypeEnum.Temperature,
+                        frequency: flower.temperature.frequency,
+                        validRange: flower.temperature.validRange,
+                        data: null
+                    }
+                });
+            })
             .catch(err => {
-                logger.error(err);
+                logger.error(err.message);
 
                 throw err;
             });
@@ -187,7 +197,7 @@ const queries: QueryResolvers = {
                 data: null // pass null to resolve this value in Sensor
             }))
             .catch(err => {
-                logger.error(err);
+                logger.error(err.message);
 
                 throw err;
             });

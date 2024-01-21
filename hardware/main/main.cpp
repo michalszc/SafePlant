@@ -20,7 +20,7 @@
 
 void save_time(void* params) {
     while(true) {
-        std::ifstream* file = new std::ifstream("storage/time.txt");
+        std::ifstream* file = new std::ifstream("/storage/time.txt");
         std::string time;
         std::getline(*file, time);
         delete file;
@@ -29,7 +29,7 @@ void save_time(void* params) {
         gettimeofday(&tv_now, nullptr);
         auto now = static_cast<long long>(tv_now.tv_sec * 1000); 
         if (time.empty() || now > std::stoll(time)) {
-            std::ofstream* file = new std::ofstream("storage/time.txt");
+            std::ofstream* file = new std::ofstream("/storage/time.txt");
             *file << now;
             delete file;
             mqtt::MqttClient::getClient().time = now;
@@ -40,7 +40,7 @@ void save_time(void* params) {
 }
 
 void load_time() {
-    std::ifstream file("storage/time.txt");
+    std::ifstream file("/storage/time.txt");
     std::string time;
     std::getline(file, time);
     if (!time.empty()) {

@@ -45,7 +45,6 @@ namespace moisture {
     }
 
     void measure_moisture_task(void* params) {
-        int delay = mqtt::MqttClient::getClient().humidity["frequency"].get<int>() * 1000;
         adc_oneshot_unit_init_cfg_t init_cfg = {
             .unit_id = ADC_UNIT_1
         };
@@ -61,14 +60,15 @@ namespace moisture {
         bool calibrated = init_adc_calibration(ADC_UNIT_1, CHANNEL, ATTEN, &channel_handle);
 
         while (true) {
+            int delay = mqtt::MqttClient::getClient().humidity["frequency"].get<int>() * 1000;
             measure_moisture();
             vTaskDelay(pdMS_TO_TICKS(delay));
         }
     }
 
     void measure_moisture() {
-        uint8_t min = 10;
-        uint8_t max = 70;
+        uint8_t min = mqtt::MqttClient::getClient().min_moisture();
+        uint8_t max = mqtt::MqttClient::getClient().max_moisture();
         timeval tv_now;
         gettimeofday(&tv_now, nullptr);
         auto time = static_cast<long long>(tv_now.tv_sec * 1000 + tv_now.tv_usec / 1000);

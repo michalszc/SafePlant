@@ -35,6 +35,14 @@ namespace mqtt {
             MqttClient::getClient().temperature = json::parse(*file);
             delete file;
         }
+
+        static uint8_t min_moisture() {
+            return static_cast<uint8_t>(MqttClient::getClient().humidity["validRange"]["min"].get<float>());
+        }
+
+        static uint8_t max_moisture() {
+            return static_cast<uint8_t>(MqttClient::getClient().humidity["validRange"]["min"].get<float>());
+        }
     };
 
     void start_mqtt();

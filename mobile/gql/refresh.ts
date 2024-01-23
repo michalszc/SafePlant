@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import { gql } from '@apollo/client';
 
 export const REFRESH = gql`
 mutation Mutation($token: JWT!) {
@@ -8,4 +8,4 @@ mutation Mutation($token: JWT!) {
         refreshToken
       }
     }
-  }`
+  }`;

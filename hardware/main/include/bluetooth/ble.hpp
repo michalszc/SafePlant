@@ -61,7 +61,6 @@ namespace ble {
 
     static uint8_t adv_config_done = 0;
     static esp_gatt_char_prop_t moisture_property = 0;
-    static esp_gatt_char_prop_t ssid_property = 0;
 
     static uint8_t adv_service_uuid128[32] = {
         //first uuid

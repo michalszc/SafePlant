@@ -4,8 +4,27 @@
 #include "esp_log.h"
 #include "esp_err.h"
 
+#include <string>
+
 namespace wifi {
-    esp_netif_t* wifi_start();
-    esp_err_t wifi_do_connect(wifi_config_t wifi_config, bool wait, void* connected);
-    esp_err_t wifi_connect();
+    esp_err_t init_sta();
+    void init();
+
+    struct Config {
+        enum ShouldConnect {
+            NO,
+            PARTIALLY,
+            FULL
+        };
+
+        std::string ssid;
+        std::string pass;
+        int counter{};
+        ShouldConnect sould_connect;
+
+        static Config& get() {
+            static Config cfg;
+            return cfg;
+        }
+    };
 }

@@ -1,5 +1,5 @@
 #include "bluetooth/ble.hpp"
-#include "moisture_sensor.h"
+#include "moisture_sensor.hpp"
 
 #include "esp_bt.h"
 #include "esp_gatt_common_api.h"

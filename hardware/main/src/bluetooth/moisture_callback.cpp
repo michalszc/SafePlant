@@ -1,6 +1,6 @@
 #include "bluetooth/ble.hpp"
 #include "esp_log.h"
-#include "moisture_sensor.h"
+#include "moisture_sensor.hpp"
 
 #include <cstring>
 

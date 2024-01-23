@@ -60,8 +60,11 @@ namespace moisture {
         bool calibrated = init_adc_calibration(ADC_UNIT_1, CHANNEL, ATTEN, &channel_handle);
 
         while (true) {
-            int delay = mqtt::MqttClient::getClient().humidity["frequency"].get<int>() * 1000;
-            measure_moisture();
+            int delay = 1000;
+            if (!mqtt::MqttClient::getClient().humidity.empty()) {
+                delay = mqtt::MqttClient::getClient().humidity["frequency"].get<int>() * 1000;
+                measure_moisture();
+            }
             vTaskDelay(pdMS_TO_TICKS(delay));
         }
     }

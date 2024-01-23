@@ -88,7 +88,7 @@ namespace ble {
         delete file;
 
         wifi::Config::get().ssid = reinterpret_cast<char*>(value);
-        if (!wifi::Config::get().pass.empty()) {
+        if (!wifi::Config::get().pass.empty() && !mqtt::MqttClient::getClient().uid.empty()) {
             connect_to_wifi();
         }
     }
@@ -101,7 +101,7 @@ namespace ble {
 
         wifi::Config::get().pass = reinterpret_cast<char*>(value);
         ESP_LOGI("WIFI", "%s %s", wifi::Config::get().ssid.c_str(), wifi::Config::get().pass.c_str());
-        if (!wifi::Config::get().ssid.empty()) {
+        if (!wifi::Config::get().ssid.empty() && !mqtt::MqttClient::getClient().uid.empty()) {
             ESP_LOGI("WIFI", "%s %s", wifi::Config::get().ssid.c_str(), wifi::Config::get().pass.c_str());
             connect_to_wifi();
         }

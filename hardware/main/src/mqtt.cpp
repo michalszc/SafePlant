@@ -3,6 +3,7 @@
 
 #include "esp_log.h"
 #include "esp_event.h"
+#include "esp_system.h"
 #include <string>
 #include "esp_spiffs.h"
 #include "sys/stat.h"
@@ -86,10 +87,7 @@ namespace mqtt {
         delete file;
         if (crop_topic == "REMOVE_DEVICE/"+uid && data == "REMOVE_DEVICE") {
             esp_spiffs_format(nullptr);
-            esp_mqtt_client_unsubscribe(client, ("NEW_DEVICE/"+uid).c_str());
-            esp_mqtt_client_unsubscribe(client, ("UPDATE_DEVICE/"+uid).c_str());
-            esp_mqtt_client_unsubscribe(client, ("REMOVE_DEVICE/"+uid).c_str());
-            MqttClient::getClient().connected = false;
+            esp_restart();
             return;
         }
         if (crop_topic == "NEW_DEVICE/"+uid) {

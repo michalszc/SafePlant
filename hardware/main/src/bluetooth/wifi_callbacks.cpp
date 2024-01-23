@@ -73,6 +73,13 @@ namespace ble {
         ESP_LOGI(GATTS_TAG, "%s\n", value);
     }
 
+    void connect_to_wifi() {
+        if (wifi::init_sta() == ESP_OK) {
+            mqtt::MqttClient::getClient().read_cfg();
+            mqtt::start_mqtt();
+        }
+    }
+
     void write_ssid(uint8_t* value) {
         std::ofstream* file = new std::ofstream("/storage/ssid.txt");
         *file << std::string(reinterpret_cast<char*>(value));
@@ -81,8 +88,7 @@ namespace ble {
 
         wifi::Config::get().ssid = reinterpret_cast<char*>(value);
         if (!wifi::Config::get().pass.empty()) {
-            wifi::init_sta();
-            mqtt::start_mqtt();
+            connect_to_wifi();
         }
     }
 
@@ -96,8 +102,7 @@ namespace ble {
         ESP_LOGI("WIFI", "%s %s", wifi::Config::get().ssid.c_str(), wifi::Config::get().pass.c_str());
         if (!wifi::Config::get().ssid.empty()) {
             ESP_LOGI("WIFI", "%s %s", wifi::Config::get().ssid.c_str(), wifi::Config::get().pass.c_str());
-            wifi::init_sta();
-            mqtt::start_mqtt();
+            connect_to_wifi();
         }
     }
 
@@ -110,8 +115,7 @@ namespace ble {
         mqtt::MqttClient::getClient().uid = reinterpret_cast<char*>(value);
 
         if (!wifi::Config::get().ssid.empty() && !wifi::Config::get().pass.empty()) {
-            wifi::init_sta();
-            mqtt::start_mqtt();
+            connect_to_wifi();
         }
     }
 

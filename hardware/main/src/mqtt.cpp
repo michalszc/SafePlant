@@ -84,7 +84,7 @@ namespace mqtt {
         std::getline(*file, uid);
         file->close();
         delete file;
-        if (data == "REMOVE_DEVICE") {
+        if (crop_topic == "REMOVE_DEVICE/"+uid && data == "REMOVE_DEVICE") {
             esp_spiffs_format(nullptr);
             esp_mqtt_client_unsubscribe(client, ("NEW_DEVICE/"+uid).c_str());
             esp_mqtt_client_unsubscribe(client, ("UPDATE_DEVICE/"+uid).c_str());

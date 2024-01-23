@@ -76,7 +76,6 @@ namespace ble {
         stop_service(SSID_APP_ID);
         stop_service(PASS_APP_ID);
         if (wifi::init_sta() == ESP_OK) {
-            mqtt::MqttClient::getClient().read_cfg();
             mqtt::start_mqtt();
         }
     }
@@ -88,7 +87,7 @@ namespace ble {
         delete file;
 
         wifi::Config::get().ssid = reinterpret_cast<char*>(value);
-        if (!wifi::Config::get().pass.empty() && !mqtt::MqttClient::getClient().uid.empty()) {
+        if (!wifi::Config::get().pass.empty()) {
             connect_to_wifi();
         }
     }

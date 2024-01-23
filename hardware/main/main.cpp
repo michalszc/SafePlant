@@ -91,8 +91,6 @@ extern "C" void app_main() {
         file->close();
         delete file;
 
-        ESP_LOGI("UID", "%s", mqtt::MqttClient::getClient().uid.c_str());
-
         file = new std::ifstream("/storage/ssid.txt");
         std::getline(*file, wifi::Config::get().ssid);
         file->close();
@@ -103,6 +101,8 @@ extern "C" void app_main() {
         file->close();
         delete file;
 
+        mqtt::MqttClient::getClient().read_cfg();
+
         // connect to wifi
         if (wifi::init_sta() == ESP_OK) {
             // synchronize time
@@ -111,7 +111,6 @@ extern "C" void app_main() {
             esp_netif_sntp_sync_wait(pdMS_TO_TICKS(10000));
 
             // if connection successful run mqtt
-            mqtt::MqttClient::getClient().read_cfg();
             mqtt::start_mqtt();
         } else {
             // in other way run ble

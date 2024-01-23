@@ -10,6 +10,9 @@
 
 namespace mqtt {
     void send_old_data() {
+        if (mqtt::MqttClient::getClient().temperature.empty() || mqtt::MqttClient::getClient().humidity.empty()) {
+            return;
+        }
         auto client = mqtt::MqttClient::getClient().client;
         auto topic = "DATA/"+mqtt::MqttClient::getClient().temperature["id"].get<std::string>();
         std::ifstream file;
@@ -80,31 +83,35 @@ namespace mqtt {
         std::string crop_topic(topic, topic_len);
         ESP_LOGI("MQTT", "Topic: %s", crop_topic.c_str());
         ESP_LOGI("MQTT", "Data: %s", data.c_str());
-        std::string uid;
-        std::ifstream* file = new std::ifstream("/storage/uid.txt");
-        std::getline(*file, uid);
-        file->close();
-        delete file;
+        std::string uid = mqtt::MqttClient::getClient().uid;
+        // std::ifstream* file = new std::ifstream("/storage/uid.txt");
+        // std::getline(*file, uid);
+        // file->close();
+        // delete file;
         if (crop_topic == "REMOVE_DEVICE/"+uid && data == "REMOVE_DEVICE") {
             esp_spiffs_format(nullptr);
             esp_restart();
             return;
         }
         if (crop_topic == "NEW_DEVICE/"+uid) {
+            ESP_LOGI("Mqtt", "New device");
             using json = nlohmann::json;
-            json device = json::parse(data);
-            json humidity = device["humidity"];
-            json temperature = device["temperature"];
-            MqttClient::getClient().humidity = humidity;
-            MqttClient::getClient().temperature = temperature;
+            if (json::accept(data)) {
+                ESP_LOGI("Mqtt", "Accpeted");
+                json device = json::parse(data);
+                json humidity = device["humidity"];
+                json temperature = device["temperature"];
+                MqttClient::getClient().humidity = humidity;
+                MqttClient::getClient().temperature = temperature;
 
-            std::ofstream* file = new std::ofstream("/storage/moisture.json");
-            *file << humidity;
-            file->close();
-            file->open("/storage/temperature.json");
-            *file << temperature;
-            file->close();
-            delete file;
+                std::ofstream* file = new std::ofstream("/storage/moisture.json");
+                *file << humidity;
+                file->close();
+                file->open("/storage/temperature.json");
+                *file << temperature;
+                file->close();
+                delete file;
+            }
         }
         if (crop_topic == "UPDATE_DEVICE/"+uid) {
             update_device(data);

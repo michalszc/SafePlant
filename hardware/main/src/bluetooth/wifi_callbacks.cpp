@@ -11,6 +11,14 @@ namespace ble {
     static bool is_ssid{};
     static bool is_pass{};
     
+    void start_service(uint16_t service_id) {
+        esp_ble_gatts_start_service(gl_profile_tab[service_id].service_handle);
+    }
+
+    void stop_service(uint16_t service_id) {
+        esp_ble_gatts_stop_service(gl_profile_tab[service_id].service_handle);
+    }
+
     void default_write_event_handler(esp_gatts_cb_event_t event,
         esp_gatt_if_t gatts_if,
         esp_ble_gatts_cb_param_t *param, 
@@ -35,15 +43,6 @@ namespace ble {
                 gl_profile_tab[profile_num].char_uuid.len = ESP_UUID_LEN_16;
                 gl_profile_tab[profile_num].char_uuid.uuid.uuid16 = char_uuid;
 
-                if (profile_num == USERID_APP_ID) {
-                    if (wifi::Config::get().sould_connect == wifi::Config::ShouldConnect::FULL) {
-                        esp_ble_gatts_start_service(gl_profile_tab[profile_num].service_handle);
-                    }
-                } else {
-                    if (wifi::Config::get().sould_connect != wifi::Config::ShouldConnect::NO) {
-                        esp_ble_gatts_start_service(gl_profile_tab[profile_num].service_handle);
-                    }
-                }
                 ESP_ERROR_CHECK(esp_ble_gatts_add_char(gl_profile_tab[profile_num].service_handle,
                                                         &gl_profile_tab[profile_num].char_uuid,
                                                         ESP_GATT_PERM_WRITE,
@@ -74,6 +73,8 @@ namespace ble {
     }
 
     void connect_to_wifi() {
+        stop_service(SSID_APP_ID);
+        stop_service(PASS_APP_ID);
         if (wifi::init_sta() == ESP_OK) {
             mqtt::MqttClient::getClient().read_cfg();
             mqtt::start_mqtt();
@@ -115,6 +116,7 @@ namespace ble {
         mqtt::MqttClient::getClient().uid = reinterpret_cast<char*>(value);
 
         if (!wifi::Config::get().ssid.empty() && !wifi::Config::get().pass.empty()) {
+            stop_service(USERID_APP_ID);
             connect_to_wifi();
         }
     }

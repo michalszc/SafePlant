@@ -61,10 +61,11 @@ extern "C" void app_main() {
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-  
+
     load_time();
   
     buzz::prepare();
+    ble::start_ble_server();
     xTaskCreate(button::button_task, "button", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::status_diode, "status", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::blink_wifi, "blink_connection", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
@@ -78,8 +79,9 @@ extern "C" void app_main() {
 
         // run ble service
         diode::set_state(diode::State::PARING);
-        wifi::Config::get().sould_connect = wifi::Config::ShouldConnect::FULL;
-        ble::start_ble_server();
+        ble::start_service(ble::SSID_APP_ID);
+        ble::start_service(ble::PASS_APP_ID);
+        ble::start_service(ble::USERID_APP_ID);
     } else {
         // when config file
 
@@ -117,8 +119,8 @@ extern "C" void app_main() {
             wifi::Config::get().pass.clear();
 
             diode::set_state(diode::State::PARING);
-            wifi::Config::get().sould_connect = wifi::Config::ShouldConnect::PARTIALLY;
-            ble::start_ble_server();
+            ble::start_service(ble::SSID_APP_ID);
+            ble::start_service(ble::PASS_APP_ID);
         }
     }
     xTaskCreate(dht::dht_test, "dht_test", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);

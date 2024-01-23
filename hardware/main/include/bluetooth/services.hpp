@@ -48,4 +48,7 @@ namespace ble {
             .gatts_if = ESP_GATT_IF_NONE
         }
     };
+
+    void start_service(uint16_t service_id);
+    void stop_service(uint16_t service_id);
 }

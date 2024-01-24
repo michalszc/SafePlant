@@ -10,9 +10,11 @@
 
 namespace mqtt {
     void send_old_data() {
+        ESP_LOGI("MQTT", "bout to send old data");
         if (mqtt::MqttClient::getClient().temperature.empty() || mqtt::MqttClient::getClient().humidity.empty()) {
             return;
         }
+        ESP_LOGI("MQTT", "sendin old data");
         auto client = mqtt::MqttClient::getClient().client;
         auto topic = "DATA/"+mqtt::MqttClient::getClient().temperature["id"].get<std::string>();
         std::ifstream file;
@@ -130,6 +132,7 @@ namespace mqtt {
             esp_mqtt_client_subscribe(client, ("UPDATE_DEVICE/"+uid).c_str(), 0);
             esp_mqtt_client_subscribe(client, ("REMOVE_DEVICE/"+uid).c_str(), 0);
             MqttClient::getClient().connected = true;
+            ESP_LOGI("MQTT", "I'm connected");
             send_old_data();
         }
             break;

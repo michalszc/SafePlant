@@ -9,6 +9,9 @@
 #include "freertos/event_groups.h"
 #include "esp_system.h"
 #include <cstring>
+#include "esp_sntp.h"
+#include "esp_netif_sntp.h"
+#include "esp_netif_types.h"
 
 namespace wifi {
     static EventGroupHandle_t s_wifi_event_group;
@@ -80,6 +83,11 @@ namespace wifi {
 
         if (bits & BIT0) {
             conn = true;
+
+            // synchronize time
+            esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
+            esp_netif_sntp_init(&config);
+
             return ESP_OK;
         }
         return ESP_ERR_WIFI_NOT_CONNECT;

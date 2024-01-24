@@ -28,11 +28,21 @@ namespace mqtt {
             using json = nlohmann::json;
             
             std::ifstream* file = new std::ifstream("/storage/moisture.json");
-            MqttClient::getClient().humidity = json::parse(*file);
+            std::string str((std::istreambuf_iterator<char>(*file)),
+                 std::istreambuf_iterator<char>());
+            ESP_LOGI("CONFIG", "%s", str.c_str());
+            if (json::accept(str)) {
+                MqttClient::getClient().humidity = json::parse(str);
+            }
             delete file;
 
             file = new std::ifstream("/storage/temperature.json");
-            MqttClient::getClient().temperature = json::parse(*file);
+            str = std::string((std::istreambuf_iterator<char>(*file)),
+                 std::istreambuf_iterator<char>());
+            ESP_LOGI("CONFIG", "%s", str.c_str());
+            if (json::accept(str)) {
+                MqttClient::getClient().temperature = json::parse(str);
+            }
             delete file;
         }
 

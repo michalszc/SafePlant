@@ -10,9 +10,6 @@
 #include "json.hpp"
 #include "button.hpp"
 
-#include "esp_sntp.h"
-#include "esp_netif_sntp.h"
-#include "esp_netif_types.h"
 #include "esp_spiffs.h"
 #include "esp_timer.h"
 #include "sys/stat.h"
@@ -62,6 +59,9 @@ extern "C" void app_main() {
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
+    // esp_spiffs_format(nullptr);
+    // return;
+
     load_time();
   
     buzz::prepare();
@@ -105,11 +105,6 @@ extern "C" void app_main() {
 
         // connect to wifi
         if (wifi::init_sta() == ESP_OK) {
-            // synchronize time
-            esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
-            esp_netif_sntp_init(&config);
-            esp_netif_sntp_sync_wait(pdMS_TO_TICKS(10000));
-
             // if connection successful run mqtt
             mqtt::start_mqtt();
         } else {

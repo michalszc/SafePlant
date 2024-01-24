@@ -51,7 +51,7 @@ namespace mqtt {
         }
 
         static uint8_t max_moisture() {
-            return static_cast<uint8_t>(MqttClient::getClient().humidity["validRange"]["min"].get<float>());
+            return static_cast<uint8_t>(MqttClient::getClient().humidity["validRange"]["max"].get<float>());
         }
     };
 

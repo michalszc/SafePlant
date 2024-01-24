@@ -11,16 +11,9 @@ namespace wifi {
     void init();
 
     struct Config {
-        enum ShouldConnect {
-            NO,
-            PARTIALLY,
-            FULL
-        };
-
         std::string ssid;
         std::string pass;
         int counter{};
-        ShouldConnect sould_connect;
 
         static Config& get() {
             static Config cfg;

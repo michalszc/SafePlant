@@ -10,9 +10,6 @@
 #include "json.hpp"
 #include "button.hpp"
 
-#include "esp_sntp.h"
-#include "esp_netif_sntp.h"
-#include "esp_netif_types.h"
 #include "esp_spiffs.h"
 #include "esp_timer.h"
 #include "sys/stat.h"
@@ -61,10 +58,14 @@ extern "C" void app_main() {
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-  
+
+    // esp_spiffs_format(nullptr);
+    // return;
+
     load_time();
   
     buzz::prepare();
+    ble::start_ble_server();
     xTaskCreate(button::button_task, "button", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::status_diode, "status", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::blink_wifi, "blink_connection", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
@@ -78,8 +79,9 @@ extern "C" void app_main() {
 
         // run ble service
         diode::set_state(diode::State::PARING);
-        wifi::Config::get().sould_connect = wifi::Config::ShouldConnect::FULL;
-        ble::start_ble_server();
+        ble::start_service(ble::SSID_APP_ID);
+        ble::start_service(ble::PASS_APP_ID);
+        ble::start_service(ble::USERID_APP_ID);
     } else {
         // when config file
 
@@ -88,8 +90,6 @@ extern "C" void app_main() {
         std::getline(*file, mqtt::MqttClient::getClient().uid);
         file->close();
         delete file;
-
-        ESP_LOGI("UID", "%s", mqtt::MqttClient::getClient().uid.c_str());
 
         file = new std::ifstream("/storage/ssid.txt");
         std::getline(*file, wifi::Config::get().ssid);
@@ -101,15 +101,11 @@ extern "C" void app_main() {
         file->close();
         delete file;
 
+        mqtt::MqttClient::getClient().read_cfg();
+
         // connect to wifi
         if (wifi::init_sta() == ESP_OK) {
-            // synchronize time
-            esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
-            esp_netif_sntp_init(&config);
-            esp_netif_sntp_sync_wait(pdMS_TO_TICKS(10000));
-
             // if connection successful run mqtt
-            mqtt::MqttClient::getClient().read_cfg();
             mqtt::start_mqtt();
         } else {
             // in other way run ble
@@ -117,8 +113,8 @@ extern "C" void app_main() {
             wifi::Config::get().pass.clear();
 
             diode::set_state(diode::State::PARING);
-            wifi::Config::get().sould_connect = wifi::Config::ShouldConnect::PARTIALLY;
-            ble::start_ble_server();
+            ble::start_service(ble::SSID_APP_ID);
+            ble::start_service(ble::PASS_APP_ID);
         }
     }
     xTaskCreate(dht::dht_test, "dht_test", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);

@@ -3,12 +3,18 @@
 
 #include "esp_log.h"
 #include "esp_event.h"
+#include "esp_system.h"
 #include <string>
 #include "esp_spiffs.h"
 #include "sys/stat.h"
 
 namespace mqtt {
     void send_old_data() {
+        ESP_LOGI("MQTT", "bout to send old data");
+        if (mqtt::MqttClient::getClient().temperature.empty() || mqtt::MqttClient::getClient().humidity.empty()) {
+            return;
+        }
+        ESP_LOGI("MQTT", "sendin old data");
         auto client = mqtt::MqttClient::getClient().client;
         auto topic = "DATA/"+mqtt::MqttClient::getClient().temperature["id"].get<std::string>();
         std::ifstream file;
@@ -42,57 +48,75 @@ namespace mqtt {
         p.close();
     }
 
+    void update_device(std::string data) {
+        using json = nlohmann::json;
+        json device = json::parse(data);
+        if (device.find("humidity") != device.end()) {
+            if (device["humidity"].find("frequency") != device["humidity"].end()) {
+                MqttClient::getClient().humidity["frequency"] = device["humidity"]["frequency"]; 
+            }
+
+            if (device["humidity"].find("validRange") != device["humidity"].end()) {
+                MqttClient::getClient().humidity["validRange"] = device["humidity"]["validRange"]; 
+            }
+        }
+
+        if (device.find("temperature") != device.end()) {
+            if (device["temperature"].find("frequency") != device["temperature"].end()) {
+                MqttClient::getClient().temperature["frequency"] = device["temperature"]["frequency"]; 
+            }
+
+            if (device["temperature"].find("validRange") != device["temperature"].end()) {
+                MqttClient::getClient().temperature["validRange"] = device["temperature"]["validRange"]; 
+            }
+        }
+
+        std::ofstream* file = new std::ofstream("/storage/moisture.json");
+        *file << MqttClient::getClient().humidity;
+        file->close();
+        file->open("/storage/temperature.json");
+        *file << MqttClient::getClient().temperature;
+        file->close();
+        delete file;
+    }
+
     void recive_msg(const char* msg, size_t msg_len, const char* topic, size_t topic_len, esp_mqtt_client_handle_t client) {
         std::string data(msg, msg_len);
         std::string crop_topic(topic, topic_len);
         ESP_LOGI("MQTT", "Topic: %s", crop_topic.c_str());
         ESP_LOGI("MQTT", "Data: %s", data.c_str());
-        std::string uid;
-        std::ifstream* file = new std::ifstream("/storage/uid.txt");
-        std::getline(*file, uid);
-        file->close();
-        delete file;
-        if (data == "REMOVE_DEVICE") {
+        std::string uid = mqtt::MqttClient::getClient().uid;
+        // std::ifstream* file = new std::ifstream("/storage/uid.txt");
+        // std::getline(*file, uid);
+        // file->close();
+        // delete file;
+        if (crop_topic == "REMOVE_DEVICE/"+uid && data == "REMOVE_DEVICE") {
             esp_spiffs_format(nullptr);
-            esp_mqtt_client_unsubscribe(client, ("NEW_DEVICE/"+uid).c_str());
-            esp_mqtt_client_unsubscribe(client, ("UPDATE_DEVICE/"+uid).c_str());
-            esp_mqtt_client_unsubscribe(client, ("REMOVE_DEVICE/"+uid).c_str());
-            MqttClient::getClient().connected = false;
+            esp_restart();
             return;
         }
         if (crop_topic == "NEW_DEVICE/"+uid) {
+            ESP_LOGI("Mqtt", "New device");
             using json = nlohmann::json;
-            json device = json::parse(data);
-            json humidity = device["humidity"];
-            json temperature = device["temperature"];
-            MqttClient::getClient().connected = true;
-            MqttClient::getClient().humidity = humidity;
-            MqttClient::getClient().temperature = temperature;
+            if (json::accept(data)) {
+                ESP_LOGI("Mqtt", "Accpeted");
+                json device = json::parse(data);
+                json humidity = device["humidity"];
+                json temperature = device["temperature"];
+                MqttClient::getClient().humidity = humidity;
+                MqttClient::getClient().temperature = temperature;
 
-            std::ofstream* file = new std::ofstream("/storage/moisture.json");
-            *file << humidity;
-            file->close();
-            file->open("/storage/temperature.json");
-            *file << temperature;
-            file->close();
-            delete file;
+                std::ofstream* file = new std::ofstream("/storage/moisture.json");
+                *file << humidity;
+                file->close();
+                file->open("/storage/temperature.json");
+                *file << temperature;
+                file->close();
+                delete file;
+            }
         }
         if (crop_topic == "UPDATE_DEVICE/"+uid) {
-            using json = nlohmann::json;
-            json device = json::parse(data);
-            json humidity = device["humidity"];
-            json temperature = device["temperature"];
-            MqttClient::getClient().connected = true;
-            MqttClient::getClient().humidity = humidity;
-            MqttClient::getClient().temperature = temperature;
-
-            std::ofstream* file = new std::ofstream("/storage/moisture.json");
-            *file << humidity;
-            file->close();
-            file->open("/storage/temperature.json");
-            *file << temperature;
-            file->close();
-            delete file;
+            update_device(data);
         }
     }
 
@@ -108,6 +132,7 @@ namespace mqtt {
             esp_mqtt_client_subscribe(client, ("UPDATE_DEVICE/"+uid).c_str(), 0);
             esp_mqtt_client_subscribe(client, ("REMOVE_DEVICE/"+uid).c_str(), 0);
             MqttClient::getClient().connected = true;
+            ESP_LOGI("MQTT", "I'm connected");
             send_old_data();
         }
             break;

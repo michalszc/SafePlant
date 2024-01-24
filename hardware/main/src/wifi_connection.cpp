@@ -1,5 +1,6 @@
 #include "wifi_connection.h"
 #include "variables.hpp"
+#include "bluetooth/services.hpp"
 
 #include <fstream>
 #include "esp_log.h"
@@ -8,6 +9,9 @@
 #include "freertos/event_groups.h"
 #include "esp_system.h"
 #include <cstring>
+#include "esp_sntp.h"
+#include "esp_netif_sntp.h"
+#include "esp_netif_types.h"
 
 namespace wifi {
     static EventGroupHandle_t s_wifi_event_group;
@@ -20,6 +24,10 @@ namespace wifi {
             esp_wifi_connect();
         } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
             conn = false;
+            if (Config::get().counter == 0) {
+                ble::start_service(ble::SSID_APP_ID);
+                ble::start_service(ble::PASS_APP_ID);
+            }
             if (Config::get().counter < MAX_RECONNECT) {
                 esp_wifi_connect();
                 ++Config::get().counter;
@@ -75,6 +83,11 @@ namespace wifi {
 
         if (bits & BIT0) {
             conn = true;
+
+            // synchronize time
+            esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
+            esp_netif_sntp_init(&config);
+
             return ESP_OK;
         }
         return ESP_ERR_WIFI_NOT_CONNECT;

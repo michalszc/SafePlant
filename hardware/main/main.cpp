@@ -69,6 +69,7 @@ extern "C" void app_main() {
   
     buzz::prepare();
     ble::start_ble_server();
+    moisture::init();
     xTaskCreate(button::button_task, "button", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::status_diode, "status", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::blink_wifi, "blink_connection", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
@@ -76,7 +77,7 @@ extern "C" void app_main() {
     xTaskCreate(ota::task, "ota_update", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
 
     wifi::init();
-  
+
     struct stat st;
     if (stat("/storage/uid.txt", &st) != 0) {
         // when no user id 
@@ -115,10 +116,6 @@ extern "C" void app_main() {
             // in other way run ble
             wifi::Config::get().ssid.clear();
             wifi::Config::get().pass.clear();
-
-            diode::set_state(diode::State::PARING);
-            ble::start_service(ble::SSID_APP_ID);
-            ble::start_service(ble::PASS_APP_ID);
         }
     }
     xTaskCreate(dht::dht_test, "dht_test", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);

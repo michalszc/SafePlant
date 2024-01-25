@@ -12,6 +12,7 @@
 #include "esp_sntp.h"
 #include "esp_netif_sntp.h"
 #include "esp_netif_types.h"
+#include "diode.hpp"
 
 namespace wifi {
     static EventGroupHandle_t s_wifi_event_group;
@@ -25,8 +26,8 @@ namespace wifi {
         } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
             conn = false;
             if (Config::get().counter == 0) {
-                ble::start_service(ble::SSID_APP_ID);
-                ble::start_service(ble::PASS_APP_ID);
+                diode::set_state(diode::State::PARING);
+                ble::activate_wifi();
             }
             if (Config::get().counter < MAX_RECONNECT) {
                 esp_wifi_connect();
@@ -36,6 +37,7 @@ namespace wifi {
             }
         } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
             conn = true;
+            ble::deactivate_wifi();
             ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
             Config::get().counter = 0;
             xEventGroupSetBits(s_wifi_event_group, BIT0);

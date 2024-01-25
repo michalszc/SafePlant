@@ -4,6 +4,7 @@
 #include "esp_adc/adc_oneshot.h"
 
 namespace moisture {
+    void init();
     bool init_adc_calibration(adc_unit_t unit,
                             adc_channel_t channel,
                             adc_atten_t atten,

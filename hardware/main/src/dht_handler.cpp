@@ -1,5 +1,6 @@
 #include "dht_handler.hpp"
 #include "lcd.hpp"
+#include "buzzer.h"
 
 #include <dht.h>
 #include <string>
@@ -12,6 +13,7 @@
 namespace dht {
     #define SENSOR_TYPE DHT_TYPE_DHT11
     #define CONFIG_EXAMPLE_DATA_GPIO GPIO_NUM_18
+    inline bool should_peeb = true;
 
     void dht_test(void *pvParameters)
     {
@@ -20,6 +22,8 @@ namespace dht {
         while (true) {
             int delay = 1000;
             if (!mqtt::MqttClient::getClient().temperature.empty()) {
+                uint8_t min = mqtt::MqttClient::getClient().min_temp();
+                uint8_t max = mqtt::MqttClient::getClient().max_temp();
                 delay = mqtt::MqttClient::getClient().temperature["frequency"].get<int>() * 1000;
                 temp = read_temp();
                 if (temp) {
@@ -41,6 +45,11 @@ namespace dht {
                         std::ofstream file("/storage/temperature_data.txt", std::ios::app);
                         file << info << std::endl;
                     }
+                    if ((temp < min || temp > max) && should_peeb) {
+                        buzz::buzz();
+                    } else if (!should_peeb && !(temp < min || temp > max)) {
+                        should_peeb = true;
+                    }
                 }
             }
 
@@ -56,5 +65,9 @@ namespace dht {
         }
 
         return 0;
+    }
+
+    void no_beep() {
+        should_peeb = false;
     }
 }

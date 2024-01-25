@@ -76,7 +76,7 @@ extern "C" void app_main() {
     xTaskCreate(ota::task, "ota_update", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
 
     wifi::init();
-  
+
     struct stat st;
     if (stat("/storage/uid.txt", &st) != 0) {
         // when no user id 

@@ -2,6 +2,7 @@
 #include "esp_log.h"
 #include "moisture_sensor.hpp"
 #include "dht_handler.hpp"
+#include "diode.hpp"
 
 #include <cstring>
 #include <string>
@@ -34,8 +35,10 @@ namespace ble {
                 break;
             case ESP_GATTS_CONNECT_EVT: 
                 connect_event(param);
+                diode::set_state(diode::CONNECTED);
                 break;
             case ESP_GATTS_DISCONNECT_EVT:
+                diode::set_state(diode::PARING);
                 ESP_LOGI(GATTS_TAG, "ESP_GATTS_DISCONNECT_EVT, disconnect reason 0x%x", param->disconnect.reason);
                 esp_ble_gap_start_advertising(&adv_params);
                 break;

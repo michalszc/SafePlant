@@ -26,6 +26,7 @@ namespace diode {
     };
     static State app_state;
 
+    State get_state();
     void set_state(State state);
     void init_rgb();
     void init();

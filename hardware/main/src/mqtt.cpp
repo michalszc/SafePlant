@@ -10,8 +10,7 @@
 #include "sys/stat.h"
 
 namespace mqtt {
-    
-
+        
     void send_old_data() {
         ESP_LOGI("MQTT", "bout to send old data");
         if (mqtt::MqttClient::getClient().temperature.empty() || mqtt::MqttClient::getClient().humidity.empty()) {

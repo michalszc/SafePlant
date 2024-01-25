@@ -89,7 +89,7 @@ namespace ota {
 
                 esp_http_client_cleanup(client);
             }
-            vTaskDelay(pdMS_TO_TICKS(10000));
+            vTaskDelay(pdMS_TO_TICKS(100000));
         }
     }
 }

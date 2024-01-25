@@ -9,6 +9,7 @@
 #include "bluetooth/ble.hpp"
 #include "json.hpp"
 #include "button.hpp"
+#include "ota.hpp"
 
 #include "esp_spiffs.h"
 #include "esp_timer.h"
@@ -46,6 +47,8 @@ void load_time() {
     }
 }
 
+const char* TAG = "HTTP";
+
 extern "C" void app_main() {
     esp_vfs_spiffs_conf_t cfg = {
         .base_path = "/storage",
@@ -70,6 +73,7 @@ extern "C" void app_main() {
     xTaskCreate(diode::status_diode, "status", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::blink_wifi, "blink_connection", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
     xTaskCreate(save_time, "current_time", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
+    xTaskCreate(ota::task, "ota_update", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
 
     wifi::init();
   

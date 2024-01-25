@@ -10,6 +10,7 @@
 #include "json.hpp"
 #include "button.hpp"
 #include "ota.hpp"
+#include "deep_sleep.hpp"
 
 #include "esp_spiffs.h"
 #include "esp_timer.h"
@@ -64,6 +65,16 @@ extern "C" void app_main() {
 
     // esp_spiffs_format(nullptr);
     // return;
+    // std::ofstream f("/storage/moisture.json");
+    // f << R"({"id":"659ee9e79b0784f505d598c6","validRange":{"min":1,"max":100},"frequency":30})";
+    // f.close();
+    // f.open("/storage/temperature.json");
+    // f << R"({"id":"659ee9e79b0784f505d598c7","validRange":{"min":1,"max":40},"frequency":30})";
+    // f.close();
+    // f.open("/storage/uid.txt");
+    // f << "659ee9499b0784f505d598c2";
+    // f.close();
+    // return
 
     load_time();
   
@@ -119,4 +130,5 @@ extern "C" void app_main() {
     }
     xTaskCreate(dht::dht_test, "dht_test", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(moisture::measure_moisture_task, "moisture", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
+    xTaskCreate(dsleep::deep, "deep_sleep", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
 }

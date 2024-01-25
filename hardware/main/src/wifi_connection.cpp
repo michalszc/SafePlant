@@ -58,15 +58,15 @@ namespace wifi {
 
         wifi_config_t wifi_config = {
             .sta = {
-                .ssid = "NETIASPOT-2.4GHz-4F49E0",
-                .password = "fu2QK9goUgGR",
+                .ssid = {},
+                .password = {},
                 .scan_method = WIFI_ALL_CHANNEL_SCAN,
                 .sort_method = WIFI_CONNECT_AP_BY_SIGNAL
             }
         };
     
-        // memcpy(&wifi_config.sta.ssid, Config::get().ssid.c_str(), Config::get().ssid.size());
-        // memcpy(&wifi_config.sta.password, Config::get().pass.c_str(), Config::get().pass.size());
+        memcpy(&wifi_config.sta.ssid, Config::get().ssid.c_str(), Config::get().ssid.size());
+        memcpy(&wifi_config.sta.password, Config::get().pass.c_str(), Config::get().pass.size());
 
         wifi_config.sta.threshold = threshold;
         

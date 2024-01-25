@@ -172,7 +172,7 @@ namespace mqtt {
         cfg.broker.verification.certificate = CA2;
         cfg.broker.verification.certificate_len = sizeof(CA2);
         cfg.credentials.username = "esp";
-        cfg.credentials.authentication.password = "PIY0E.2KF2;8'%}NtI0qKx1Cccie6H}OscyF}Qv'[Vru#ErbQ@";
+        cfg.credentials.authentication.password = "";
         cfg.credentials.authentication.certificate = CERT2; 
         cfg.credentials.authentication.certificate_len = sizeof(CERT2);
         cfg.credentials.authentication.key = KEY2;

@@ -13,6 +13,9 @@
 #include <freertos/task.h>
 
 namespace ota {
+    constexpr char* url = "http://iotstorage2137.file.core.windows.net/ota/info.json";
+    constexpr char* url_params = "?sv=2022-11-02&ss=f&srt=o&sp=r&se=2024-02-25T03:53:52Z&st=2024-01-24T19:53:52Z&spr=https,http&sig=PlSwKhkm67fvXq6AVF7764yvHbjgXJjZs%2BsOKRzQg9w%3D";
+
     void perform_update(esp_http_client_event_t *evt) {
         ESP_LOGI("HTTP", "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
         if (!esp_http_client_is_chunked_response(evt->client)) {
@@ -20,12 +23,11 @@ namespace ota {
             using json = nlohmann::json;
             json cfg = json::parse(data);
             // Process the data received from the server
-            std::string params = "?sv=2022-11-02&ss=f&srt=o&sp=r&se=2024-02-25T03:53:52Z&st=2024-01-24T19:53:52Z&spr=https,http&sig=PlSwKhkm67fvXq6AVF7764yvHbjgXJjZs%2BsOKRzQg9w%3D";
             if (cfg["version"].get<std::string>() <= "0.0.3") {
                 ESP_LOGI("HTTP", "Not a newer version");
                 return;
             }
-            std::string url = cfg["url"].get<std::string>() + params; 
+            std::string url = cfg["url"].get<std::string>() + url_params; 
             esp_http_client_config_t config = {
                 .url = url.c_str()
             };
@@ -76,8 +78,9 @@ namespace ota {
     void task(void* params) {
         while (true) {
                 if (conn) {
+                std::string url_str = std::string(url) + url_params;
                 esp_http_client_config_t config = {
-                    .url = "http://iotstorage2137.file.core.windows.net/ota/info.json?sv=2022-11-02&ss=f&srt=o&sp=r&se=2024-02-25T03:53:52Z&st=2024-01-24T19:53:52Z&spr=https,http&sig=PlSwKhkm67fvXq6AVF7764yvHbjgXJjZs%2BsOKRzQg9w%3D",
+                    .url = url_str.c_str(),
                     .event_handler = _http_event_handler,
                 };
 

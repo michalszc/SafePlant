@@ -25,6 +25,7 @@ namespace wifi {
             esp_wifi_connect();
         } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
             conn = false;
+
             if (Config::get().counter < MAX_RECONNECT) {
                 ++Config::get().counter;
                 esp_wifi_connect();

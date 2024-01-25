@@ -25,13 +25,10 @@ namespace wifi {
             esp_wifi_connect();
         } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
             conn = false;
-            if (Config::get().counter == 0) {
-                diode::set_state(diode::State::PARING);
-                ble::activate_wifi();
-            }
+
             if (Config::get().counter < MAX_RECONNECT) {
-                esp_wifi_connect();
                 ++Config::get().counter;
+                esp_wifi_connect();
             } else {
                 xEventGroupSetBits(s_wifi_event_group, BIT1);
             }
@@ -61,20 +58,21 @@ namespace wifi {
 
         wifi_config_t wifi_config = {
             .sta = {
-                .ssid = {},
-                .password = {},
+                .ssid = "NETIASPOT-2.4GHz-4F49E0",
+                .password = "fu2QK9goUgGR",
                 .scan_method = WIFI_ALL_CHANNEL_SCAN,
                 .sort_method = WIFI_CONNECT_AP_BY_SIGNAL
             }
         };
     
-        memcpy(&wifi_config.sta.ssid, Config::get().ssid.c_str(), Config::get().ssid.size());
-        memcpy(&wifi_config.sta.password, Config::get().pass.c_str(), Config::get().pass.size());
+        // memcpy(&wifi_config.sta.ssid, Config::get().ssid.c_str(), Config::get().ssid.size());
+        // memcpy(&wifi_config.sta.password, Config::get().pass.c_str(), Config::get().pass.size());
 
         wifi_config.sta.threshold = threshold;
         
         ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
         ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
+        diode::set_state(diode::CONNECTING);
         ESP_ERROR_CHECK(esp_wifi_start() );
 
         EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
@@ -90,8 +88,11 @@ namespace wifi {
             esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
             esp_netif_sntp_init(&config);
 
+            diode::set_state(diode::State::ERROR);
             return ESP_OK;
         }
+        diode::set_state(diode::State::PARING);
+        ble::activate_wifi();
         return ESP_ERR_WIFI_NOT_CONNECT;
     }
 

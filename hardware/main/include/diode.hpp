@@ -15,10 +15,10 @@ namespace diode {
     };
     static lcd_info_t led_ch[3];
 
-    void blink_wifi(void* connected);
-
     enum State {
         INIT,
+        NEW,
+        CONNECTING,
         PARING,
         CONNECTED,
         WORKING,
@@ -29,6 +29,8 @@ namespace diode {
     void set_state(State state);
     void init_rgb();
     void init();
+    void new_user();
+    void connecting();
     void paring();
     void connected();
     void works();

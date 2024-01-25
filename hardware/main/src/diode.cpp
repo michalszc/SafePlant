@@ -85,6 +85,11 @@ namespace diode {
         vTaskDelay(300 / portTICK_PERIOD_MS);
     }
 
+    void new_user() {
+        set_color(13, 0, 82);
+        vTaskDelay(300 / portTICK_PERIOD_MS);
+    }
+
     void paring() {
         set_color(0, 0, 255);
         vTaskDelay(300 / portTICK_PERIOD_MS);
@@ -107,12 +112,27 @@ namespace diode {
         vTaskDelay(300 / portTICK_PERIOD_MS);
     }
 
+    void connecting() {
+        set_color(255, 255, 0);
+        vTaskDelay(300 / portTICK_PERIOD_MS);
+        set_color(0, 0, 0);
+        vTaskDelay(300 / portTICK_PERIOD_MS);
+    }
+
     void status_diode(void* params) {
         diode::init_rgb();
         while (true) {
             switch (app_state) {
                 case State::INIT:
                     init();
+                    break;
+
+                case State::NEW:
+                    new_user();
+                    break;
+
+                case State::CONNECTING:
+                    connecting();
                     break;
 
                 case State::PARING:

@@ -2,6 +2,7 @@
 #include "json.hpp"
 
 #include "esp_log.h"
+#include "diode.hpp"
 #include "esp_event.h"
 #include "esp_system.h"
 #include <string>
@@ -9,6 +10,8 @@
 #include "sys/stat.h"
 
 namespace mqtt {
+    
+
     void send_old_data() {
         ESP_LOGI("MQTT", "bout to send old data");
         if (mqtt::MqttClient::getClient().temperature.empty() || mqtt::MqttClient::getClient().humidity.empty()) {
@@ -132,13 +135,15 @@ namespace mqtt {
             esp_mqtt_client_subscribe(client, ("UPDATE_DEVICE/"+uid).c_str(), 0);
             esp_mqtt_client_subscribe(client, ("REMOVE_DEVICE/"+uid).c_str(), 0);
             MqttClient::getClient().connected = true;
-            ESP_LOGI("MQTT", "I'm connected");
+            diode::set_state(diode::State::WORKING);
             send_old_data();
         }
             break;
         
         case MQTT_EVENT_DISCONNECTED:
             MqttClient::getClient().connected = false;
+            diode::set_state(diode::State::ERROR);
+            
             break;
         
         case MQTT_EVENT_SUBSCRIBED:
@@ -162,16 +167,16 @@ namespace mqtt {
 
     void start_mqtt() {
         esp_mqtt_client_config_t cfg{};
-        cfg.broker.address.uri = "mqtt://test.mosquitto.org";
-        cfg.broker.address.port = 1883;
-        // cfg.broker.verification.certificate = "";
-        // cfg.broker.verification.certificate_len = sizeof("");
-        // cfg.credentials.username = "esp";
-        // cfg.credentials.authentication.password = "";
-        // cfg.credentials.authentication.certificate = ""; 
-        // cfg.credentials.authentication.certificate_len = sizeof("CERT");
-        // cfg.credentials.authentication.key = "";
-        // cfg.credentials.authentication.key_len = sizeof("");
+        cfg.broker.address.uri = "mqtts://dsz0ispzqb.polandcentral.azurecontainer.io";
+        cfg.broker.address.port = 8883;
+        cfg.broker.verification.certificate = CA2;
+        cfg.broker.verification.certificate_len = sizeof(CA2);
+        cfg.credentials.username = "esp";
+        cfg.credentials.authentication.password = "";
+        cfg.credentials.authentication.certificate = CERT2; 
+        cfg.credentials.authentication.certificate_len = sizeof(CERT2);
+        cfg.credentials.authentication.key = KEY2;
+        cfg.credentials.authentication.key_len = sizeof(KEY2);
 
         MqttClient::getClient().client = esp_mqtt_client_init(&cfg);
         auto client = MqttClient::getClient().client;

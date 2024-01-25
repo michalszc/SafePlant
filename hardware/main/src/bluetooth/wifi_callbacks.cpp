@@ -55,8 +55,14 @@ namespace ble {
                 gl_profile_tab[profile_num].conn_id = param->connect.conn_id;
                 break;
             case ESP_GATTS_WRITE_EVT:
-                if (is_ssid && is_pass) {
-                    esp_ble_gatts_close(gatts_if, param->connect.conn_id);
+                if (!mqtt::MqttClient::getClient().uid.empty()){
+                    if (!wifi::Config::get().ssid.empty() || !wifi::Config::get().pass.empty()) {
+                        esp_ble_gatts_close(gatts_if, param->connect.conn_id);
+                    }
+                } else {
+                    if (!wifi::Config::get().ssid.empty() && !wifi::Config::get().pass.empty()) {
+                        esp_ble_gatts_close(gatts_if, param->connect.conn_id);
+                    }
                 }
                 function(param->write.value);
                 if (param->write.need_rsp){
@@ -167,8 +173,6 @@ namespace ble {
         if (gl_profile_tab[PASS_APP_ID].service_handle) {
             esp_ble_gatts_stop_service(gl_profile_tab[PASS_APP_ID].service_handle);
         }
-
-        deactivate_uid();
     }
 
     void deactivate_uid() {
@@ -185,13 +189,21 @@ namespace ble {
         if (gl_profile_tab[PASS_APP_ID].service_handle) {
             esp_ble_gatts_start_service(gl_profile_tab[PASS_APP_ID].service_handle);
         }
-
-        activate_uid();
     }
 
     void activate_uid() {
         if (gl_profile_tab[USERID_APP_ID].service_handle) {
             esp_ble_gatts_start_service(gl_profile_tab[USERID_APP_ID].service_handle);
         }
+    }
+
+    void activate_new() {
+        activate_wifi();
+        activate_uid();
+    }
+
+    void deactivate_new() {
+        deactivate_wifi();
+        deactivate_wifi();
     }
 }

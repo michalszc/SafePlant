@@ -72,7 +72,6 @@ extern "C" void app_main() {
     moisture::init();
     xTaskCreate(button::button_task, "button", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
     xTaskCreate(diode::status_diode, "status", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
-    xTaskCreate(diode::blink_wifi, "blink_connection", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
     xTaskCreate(save_time, "current_time", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
     xTaskCreate(ota::task, "ota_update", configMINIMAL_STACK_SIZE * 3, nullptr, 5, nullptr);
 
@@ -83,7 +82,7 @@ extern "C" void app_main() {
         // when no user id 
 
         // run ble service
-        diode::set_state(diode::State::PARING);
+        diode::set_state(diode::State::NEW);
         ble::start_service(ble::SSID_APP_ID);
         ble::start_service(ble::PASS_APP_ID);
         ble::start_service(ble::USERID_APP_ID);

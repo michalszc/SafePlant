@@ -44,7 +44,7 @@ namespace moisture {
         return calibrated;
     }
 
-    void measure_moisture_task(void* params) {
+    void init() {
         adc_oneshot_unit_init_cfg_t init_cfg = {
             .unit_id = ADC_UNIT_1
         };
@@ -58,7 +58,9 @@ namespace moisture {
 
         adc_cali_handle_t channel_handle;
         bool calibrated = init_adc_calibration(ADC_UNIT_1, CHANNEL, ATTEN, &channel_handle);
+    }
 
+    void measure_moisture_task(void* params) {
         while (true) {
             int delay = 1000;
             if (!mqtt::MqttClient::getClient().humidity.empty()) {

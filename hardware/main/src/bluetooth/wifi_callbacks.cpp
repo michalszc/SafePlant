@@ -55,8 +55,14 @@ namespace ble {
                 gl_profile_tab[profile_num].conn_id = param->connect.conn_id;
                 break;
             case ESP_GATTS_WRITE_EVT:
-                if (is_ssid && is_pass) {
-                    esp_ble_gatts_close(gatts_if, param->connect.conn_id);
+                if (!mqtt::MqttClient::getClient().uid.empty()){
+                    if (!wifi::Config::get().ssid.empty() || !wifi::Config::get().pass.empty()) {
+                        esp_ble_gatts_close(gatts_if, param->connect.conn_id);
+                    }
+                } else {
+                    if (!wifi::Config::get().ssid.empty() && !wifi::Config::get().pass.empty()) {
+                        esp_ble_gatts_close(gatts_if, param->connect.conn_id);
+                    }
                 }
                 function(param->write.value);
                 if (param->write.need_rsp){

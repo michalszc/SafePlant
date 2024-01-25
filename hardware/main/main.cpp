@@ -82,7 +82,7 @@ extern "C" void app_main() {
         // when no user id 
 
         // run ble service
-        diode::set_state(diode::State::PARING);
+        diode::set_state(diode::State::NEW);
         ble::start_service(ble::SSID_APP_ID);
         ble::start_service(ble::PASS_APP_ID);
         ble::start_service(ble::USERID_APP_ID);

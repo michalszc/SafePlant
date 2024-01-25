@@ -17,6 +17,8 @@ namespace diode {
 
     enum State {
         INIT,
+        NEW,
+        CONNECTING,
         PARING,
         CONNECTED,
         WORKING,
@@ -27,6 +29,8 @@ namespace diode {
     void set_state(State state);
     void init_rgb();
     void init();
+    void new_user();
+    void connecting();
     void paring();
     void connected();
     void works();

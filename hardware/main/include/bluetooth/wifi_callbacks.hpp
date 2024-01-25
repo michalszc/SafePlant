@@ -17,6 +17,9 @@ namespace ble {
 
     void activate_wifi();
     void deactivate_wifi();
+    
+    void activate_new();
+    void deactivate_new();
 
     void activate_uid();
     void deactivate_uid();

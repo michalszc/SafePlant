@@ -116,10 +116,6 @@ extern "C" void app_main() {
             // in other way run ble
             wifi::Config::get().ssid.clear();
             wifi::Config::get().pass.clear();
-
-            diode::set_state(diode::State::PARING);
-            ble::start_service(ble::SSID_APP_ID);
-            ble::start_service(ble::PASS_APP_ID);
         }
     }
     xTaskCreate(dht::dht_test, "dht_test", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);

@@ -15,13 +15,14 @@ namespace dht {
 
     void dht_test(void *pvParameters)
     {
-        float temperature, humidity;
+        uint8_t temp;
 
         while (true) {
             int delay = 1000;
             if (!mqtt::MqttClient::getClient().temperature.empty()) {
                 delay = mqtt::MqttClient::getClient().temperature["frequency"].get<int>() * 1000;
-                if (dht_read_float_data(SENSOR_TYPE, CONFIG_EXAMPLE_DATA_GPIO, &humidity, &temperature) == ESP_OK) {
+                temp = read_temp();
+                if (temp) {
                     timeval tv_now;
                     gettimeofday(&tv_now, nullptr);
                     auto time = static_cast<long long>(tv_now.tv_sec * 1000 + tv_now.tv_usec / 1000);
@@ -29,7 +30,7 @@ namespace dht {
                         time += mqtt::MqttClient::getClient().time;
                     }
                     auto time_str = std::to_string(time);
-                    auto value = std::to_string(static_cast<int>(temperature));
+                    auto value = std::to_string(static_cast<int>(temp));
                     lcd::Display::get_display().print("Temp: " + value + "\337C", 0, 0);
                     std::string info = "{ \"timestamp\":" + time_str + ",\"value\": " + value + "}";
                     if (mqtt::MqttClient::getClient().connected) {
@@ -45,5 +46,15 @@ namespace dht {
 
             vTaskDelay(pdMS_TO_TICKS(delay));
         }
+    }
+
+    uint8_t read_temp() {
+        float temperature, humidity;
+
+        if (dht_read_float_data(SENSOR_TYPE, CONFIG_EXAMPLE_DATA_GPIO, &humidity, &temperature) == ESP_OK) {
+            return static_cast<uint8_t>(temperature);
+        }
+
+        return 0;
     }
 }

@@ -1,8 +1,10 @@
 #include "bluetooth/ble.hpp"
 #include "esp_log.h"
 #include "moisture_sensor.hpp"
+#include "dht_handler.hpp"
 
 #include <cstring>
+#include <string>
 
 namespace ble {
     void gatts_moisture_event_handler(
@@ -75,27 +77,14 @@ namespace ble {
         ESP_LOGI(GATTS_TAG, "GATT_READ_EVT, conn_id %d, trans_id %" PRIu32 ", handle %d\n", param->read.conn_id, param->read.trans_id, param->read.handle);
         esp_gatt_rsp_t rsp{};
         rsp.attr_value.handle = param->read.handle;
-        auto massage = moisture::get_moisture();
-        auto hundreds = massage / 100;
-        auto decims = (massage - hundreds * 100) / 10;
-        auto units = massage % 10; 
-        rsp.attr_value.len = 4;
-        if (hundreds == 0) {
-            if (decims == 0){
-                rsp.attr_value.len = 2;
-                rsp.attr_value.value[0] = units + '0';
-                rsp.attr_value.value[1] = '%';
-            } else {
-                rsp.attr_value.len = 3;
-                rsp.attr_value.value[0] = decims + '0';
-                rsp.attr_value.value[1] = units + '0';
-                rsp.attr_value.value[2] = '%';
-            }
-        } else {
-            rsp.attr_value.value[0] = hundreds + '0';
-            rsp.attr_value.value[1] = decims + '0';
-            rsp.attr_value.value[2] = units + '0';
-            rsp.attr_value.value[3] = '%';
+        auto moist = moisture::get_moisture();
+        auto temp = dht::read_temp();
+        std::string msg1 = std::to_string(moist);
+        std::string msg2 = std::to_string(temp);
+        auto massage = msg1 + " " + msg2;
+        rsp.attr_value.len = massage.size();
+        for (size_t i = 0; i < massage.size(); ++i) {
+            rsp.attr_value.value[i] = massage[i];
         }
         
         esp_ble_gatts_send_response(gatts_if, param->read.conn_id, param->read.trans_id,

@@ -167,8 +167,6 @@ namespace ble {
         if (gl_profile_tab[PASS_APP_ID].service_handle) {
             esp_ble_gatts_stop_service(gl_profile_tab[PASS_APP_ID].service_handle);
         }
-
-        deactivate_uid();
     }
 
     void deactivate_uid() {
@@ -185,13 +183,21 @@ namespace ble {
         if (gl_profile_tab[PASS_APP_ID].service_handle) {
             esp_ble_gatts_start_service(gl_profile_tab[PASS_APP_ID].service_handle);
         }
-
-        activate_uid();
     }
 
     void activate_uid() {
         if (gl_profile_tab[USERID_APP_ID].service_handle) {
             esp_ble_gatts_start_service(gl_profile_tab[USERID_APP_ID].service_handle);
         }
+    }
+
+    void activate_new() {
+        activate_wifi();
+        activate_uid();
+    }
+
+    void deactivate_new() {
+        deactivate_wifi();
+        deactivate_wifi();
     }
 }

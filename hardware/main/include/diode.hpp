@@ -15,8 +15,6 @@ namespace diode {
     };
     static lcd_info_t led_ch[3];
 
-    void blink_wifi(void* connected);
-
     enum State {
         INIT,
         PARING,

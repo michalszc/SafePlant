@@ -7,7 +7,7 @@ It also provides a GraphQL API tailored for our mobile application, providing a 
 
 ## Run locally
 
-### Set environment variables (.env):
+### Set environment variables (.env) - example:
 
 ```bash
 PORT=5555
@@ -89,10 +89,50 @@ ml2s5YaKrN2CFnXOCXUyYTuhW6sCmKnO5oiuOxMYnC92OjxBOmJkgw==
 '
 ```
 
+### Running in Development
+
+```bash
+# start MongoDB and Mosquitto 
+npm run docker:dev
+
+# start backend
+npm run start
+
+# start backend and watch for changes
+npm run watch
+```
+
 ### Running in a production environment
 
 ```bash
 npm run docker:prod
+```
+
+### Lint
+
+```bash
+# lint code with ESLint
+npm run lint
+
+# try to fix ESLint errors
+npm run lint:fix
+```
+
+### Test
+
+```bash
+# run all tests with jest
+npm run test
+
+# run all tests and report coverage information
+npm run test:coverage
+```
+
+### Validate
+
+```bash
+# run lint and tests
+npm run validate
 ```
 
 ## Manage users in Mosquitto

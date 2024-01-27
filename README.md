@@ -2,6 +2,12 @@
 
 It is an innovative **IoT** project that aims to revolutionise the way we look after our plants and crops. This intelligent system combines cutting-edge technology to monitor soil moisture and air temperature to ensure optimal growing conditions. By collecting real-time data, SafePlant enables growers to make informed decisions that conserve resources and maximise plant health.
 
+## Architecture
+
+<p align="center" width="100%">
+    <img width="59%" src="./architecture.png">
+</p>
+
 ## Project structure
 
 ```bash

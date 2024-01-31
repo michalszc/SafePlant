@@ -6,6 +6,7 @@
 #include <string>
 #include <fstream>
 #include "esp_spiffs.h"
+#include "esp_system.h"
 
 namespace ble {
     static bool is_ssid{};
@@ -81,9 +82,7 @@ namespace ble {
     void connect_to_wifi() {
         stop_service(SSID_APP_ID);
         stop_service(PASS_APP_ID);
-        if (wifi::init_sta() == ESP_OK) {
-            mqtt::start_mqtt();
-        }
+        esp_restart();
     }
 
     void write_ssid(uint8_t* value) {
@@ -204,6 +203,6 @@ namespace ble {
 
     void deactivate_new() {
         deactivate_wifi();
-        deactivate_wifi();
+        deactivate_uid();
     }
 }
